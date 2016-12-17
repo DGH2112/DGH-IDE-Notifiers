@@ -1,4 +1,32 @@
-//: @stopdocumentation
+(**
+
+  This module contains an IDE wizard which implements IOTAWizard and IOTAMenuWizard to create a
+  RAD Studio IDE expert / plug-in to log notifications from various aspects of the IDE.
+
+  The wizard is responsible for the life time management of all other objects in this plugin (except
+  the dockable form) and installs the notifiers on creation and remoces them on destruction.
+
+  The following notifiers are currently implemented:
+   * IOTAIDENotifier;
+   * IOTAVersionControlNotifier;
+   * IOTACompileNotifier;
+   * IOTAIDEInsightNotifier;
+   * IOTAMessageNotifier;
+   * IOTAProjectFileStorageNotifier;
+   * IOTAEditorNotifier;
+   * INTAEditServicesNotifier;
+   * IOTADebuggerNotifier;
+   * IOTADebuggerNotifier90;
+   * IOTADebuggerNotifier100;
+   * IOTADebuggerNotifier110.
+
+  @Author  David Hoyle
+  @Version 1.0
+  @Date    17 Dec 2016
+
+  @stopdocumentation
+
+**)
 Unit DGHIDENotifiersWizard;
 
 Interface

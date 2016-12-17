@@ -1,4 +1,15 @@
-//: @stopdocumentation
+(**
+
+  This module contains two procedures for adding and removing an about box entry in the RAD Studio
+  IDE.
+
+  @Author  David Hoyle
+  @Version 1.0
+  @Date    17 Dec 2016
+
+  @stopdocumentation
+
+**)
 Unit DGHIDENotificationsAboutBox;
 
 Interface

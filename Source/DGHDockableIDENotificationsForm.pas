@@ -1,4 +1,15 @@
-//: @stopdocumentation
+(**
+
+  This module contains a dockable IDE window for logging all the notifications from this wizard /
+  expert / plug-in which are generated RAD Studio IDE.
+
+  @Author  David Hoyle
+  @Version 1.0
+  @date    17 Dec 2016
+
+  @stopdocumentation
+
+**)
 Unit DGHDockableIDENotificationsForm;
 
 Interface
@@ -26,7 +37,7 @@ Uses
   {$IFDEF DXE70} // Might need adjusting for XE 3 through 6 - don't have these.
   Actions,
   {$ENDIF}
-  DGHIDENotificationTypes;
+  DGHIDENotificationTypes, System.Actions, System.ImageList;
 
 Type
   TfrmDockableIDENotifications = Class(TDockableForm)

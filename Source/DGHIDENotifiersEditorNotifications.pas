@@ -1,4 +1,15 @@
-//: @stopdocumentation
+(**
+
+  This module contains a class which implements the IOTAEditorNotifier and INTAEditServicesNotifier
+  interfaces for capturing editor events in the RAD Studio IDE.
+
+  @Author  David Hoyle
+  @Version 1.0
+  @Date    17 Dec 2016
+
+  @stopdocumentation
+
+**)
 Unit DGHIDENotifiersEditorNotifications;
 
 Interface

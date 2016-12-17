@@ -1,4 +1,16 @@
-//: @stopdocumentation
+(**
+
+  This module contains a class which implements the IOTAIDEInsightNotifier and
+  IOTAIDEInsightNotifier150 interfaces to capture IDE Insight actions in the RAD Studio IDE
+  so that the developer can modify the contents of the IDE Insight results.
+
+  @Author  David Hoyle
+  @Version 1.0
+  @Date    17 Dec 2017
+
+  @stopdocumentation
+
+**)
 Unit DGHIDENotifiersIDEInsightNotifications;
 
 Interface

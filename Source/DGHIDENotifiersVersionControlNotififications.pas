@@ -1,4 +1,16 @@
-//: @stopdocumentation
+(**
+
+  This module contain a class which implements the IOTAVersionControlNotifier and
+  IOTAVersionControlNotifier150 interfaces to demonstrate how to create a version control interface
+  for the RAD Studio IDE. The methods of the notifier are logged to the notification log window.
+
+  @Author  David Hoyle
+  @Version 1.0
+  @Date    17 Dec 2016
+
+  @stopdocumentation
+
+**)
 Unit DGHIDENotifiersVersionControlNotififications;
 
 Interface
@@ -40,7 +52,7 @@ Uses
   SysUtils;
 
 {$IFDEF D2010}
-{ TDGHIDENotifiersVersionControlNotififications }
+{ TDGHIDENotifiersVersionControlNotifications }
 
 Function TDGHIDENotificationsVersionControlNotifier.AddNewProject(
   Const Project: IOTAProject): Boolean;

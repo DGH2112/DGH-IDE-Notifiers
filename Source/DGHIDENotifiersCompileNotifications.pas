@@ -1,4 +1,16 @@
-//: @stopdocumentation
+(**
+
+  This module contains a class which implements the IOTACompilerNotifier for the RAD Studio IDE
+  in order to recieve notifications when compilers are and stop for each project and project group
+  in the RAD Studio IDE.
+
+  @Author  David Hoyle
+  @Version 1.0
+  @Date    17 Dec 2016
+
+  @stopdocumentation
+
+**)
 Unit DGHIDENotifiersCompileNotifications;
 
 Interface

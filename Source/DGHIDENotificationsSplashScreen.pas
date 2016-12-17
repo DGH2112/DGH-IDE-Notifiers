@@ -1,4 +1,15 @@
-//: @stopdocumentation
+(**
+
+  This module contains a procedure to add a splash screen entry to the RAD Studio splash screen on
+  startup.
+
+  @Author  David Hoyle
+  @Version 1.0
+  @Date    17 Dec 2016
+
+  @stopdocumentation
+
+**)
 Unit DGHIDENotificationsSplashScreen;
 
 Interface

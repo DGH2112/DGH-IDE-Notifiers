@@ -1,4 +1,15 @@
-//: @stopdocumentation
+(**
+
+  This module contains some common resource strings and a procedure for setting the wizard /expert /
+  plug-ins build information for the splash screen and about box.
+
+  @Author  David Hoyle
+  @Version 1.0
+  @Date    17 Dec 2016
+
+  @stopdocumentation
+
+**)
 Unit DGHIDENotificationsCommon;
 
 Interface

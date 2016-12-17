@@ -1,4 +1,16 @@
-//: @stopdocumentation
+(**
+
+  This module contains a class which implements the IOTAMessageNotififer and INTAMessageNotifier
+  interfaces to demonstrate how to capture events associated with the creationa dn destruction of
+  message groups and add context menus to custom messages in the RAD Studio IDE.
+
+  @Author  David Hoyle
+  @Version 1.0
+  @Date    17 Dec 2016
+
+  @stopdocumentation
+
+**)
 Unit DGHIDENotifiersMessageNotifications;
 
 Interface

@@ -1,4 +1,15 @@
-//: @stopdocumentation
+(**
+
+  This module contains a custom base class for all the notifier along with supporting types so that
+  all the notifiers can log messages with the notification logging window.
+
+  @Author  David Hoyle
+  @Version 1.0
+  @Date    17 Dec 2016
+
+  @stopdocumentation
+
+**)
 Unit DGHIDENotificationTypes;
 
 Interface

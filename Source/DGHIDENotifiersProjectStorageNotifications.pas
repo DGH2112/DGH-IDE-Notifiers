@@ -1,4 +1,15 @@
-//: @stopdocumentation
+(**
+
+  This module contains a class which implements the IOTAProjectFileStorageNotifer interface to
+  demonstrate how to capture file storage events in the RAD Studio IDE.
+
+  @Author  David Hoyle
+  @Version 1.0
+  @Date    17 Dec 2016
+
+  @stopdocumentation
+
+**)
 Unit DGHIDENotifiersProjectStorageNotifications;
 
 Interface

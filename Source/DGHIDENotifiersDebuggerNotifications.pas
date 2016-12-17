@@ -1,4 +1,16 @@
-//: @stopdocumentation
+(**
+
+  This module contains a class which implements the IOTADebuggerNotifier, IOTADebuggerNotifier90,
+  IOTADebuggerNotifier100 and IOTADebuggerNotifier110 interfaces to demonstarte how to get debugging
+  and breakpoint notifications from the RAD Studio IDE.
+
+  @Author  David Hoyle
+  @Version 1.0
+  @Date    17 Dec 2016
+
+  @stopdocumentation
+
+**)
 Unit DGHIDENotifiersDebuggerNotifications;
 
 Interface

@@ -1,4 +1,16 @@
-//: @stopdocumentation
+(**
+
+  This module contains a class which implements the IOTAIDENotifier, IOTAIDENotifier50 and
+  IOTAIDENotifier80 interfaces to capture file notifiction and compiler notifications in the
+  RAD Studio IDE.
+
+  @Author  David Hoyle
+  @Version 1.0
+  @Date    17 Dec 2016
+
+  @stopdocumentation
+
+**)
 Unit DGHIDENotifiersIDENotifications;
 
 Interface
