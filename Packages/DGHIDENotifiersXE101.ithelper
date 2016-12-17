@@ -1,0 +1,22 @@
+[Setup]
+WarnBefore=0
+WarnAfter=0
+
+[Zipping]
+Enabled=1
+ZipFile=D:\HoylD\Web Page\Zips\DGHIDENotifiers.zip
+BasePath=D:\HoylD\RAD Studio\
+ExclusionFiles=
+
+[VersionInfo]
+CompanyName=
+FileDescription=
+FileVersion=1.0.0.0
+InternalName=
+LegalCopyright=
+LegalTrademarks=
+OriginalFilename=
+ProductName=
+ProductVersion=1.0
+Comments=
+

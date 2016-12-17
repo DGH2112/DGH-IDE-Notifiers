@@ -1,0 +1,13 @@
+/*
+
+  This is a Windows Resource File which generates a Splash Screen Icons for the
+  RAD Studio IDEs.
+
+  @Author  David Hoyle
+  @Version 1.0
+  @Date    01 Oct 2016
+
+*/
+DGHIDENotificationsSplashScreenBitMap48x48 BITMAP "Icons\DGH IDE Notifications Splash Screen Icon 48x48.bmp"
+DGHIDENotificationsSplashScreenBitMap24x24 BITMAP "Icons\DGH IDE Notifications Splash Screen Icon 24x24.bmp"
+
