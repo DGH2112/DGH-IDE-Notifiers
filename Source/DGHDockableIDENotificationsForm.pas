@@ -37,7 +37,7 @@ Uses
   {$IFDEF DXE70} // Might need adjusting for XE 3 through 6 - don't have these.
   Actions,
   {$ENDIF}
-  DGHIDENotificationTypes, System.Actions, System.ImageList;
+  DGHIDENotificationTypes;
 
 Type
   TfrmDockableIDENotifications = Class(TDockableForm)

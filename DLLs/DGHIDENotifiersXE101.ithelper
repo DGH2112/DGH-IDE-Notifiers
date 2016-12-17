@@ -10,7 +10,7 @@ CompileWithBRCC32=0
 MajorVer=1
 MinorVer=0
 ReleaseVer=0
-BuildVer=226
+BuildVer=228
 ResourceName=..\DGHIDENotITHVerInfo
 
 [Zipping]
@@ -22,7 +22,7 @@ ExclusionFiles=
 [VersionInfo]
 CompanyName=Season's Fall Music
 FileDescription=DGHIDENotifier
-FileVersion=1.0.0.226
+FileVersion=1.0.0.228
 InternalName=DGHIDENotifier
 LegalCopyright=Season's Fall Music
 LegalTrademarks=Season's Fall Music
@@ -30,4 +30,7 @@ OriginalFilename=DGHIDENotifier
 ProductName=DGHIDENotifier
 ProductVersion=1.0
 Comments=An IDE Plugin to provide notifications for all sorts of things.
+
+[Additional Zip Files]
+Item0=D:\HoylD\RAD Studio\IDE Addins\DGH IDE Notifiers\Icons\*.bmp
 
