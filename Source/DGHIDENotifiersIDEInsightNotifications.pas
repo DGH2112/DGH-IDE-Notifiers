@@ -6,9 +6,7 @@
 
   @Author  David Hoyle
   @Version 1.0
-  @Date    17 Dec 2017
-
-  @stopdocumentation
+  @Date    06 Jan 2017
 
 **)
 Unit DGHIDENotifiersIDEInsightNotifications;
@@ -19,10 +17,11 @@ Uses
   ToolsAPI,
   DGHIDENotificationTypes;
 
-{$INCLUDE ..\..\..\Library\CompilerDefinitions.inc}
+{$INCLUDE CompilerDefinitions.inc}
 
 {$IFDEF D2010}
 Type
+  (** This class implements a notifier for IDE Insight changes. **)
   TDGHIDENotificationsIDEInsightNotifier = Class(TDGHNotifierObject,
     IOTAIDEInsightNotifier {$IFDEF DXE00}, IOTAIDEInsightNotifier150 {$ENDIF})
   Strict Private
@@ -47,6 +46,17 @@ Uses
 { TDGHIDENotificationsIDEInsightNotifier }
 
 {$IFDEF DXE00}
+(**
+
+  This method is called to notifier the caller that they need to clean up any IDE Insight
+  objects they have created.
+
+  @precon  None.
+  @postcon Provides a context.
+
+  @param   Context as an IInterface
+
+**)
 Procedure TDGHIDENotificationsIDEInsightNotifier.ReleaseItems(Context: IInterface);
 
 Begin
@@ -54,6 +64,17 @@ Begin
 End;
 {$ENDIF}
 
+(**
+
+  This method is called when the IDE Insight dialogue is being invoked and requesting items.
+
+  @precon  None.
+  @postcon Povides access to the IDE Inight services and an reserved context value.
+
+  @param   IDEInsightService as an IOTAIDEInsightService
+  @param   Context           as an IInterface
+
+**)
 Procedure TDGHIDENotificationsIDEInsightNotifier.RequestingItems(
   IDEInsightService: IOTAIDEInsightService; Context: IInterface);
 

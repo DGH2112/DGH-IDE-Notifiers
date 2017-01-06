@@ -5,16 +5,14 @@
 
   @Author  David Hoyle
   @Version 1.0
-  @Date    17 Dec 2016
-
-  @stopdocumentation
+  @Date    06 Jan 2017
 
 **)
 Unit DGHIDENotificationsAboutBox;
 
 Interface
 
-{$INCLUDE ..\..\..\Library\CompilerDefinitions.inc}
+{$INCLUDE CompilerDefinitions.inc}
 
   Procedure AddAboutBoxEntry;
   Procedure RemoveAboutBoxEntry;
@@ -30,9 +28,19 @@ Uses
 
 {$IFDEF D2005}
 Var
+  (** This is an internal reference for the about box entry`s plugin index - requried for
+      removal. **)
   iAboutPlugin : Integer;
 {$ENDIF}
 
+(**
+
+  This method adds an Aboutbox entry to the RAD Studio IDE.
+
+  @precon  None.
+  @postcon The about box entry is added to the IDE and its plugin index stored in iAboutPlugin.
+
+**)
 Procedure AddAboutBoxEntry;
 
 Var
@@ -57,6 +65,14 @@ Begin
   {$ENDIF}
 End;
 
+(**
+
+  This method removes the indexed abotu box entry from the RAD Studio IDE.
+
+  @precon  None.
+  @postcon The about box entry is remvoed from the IDE.
+
+**)
 Procedure RemoveAboutBoxEntry;
 
 Begin

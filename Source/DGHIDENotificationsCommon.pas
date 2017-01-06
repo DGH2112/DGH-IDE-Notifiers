@@ -5,23 +5,30 @@
 
   @Author  David Hoyle
   @Version 1.0
-  @Date    17 Dec 2016
-
-  @stopdocumentation
+  @Date    06 Jan 2017
 
 **)
 Unit DGHIDENotificationsCommon;
 
 Interface
 
+Uses
+  ToolsAPI;
+
   Procedure BuildNumber(var iMajor, iMinor, iBugFix, iBuild : Integer);
+  Function GetProjectFileName(Project : IOTAProject) : String;
 
 Resourcestring
+  (** This resource string is used for the bug fix number in the splash screen and about box
+      entries. **)
   strRevision = ' abcdefghijklmnopqrstuvwxyz';
+  (** This resource string is used in the splash screen and about box entries. **)
   strSplashScreenName = 'DGH IDE Notifications %d.%d%s for %s';
+  (** This resource string is used in the splash screen and about box entries. **)
   strSplashScreenBuild = 'Freeware by David Hoyle (Build %d.%d.%d.%d)';
 
 Const
+  (** A constant to define the failed state for a notifier not installed. **)
   iWizardFailState = -1;
 
 Implementation
@@ -30,6 +37,19 @@ Uses
   SysUtils,
   Windows;
 
+(**
+
+  This procedure returns the build information for the OTA Plugin.
+
+  @precon  None.
+  @postcon the build information for the OTA plugin is returned.
+
+  @param   iMajor  as an Integer as a reference
+  @param   iMinor  as an Integer as a reference
+  @param   iBugFix as an Integer as a reference
+  @param   iBuild  as an Integer as a reference
+
+**)
 Procedure BuildNumber(var iMajor, iMinor, iBugFix, iBuild : Integer);
 
 Var
@@ -61,6 +81,25 @@ Begin
         FreeMem(VerInfo, VerInfoSize);
       End;
     End;
+End;
+
+(**
+
+  This method returns the filename of the given project is the project is valid.
+
+  @precon  None.
+  @postcon The filename of the project is returned if valid.
+
+  @param   Project as an IOTAProject
+  @return  a String
+
+**)
+Function GetProjectFileName(Project : IOTAProject) : String;
+
+Begin
+  Result := '(no project)';
+  If Project <> Nil Then
+    Result := ExtractFileName(Project.FileName);
 End;
 
 End.

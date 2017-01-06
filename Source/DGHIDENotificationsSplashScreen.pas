@@ -5,16 +5,14 @@
 
   @Author  David Hoyle
   @Version 1.0
-  @Date    17 Dec 2016
-
-  @stopdocumentation
+  @Date    06 Jan 2017
 
 **)
 Unit DGHIDENotificationsSplashScreen;
 
 Interface
 
-{$INCLUDE ..\..\..\Library\CompilerDefinitions.inc}
+{$INCLUDE CompilerDefinitions.inc}
 
   Procedure AddSplashScreen;
 
@@ -27,6 +25,14 @@ Uses
   Forms,
   DGHIDENotificationsCommon;
 
+(**
+
+  This method installs an entry in the RAD Studio IDE splash screen.
+
+  @precon  None.
+  @postcon An entry is added to the splash screen for this plugin.
+
+**)
 Procedure AddSplashScreen;
 
 Var

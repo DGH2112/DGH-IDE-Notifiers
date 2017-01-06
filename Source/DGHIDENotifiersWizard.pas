@@ -22,9 +22,7 @@
 
   @Author  David Hoyle
   @Version 1.0
-  @Date    17 Dec 2016
-
-  @stopdocumentation
+  @Date    06 Jan 2017
 
 **)
 Unit DGHIDENotifiersWizard;
@@ -36,10 +34,11 @@ Uses
   Graphics,
   DGHIDENotificationTypes;
 
-{$INCLUDE ..\..\..\Library\CompilerDefinitions.inc}
+{$INCLUDE CompilerDefinitions.inc}
 {$R DGHIDENotITHVerInfo.RES ..\DGHIDENotITHVerInfo.RC}
 
 Type
+  (** This class implement the plugins wizard. **)
   TDGHIDENotifiersWizard = Class(TDGHNotifierObject, IOTAWizard, IOTAMenuWizard)
   Strict Private
     FIDENotifier : Integer;
@@ -87,6 +86,14 @@ Uses
 
 { TDGHIDENotifiersWizard }
 
+(**
+
+  A constructor for the TDGHIDENotifierWizard class.
+
+  @precon  None.
+  @postcon Installs all the notifiers.
+
+**)
 Constructor TDGHIDENotifiersWizard.Create;
 
 {: @debug Var
@@ -172,6 +179,14 @@ Begin
 **)
 End;
 
+(**
+
+  A destructor for the TDGHIDENotifiersWizard class.
+
+  @precon  None.
+  @postcon Removes all the notifiers.
+
+**)
 Destructor TDGHIDENotifiersWizard.Destroy;
 
 Begin
@@ -197,6 +212,14 @@ Begin
   Inherited Destroy;
 End;
 
+(**
+
+  This method is invoked when the menu under the help menu is.
+
+  @precon  None.
+  @postcon Displays the notifier dockable form.
+
+**)
 Procedure TDGHIDENotifiersWizard.Execute;
 
 Begin
@@ -204,6 +227,16 @@ Begin
   TfrmDockableIDENotifications.ShowDockableBrowser;
 End;
 
+(**
+
+  This is a getter method for the IDstring property.
+
+  @precon  None.
+  @postcon Returns a unique string for the plugin wizard.
+
+  @return  a String
+
+**)
 Function TDGHIDENotifiersWizard.GetIDString: String;
 
 Begin
@@ -211,6 +244,16 @@ Begin
   DoNotification(Format('IOTAWizard.GetIDString = Result: %s', [Result]));
 End;
 
+(**
+
+  This is a getter method for the MenuText property.
+
+  @precon  None.
+  @postcon Returns the menu text for the menu created under the help menu.
+
+  @return  a String
+
+**)
 Function TDGHIDENotifiersWizard.GetMenuText: String;
 
 Begin
@@ -218,6 +261,16 @@ Begin
   DoNotification(Format('IOTAMenuWizard.GetMenuText = Result: %s', [Result]));
 End;
 
+(**
+
+  This is a getter method for the Name property.
+
+  @precon  None.
+  @postcon Returns the name of the wizard.
+
+  @return  a String
+
+**)
 Function TDGHIDENotifiersWizard.GetName: String;
 
 Begin
@@ -225,6 +278,16 @@ Begin
   DoNotification(Format('IOTAWizard.GetName = Result: %s', [Result]));
 End;
 
+(**
+
+  This is a getter method for the State property.
+
+  @precon  None.
+  @postcon Returns an enabled state for the wizard.
+
+  @return  a TWizardState
+
+**)
 Function TDGHIDENotifiersWizard.GetState: TWizardState;
 
 Begin

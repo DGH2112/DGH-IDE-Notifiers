@@ -37,7 +37,7 @@ object frmDockableIDENotifications: TfrmDockableIDENotifications
     object tbtnCapture: TToolButton
       Left = 0
       Top = 0
-      Action = actCatpure
+      Action = actCapture
     end
     object tbtnClear: TToolButton
       Left = 23
@@ -73,7 +73,7 @@ object frmDockableIDENotifications: TfrmDockableIDENotifications
     Left = 32
     Top = 72
     Bitmap = {
-      494C010102000800340010001000FFFFFFFFFF10FFFFFFFFFFFFFFFF424D3600
+      494C010102000800400010001000FFFFFFFFFF10FFFFFFFFFFFFFFFF424D3600
       0000000000003600000028000000400000001000000001002000000000000010
       0000000000000000000000000000000000000000000000000000000000000000
       0000000000000000000000000000000000000000000000000000000000000000
@@ -216,11 +216,11 @@ object frmDockableIDENotifications: TfrmDockableIDENotifications
     Images = ilButtons
     Left = 32
     Top = 128
-    object actCatpure: TAction
+    object actCapture: TAction
       Caption = 'Catpure Notifications'
       ImageIndex = 0
-      OnExecute = actCatpureExecute
-      OnUpdate = actCatpureUpdate
+      OnExecute = actCaptureExecute
+      OnUpdate = actCaptureUpdate
     end
     object actClear: TAction
       Caption = 'actClear'

@@ -5,9 +5,7 @@
 
   @Author  David Hoyle
   @Version 1.0
-  @Date    17 Dec 2016
-
-  @stopdocumentation
+  @Date    06 Jan 2017
 
 **)
 Unit DGHIDENotificationTypes;
@@ -19,6 +17,7 @@ Uses
   Graphics;
 
 Type
+  (** An enumerate to describe each notification type. **)
   TDGHIDENotification = (
     dinWizard,
     dinMenuWizard,
@@ -32,8 +31,10 @@ Type
     dinDebuggerNotifier
   );
 
+  (** A set of the above notification type so that they can be filtered. **)
   TDGHIDENotifications = Set Of TDGHIDENotification;
 
+  (** A base notifier object to provide common notification messaging in all notifiers. **)
   TDGHNotifierObject = Class(TNotifierObject, IOTANotifier)
   Strict Private
     FNotification : TDGHIDENotification;
@@ -52,6 +53,7 @@ Type
   End;
 
 Const
+  (** A constant array of colours to provide a different colour for each notification. **)
   iNotificationColours: Array [Low(TDGHIDENotification) .. High(TDGHIDENotification)] Of
     TColor = (
     clTeal,
@@ -67,8 +69,10 @@ Const
     clPurple
   );
 
+  (** A constant array of boolean to provide a string representation of a boolean value. **)
   strBoolean: Array [Low(False) .. High(True)] Of String = ('False', 'True');
 
+  (** A constant array of strings to provide string representation of each notification. **)
   strNotificationLabel: Array [Low(TDGHIDENotification) .. High(TDGHIDENotification)] Of
     String = (
     'Wizard Notifications',
@@ -88,6 +92,14 @@ Implementation
 Uses
   DGHDockableIDENotificationsForm;
 
+(**
+
+  This method of the notifier is called after construction of the notifier (not is all cases).
+
+  @precon  None.
+  @postcon Outputs a notification.
+
+**)
 Procedure TDGHNotifierObject.AfterConstruction;
 
 Begin
@@ -95,12 +107,28 @@ Begin
   DoNotification(FNotifier + '.AfterConstruction');
 End;
 
+(**
+
+  This method is called after the object the notifier is attached to is saved (if applicable).
+
+  @precon  None.
+  @postcon Outputs a notification.
+
+**)
 Procedure TDGHNotifierObject.AfterSave;
 
 Begin
   DoNotification(FNotifier + '.AfterSave');
 End;
 
+(**
+
+  This method is called before the notifier is destroyed.
+
+  @precon  None.
+  @postcon Outputs a notification.
+
+**)
 Procedure TDGHNotifierObject.BeforeDestruction;
 
 Begin
@@ -108,12 +136,31 @@ Begin
   DoNotification(FNotifier + '.BeforeDestruction');
 End;
 
+(**
+
+  This method is called before the object the notifier is attached to is saved (if applicable).
+
+  @precon  None.
+  @postcon Outputs a notification.
+
+**)
 Procedure TDGHNotifierObject.BeforeSave;
 
 Begin
   DoNotification(FNotifier + '.BeforeSave');
 End;
 
+(**
+
+  A constructor for the TDGHNotifierObject class.
+
+  @precon  None.
+  @postcon Stores the notifier object name and notifier type.
+
+  @param   strNotifier   as a String
+  @param   iNotification as a TDGHIDENotification
+
+**)
 Constructor TDGHNotifierObject.Create(strNotifier : String;
   iNotification: TDGHIDENotification);
 
@@ -122,12 +169,30 @@ Begin
   FNotification := iNotification;
 End;
 
+(**
+
+  This method is called when the notifier is destroyed.
+
+  @precon  None.
+  @postcon Outputs a notificiation.
+
+**)
 Procedure TDGHNotifierObject.Destroyed;
 
 Begin
   DoNotification(FNotifier + '.Destroyed');
 End;
 
+(**
+
+  This method adds a notification to the dockable notifier form.
+
+  @precon  None.
+  @postcon A notification is aded to the dockable form.
+
+  @param   strMessage as a String
+
+**)
 Procedure TDGHNotifierObject.DoNotification(strMessage: String);
 
 Begin
@@ -137,6 +202,14 @@ Begin
   );
 End;
 
+(**
+
+  This method is called when the object the notifier is attached to is saved (if applicable).
+
+  @precon  None.
+  @postcon Outputs a message.
+
+**)
 Procedure TDGHNotifierObject.Modified;
 
 Begin

@@ -5,16 +5,14 @@
 
   @Author  David Hoyle
   @Version 1.0
-  @date    17 Dec 2016
-
-  @stopdocumentation
+  @date    06 Jan 2017
 
 **)
 Unit DGHDockableIDENotificationsForm;
 
 Interface
 
-{$INCLUDE '..\..\..\Library\CompilerDefinitions.inc'}
+{$INCLUDE 'CompilerDefinitions.inc'}
 
 Uses
   Windows,
@@ -40,21 +38,22 @@ Uses
   DGHIDENotificationTypes;
 
 Type
+  (** This class presents a dockable form for the RAD Studio IDE. **)
   TfrmDockableIDENotifications = Class(TDockableForm)
     tbrMessageFilter: TToolBar;
     ilButtons: TImageList;
     alButtons: TActionList;
     tbtnCapture: TToolButton;
     tbtnSep1: TToolButton;
-    actCatpure: TAction;
+    actCapture: TAction;
     lbxNotifications: TListBox;
     tbtnClear: TToolButton;
     actClear: TAction;
-    procedure actCatpureExecute(Sender: TObject);
-    procedure actCatpureUpdate(Sender: TObject);
-    procedure lbxNotificationsDrawItem(Control: TWinControl; Index: Integer; Rect: TRect;
+    Procedure actCaptureExecute(Sender: TObject);
+    Procedure actCaptureUpdate(Sender: TObject);
+    Procedure lbxNotificationsDrawItem(Control: TWinControl; Index: Integer; Rect: TRect;
       State: TOwnerDrawState);
-    procedure actClearExecute(Sender: TObject);
+    Procedure actClearExecute(Sender: TObject);
   Strict Private
     FMessageList : TStringList;
     FMessageFilter : TDGHIDENotifications;
@@ -79,6 +78,8 @@ Type
     Class Procedure AddNotification(iNotification : TDGHIDENotification; strMessage: String);
   End;
 
+  (** This is a class references for the dockable form which is required by some of the OTA
+      methods. **)
   TfrmDockableIDENotificationsClass = Class Of TfrmDockableIDENotifications;
 
 Implementation
@@ -91,8 +92,19 @@ Uses
   Registry;
 
 Var
+  (** This is a private reference for the form to implement a singleton pattern. **)
   FormInstance: TfrmDockableIDENotifications;
 
+(**
+
+  This method shows the form if it has been created.
+
+  @precon  None.
+  @postcon The form is displayed.
+
+  @param   Form as a TfrmDockableIDENotifications
+
+**)
 Procedure ShowDockableForm(Form: TfrmDockableIDENotifications);
 
 Begin
@@ -111,6 +123,17 @@ Begin
     End;
 End;
 
+(**
+
+  This method registers the dockable form with the IDE.
+
+  @precon  FormVar must be a valid reference.
+  @postcon The dockable form is registered with the IDE.
+
+  @param   FormClass as a TfrmDockableIDENotificationsClass
+  @param   FormVar   as   @param   FormName  as a String as a constant
+
+**)
 Procedure RegisterDockableForm(FormClass: TfrmDockableIDENotificationsClass; Var FormVar;
   Const FormName: String);
 
@@ -120,6 +143,16 @@ Begin
   RegisterDesktopFormClass(FormClass, FormName, FormName);
 End;
 
+(**
+
+  This method unregisters the dockable for from the IDE.
+
+  @precon  FormVar must be a valid reference.
+  @postcon The dockable form is unregistered from the IDE.
+
+  @param   FormVar  as   @param   FormName as a String as a constant
+
+**)
 Procedure UnRegisterDockableForm(Var FormVar; Const FormName: String);
 
 Begin
@@ -127,6 +160,17 @@ Begin
     UnRegisterFieldAddress(@FormVar);
 End;
 
+(**
+
+  This method creates an instance of the dockable form and registers it with the IDE.
+
+  @precon  FormVar must be a valid reference.
+  @postcon The dockable form is created and registered with the IDE.
+
+  @param   FormVar   as a TfrmDockableIDENotifications as a reference
+  @param   FormClass as a TfrmDockableIDENotificationsClass
+
+**)
 Procedure CreateDockableForm(Var FormVar: TfrmDockableIDENotifications;
   FormClass: TfrmDockableIDENotificationsClass);
 
@@ -135,6 +179,16 @@ Begin
   RegisterDockableForm(FormClass, FormVar, TCustomForm(FormVar).Name);
 End;
 
+(**
+
+  This method unregisters the dockable form from the IDE and frees its instance.
+
+  @precon  FormVar must be a valid reference.
+  @postcon The form is unregistered from the IDE and freed.
+
+  @param   FormVar as a TfrmDockableIDENotifications as a reference
+
+**)
 Procedure FreeDockableForm(Var FormVar: TfrmDockableIDENotifications);
 
 Begin
@@ -145,6 +199,16 @@ Begin
     End;
 End;
 
+(**
+
+  A constructor for the TfrmDockableIDENotifications class.
+
+  @precon  AOwner must be a valid reference.
+  @postcon Initialises the form and loads the settings.
+
+  @param   AOwner as a TComponent
+
+**)
 Constructor TfrmDockableIDENotifications.Create(AOwner: TComponent);
 
 Begin
@@ -160,6 +224,14 @@ Begin
   LoadSettings;
 End;
 
+(**
+
+  A destructor for the TfrmDockableIDENotifications class.
+
+  @precon  None.
+  @postcon Saves the settings and frees the form memory.
+
+**)
 Destructor TfrmDockableIDENotifications.Destroy;
 
 Var
@@ -178,9 +250,37 @@ Begin
   Inherited Destroy;
 End;
 
+(**
+
+  This is an on DrawItem event handler for the notifications listbox.
+
+  @precon  None.
+  @postcon Custom draws each list view item based on its information.
+
+  @param   Control as a TWinControl
+  @param   Index   as an Integer
+  @param   Rect    as a TRect
+  @param   State   as a TOwnerDrawState
+
+**)
 Procedure TfrmDockableIDENotifications.lbxNotificationsDrawItem(Control: TWinControl;
   Index: Integer; Rect: TRect; State: TOwnerDrawState);
 
+  (**
+
+    This method draw the given text with the given colour and font style on the listbox canvas
+    starting at the given left point.
+
+    @precon  None.
+    @postcon The text is drawn on the listbox canvas.
+
+    @param   strText  as a String
+    @param   iLeft    as an Integer
+    @param   boolBold as a Boolean
+    @param   iColour  as a TColor
+    @return  an Integer
+
+  **)
   Function DrawTextOnCanvas(strText : String; iLeft : Integer; boolBold : Boolean;
     iColour : TColor) : Integer;
 
@@ -207,6 +307,20 @@ Procedure TfrmDockableIDENotifications.lbxNotificationsDrawItem(Control: TWinCon
     Result := R.Right;
   End;
 
+  (**
+
+    This method parses the given text using the given delimiter and returns the first portion of
+    the text up to but not including the delimiter.
+
+    @precon  None.
+    @postcon The first portion of the text up to the delimiter is returned and that portion of the
+             text is removed from the original text.
+
+    @param   strText      as a String as a reference
+    @param   strDelimiter as a String
+    @return  a String
+
+  **)
   Function ParseText(var strText : String; strDelimiter : String) : String;
 
   Var
@@ -272,6 +386,14 @@ Begin
     lbxNotifications.ScrollWidth := iLeft;
 End;
 
+(**
+
+  This method loads the forms / applcations settings from the registry.
+
+  @precon  None.
+  @postcon The forms / applications settings are loaded from the registry.
+
+**)
 Procedure TfrmDockableIDENotifications.LoadSettings;
 
 Var
@@ -291,6 +413,14 @@ Begin
   End;
 End;
 
+(**
+
+  This method creates the dockable form is it is not already created.
+
+  @precon  None.
+  @postcon The dockable form is created.
+
+**)
 Class Procedure TfrmDockableIDENotifications.CreateDockableBrowser;
 
 Begin
@@ -298,6 +428,16 @@ Begin
     CreateDockableForm(FormInstance, TfrmDockableIDENotifications);
 End;
 
+(**
+
+  This method creates tool bar buttons, one for each notification type to the right of the default
+  buttons.
+
+  @precon  None.
+  @postcon Toolbar buttons are created for each notifications type so that the notification can
+           be switched on or off in the view.
+
+**)
 Procedure TfrmDockableIDENotifications.CreateFilterButtons;
 
 Const
@@ -345,12 +485,28 @@ Begin
     End;
 End;
 
+(**
+
+  This method frees the dockable form.
+
+  @precon  None.
+  @postcon The dockable form  is freed.
+
+**)
 Class Procedure TfrmDockableIDENotifications.RemoveDockableBrowser;
 
 Begin
   FreeDockableForm(FormInstance);
 End;
 
+(**
+
+  This method saves the forms / applications settings to the registry.
+
+  @precon  None.
+  @postcon The forms / applications settings are saved to the regsitry.
+
+**)
 Procedure TfrmDockableIDENotifications.SaveSettings;
 
 Var
@@ -369,6 +525,14 @@ Begin
   End;
 End;
 
+(**
+
+  This method shows the dockable form and also will create it if it is not already created.
+
+  @precon  None.
+  @postcon The dockable form is shown.
+
+**)
 Class Procedure TfrmDockableIDENotifications.ShowDockableBrowser;
 
 Begin
@@ -376,19 +540,49 @@ Begin
   ShowDockableForm(FormInstance);
 End;
 
-Procedure TfrmDockableIDENotifications.actCatpureExecute(Sender: TObject);
+(**
+
+  This is an on execute event handler for the Capture action.
+
+  @precon  None.
+  @postcon Toggles the action.
+
+  @param   Sender as a TObject
+
+**)
+Procedure TfrmDockableIDENotifications.actCaptureExecute(Sender: TObject);
 
 Begin
   FCapture := Not FCapture;
 End;
 
-Procedure TfrmDockableIDENotifications.actCatpureUpdate(Sender: TObject);
+(**
+
+  This is an on update event handler for the Capture action.
+
+  @precon  None.
+  @postcon Sets the checked property of the capture action.
+
+  @param   Sender as a TObject
+
+**)
+Procedure TfrmDockableIDENotifications.actCaptureUpdate(Sender: TObject);
 
 Begin
   If Sender Is TAction Then
     (Sender As TAction).Checked := FCapture;
 End;
 
+(**
+
+  This is an on execute event handler for the Clear action.
+
+  @precon  None.
+  @postcon Clears the list of notifications.
+
+  @param   Sender as a TObject
+
+**)
 Procedure TfrmDockableIDENotifications.actClearExecute(Sender: TObject);
 
 Begin
@@ -396,6 +590,16 @@ Begin
   lbxNotifications.Clear;
 End;
 
+(**
+
+  This is an on execute event handler for all the notification action.
+
+  @precon  None.
+  @postcon Updates the filter for the view of the notifications and rebuilds the list.
+
+  @param   Sender as a TObject
+
+**)
 Procedure TfrmDockableIDENotifications.ActionExecute(Sender: TObject);
 
 Var
@@ -430,6 +634,17 @@ Begin
   End;
 End;
 
+(**
+
+  This is an on update event handler for all the notification action.
+
+  @precon  None.
+  @postcon Updates the check property of the notification based on whether the notification is in
+           the filter.
+
+  @param   Sender as a TObject
+
+**)
 Procedure TfrmDockableIDENotifications.ActionUpdate(Sender: TObject);
 
 Var
@@ -443,6 +658,18 @@ Begin
     End;
 End;
 
+(**
+
+  This method adds an item to the listbox.
+
+  @precon  None.
+  @postcon An item is added to the end of the list box.
+
+  @param   strMessage    as a string
+  @param   iNotification as a TDGHIDENotification
+  @return  an Integer
+
+**)
 Function TfrmDockableIDENotifications.AddListViewItem(strMessage: string;
   iNotification: TDGHIDENotification) : Integer;
 
@@ -450,6 +677,18 @@ Begin
   Result := lbxNotifications.Items.AddObject(strMessage, TObject(iNotification));
 End;
 
+(**
+
+  This method adds a notification to the forms listbox and underlying stored mechanism.
+
+  @precon  None.
+  @postcon A notification message is aded to the list if included in the filter else just stored
+           internally.
+
+  @param   iNotification as a TDGHIDENotification
+  @param   strMessage    as a String
+
+**)
 Class Procedure TfrmDockableIDENotifications.AddNotification(
   iNotification : TDGHIDENotification; strMessage: String);
 
