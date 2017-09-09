@@ -6,7 +6,7 @@
 
   @Author  David Hoyle
   @Version 1.0
-  @Date    06 Jan 2017
+  @Date    15 Jul 2017
 
 **)
 Unit DGHIDENotifiersIDENotifications;
@@ -15,20 +15,62 @@ Interface
 
 Uses
   ToolsAPI,
-  DGHIDENotificationTypes;
+  DGHIDENotificationTypes,
+  Classes,
+  Generics.Collections;
 
 {$INCLUDE 'CompilerDefinitions.inc'}
 
 Type
+  (** A record to describe the properties of a Module, project or Form notifier. **)
+  TModNotRec = Record
+  Strict Private
+    //: @nohint - fix for bug in BaDI
+    FFileName      : String;
+    //: @nohint - fix for bug in BaDI
+    FNotifierIndex : Integer;
+    //: @nohint - fix for bug in BaDI
+    FNotifierType  : TDGHIDENotification;
+  Public
+    Constructor Create(Const strFileName : String; Const iIndex : Integer;
+      Const eNotifierType : TDGHIDENotification);
+    (**
+      A property to return the filename for the notifier record.
+      @precon  None.
+      @postcon Returns the filename associated with the notifier.
+      @return  a String
+    **)
+    Property FileName : String Read FFileName;
+    (**
+      A property to return the notifier index for the notifier record.
+      @precon  None.
+      @postcon Returns the notifier index associated with the notifier.
+      @return  a Integer
+    **)
+    Property NotifierIndex : Integer Read FNotifierIndex;
+    (**
+      A property to return the notifier type for the notifier record.
+      @precon  None.
+      @postcon Returns the notifier type associated with the notifier.
+      @return  a TDGHIDENotification
+    **)
+    Property NotifierType : TDGHIDENotification Read FNotifierType;
+  End;
+
+  (** A type to describe the generic list - workaround for a BaDI not liking
+      generics in record/class helpers. **)
+  TModNotRecList = TList<TModNotRec>;
+
   (** This class implements the IDENotifier interfaces. **)
   TDGHNotificationsIDENotifier = Class(TDGHNotifierObject, IOTAIDENotifier,
     IOTAIDENotifier50, IOTAIDENotifier80)
   Strict Private
-  Strict Protected
-  Public
+    FModuleNotifierRefs : TModNotRecList;
+  {$IFDEF D2010} Strict {$ENDIF} Protected
     // IOTAIDENotifier
     Procedure FileNotification(NotifyCode: TOTAFileNotification;
       Const FileName: String; Var Cancel: Boolean);
+    // IOTAIDENotifier
     Procedure BeforeCompile(Const Project: IOTAProject; Var Cancel: Boolean); Overload;
     Procedure AfterCompile(Succeeded: Boolean); Overload;
     // IOTAIDENotifier50
@@ -38,13 +80,55 @@ Type
     // IOTAIDENotifier80
     Procedure AfterCompile(Const Project: IOTAProject; Succeeded:
       Boolean; IsCodeInsight: Boolean); Overload;
+    Function Find(Const strFileName : String; Var iIndex : Integer) : Boolean;
+    (**
+      A property to expose the module notifier collection to the class helper.
+      @precon  None.
+      @postcon Returns a reference to the notification collection.
+      @return  a TModNotRecList
+    **)
+    Property ModuleNotifierRefs : TModNotRecList Read FModuleNotifierRefs;
+  Public
+    Constructor Create(Const strNotifier, strFileName : String;
+      Const iNotification : TDGHIDENotification); Override;
+    Destructor Destroy; Override;
   End;
 
 Implementation
 
 Uses
+  {$IFDEF DEBUG}
+  CodeSiteLogging,
+  {$ENDIF}
   SysUtils,
-  DGHIDENotificationsCommon;
+  DGHIDENotificationsCommon,
+  DGHIDENotifiersModuleNotifications,
+  DGHIDENotifiersProjectNotifications,
+  DGHIDENotifiersFormNotifications;
+
+{ TModNotRed }
+
+(**
+
+  This is a constructor for the TModNotRec record which describes the attributes
+  to be stored for each module / project / form notifier registered.
+
+  @precon  None.
+  @postcon Initialises the record.
+
+  @param   strFileName   as a String as a constant
+  @param   iIndex        as an Integer as a constant
+  @param   eNotifierType as a TDGHIDENotification as a constant
+
+**)
+Constructor TModNotRec.Create(Const strFileName: String; Const iIndex: Integer;
+  Const eNotifierType: TDGHIDENotification);
+
+Begin
+  FFileName := strFileName;
+  FNotifierIndex := iIndex;
+  FNotifierType := NotifierType;
+End;
 
 { TDGHNotifiersIDENotifications }
 
@@ -153,6 +237,53 @@ End;
 
 (**
 
+  This is a constructor for the TDGHNotificationsIDENotifier class.
+
+  @precon  None.
+  @postcon Initialises a string list to store the filenames and their module notifier indexes.
+
+  @param   strNotifier   as a String as a constant
+  @param   strFileName   as a String as a constant
+  @param   iNotification as a TDGHIDENotification as a constant
+
+**)
+Constructor TDGHNotificationsIDENotifier.Create(Const strNotifier, strFileName : String;
+  Const iNotification : TDGHIDENotification);
+
+Begin
+  Inherited Create(strNotifier, strFileName, iNotification);
+  FModuleNotifierRefs := TModNotRecList.Create;
+End;
+
+(**
+
+  This is a destructor for the TDGHNotificationsIDENotifier class.
+
+  @precon  None.
+  @postcon Closes any remaining module notifiers and frees the memory.
+
+**)
+Destructor TDGHNotificationsIDENotifier.Destroy;
+
+Var
+  iModule : Integer;
+
+Begin
+  For iModule := FModuleNotifierRefs.Count - 1 DownTo 0 Do
+    Begin
+      {$IFDEF DEBUG}
+      CodeSite.Send('Destroy', FModuleNotifierRefs[iModule].FileName);
+      {$ENDIF}
+      FModuleNotifierRefs.Delete(iModule);
+      //: @note Cannot remove any left over notifiers here as the module
+      //:       is most likely closed at ths point.
+    End;
+  FModuleNotifierRefs.Free;
+  Inherited Destroy;
+End;
+
+(**
+
   This method is called before a project is compiled.
 
   @precon  None.
@@ -202,9 +333,18 @@ Const
     'ofnProjectDesktopSave',
     'ofnPackageInstalled',
     'ofnPackageUninstalled',
-    'ofnActiveProjectChanged' {$IFDEF DXE100},
+    'ofnActiveProjectChanged' {$IFDEF DXE80},
     'ofnProjectOpenedFromTemplate' {$ENDIF}
   );
+
+Var
+  MS : IOTAModuleServices;
+  M : IOTAModule;
+  iModuleIndex: Integer;
+  P : IOTAProject;
+  eNotiferType : TDGHIDENotification;
+  R: TModNotRec;
+  MN : TDNModuleNotifier;
 
 Begin
   DoNotification(
@@ -216,6 +356,69 @@ Begin
         strBoolean[Cancel]
       ])
   );
+  If Not Cancel And Supports(BorlandIDEServices, IOTAModuleServices, MS) Then
+    Case NotifyCode Of
+      ofnFileOpened:
+        Begin
+          M := MS.OpenModule(FileName);
+          If Supports(M, IOTAProject, P) Then
+            Begin
+              MN := TDNProjectNotifier.Create('IOTAProjectNotifier', FileName, dinProjectNotifier);
+              iModuleIndex := M.AddNotifier(MN);
+              eNotiferType := dinProjectNotifier;
+            End Else
+            Begin
+              MN := TDNModuleNotifier.Create('IOTAModuleNotifier', FileName, dinModuleNotifier);
+              iModuleIndex := M.AddNotifier(MN);
+              eNotiferType := dinModuleNotifier;
+            End;
+          FModuleNotifierRefs.Add(TModNotRec.Create(FileName, iModuleIndex, eNotiferType));
+        End;
+      ofnFileClosing:
+        Begin
+          M := MS.OpenModule(FileName);
+          If Find(M.FileName, iModuleIndex) Then
+            Begin
+              R := FModuleNotifierRefs[iModuleIndex];
+              M.RemoveNotifier(R.NotifierIndex);
+              FModuleNotifierRefs.Delete(iModuleIndex);
+            End;
+        End;
+    End;
+End;
+
+(**
+
+  This method searches for the given filename in the collection and if found returns
+  true with the index in iIndex else returns false.
+
+  @precon  None.
+  @postcon Either trues the true with the index of the found item or returns false.
+
+  @param   strFileName as a String as a constant
+  @param   iIndex      as an Integer as a reference
+  @return  a Boolean
+
+**)
+Function TDGHNotificationsIDENotifier.Find(Const strFileName: String; Var iIndex: Integer): Boolean;
+
+Var
+  iModNotIdx : Integer;
+  R: TModNotRec;
+
+Begin
+  Result := False;
+  iIndex := -1;
+  For iModNotIdx := 0 To FModuleNotifierRefs.Count - 1 Do
+    Begin
+      R := FModuleNotifierRefs.Items[iModNotIdx];
+      If CompareText(R.FileName, strFileName) = 0 Then
+        Begin
+          iIndex := iModNotIdx;
+          Result := True;
+          Break;
+        End;
+    End;
 End;
 
 End.

@@ -5,12 +5,13 @@ object frmDockableIDENotifications: TfrmDockableIDENotifications
   ClientHeight = 337
   ClientWidth = 635
   Color = clBtnFace
-  Font.Charset = DEFAULT_CHARSET
+  Font.Charset = ANSI_CHARSET
   Font.Color = clWindowText
   Font.Height = -13
-  Font.Name = 'Courier New'
+  Font.Name = 'Tahoma'
   Font.Style = []
   OldCreateOrder = False
+  Position = poDesigned
   PixelsPerInch = 96
   TextHeight = 16
   object tbrMessageFilter: TToolBar
@@ -33,7 +34,7 @@ object frmDockableIDENotifications: TfrmDockableIDENotifications
     ParentFont = False
     ParentShowHint = False
     ShowHint = True
-    TabOrder = 1
+    TabOrder = 0
     object tbtnCapture: TToolButton
       Left = 0
       Top = 0
@@ -53,27 +54,24 @@ object frmDockableIDENotifications: TfrmDockableIDENotifications
       Style = tbsSeparator
     end
   end
-  object lbxNotifications: TListBox
+  object stbStatusBar: TStatusBar
     Left = 0
-    Top = 26
+    Top = 318
     Width = 635
-    Height = 311
-    Style = lbOwnerDrawFixed
-    Align = alClient
-    Font.Charset = DEFAULT_CHARSET
-    Font.Color = clWindowText
-    Font.Height = -13
-    Font.Name = 'Tahoma'
-    Font.Style = []
-    ParentFont = False
-    TabOrder = 0
-    OnDrawItem = lbxNotificationsDrawItem
+    Height = 19
+    Panels = <
+      item
+        Width = 250
+      end
+      item
+        Width = 50
+      end>
   end
   object ilButtons: TImageList
     Left = 32
     Top = 72
     Bitmap = {
-      494C010102000800400010001000FFFFFFFFFF10FFFFFFFFFFFFFFFF424D3600
+      494C0101020008009C0010001000FFFFFFFFFF10FFFFFFFFFFFFFFFF424D3600
       0000000000003600000028000000400000001000000001002000000000000010
       0000000000000000000000000000000000000000000000000000000000000000
       0000000000000000000000000000000000000000000000000000000000000000

@@ -5,7 +5,7 @@
 
   @Author  David Hoyle
   @Version 1.0
-  @Date    06 Jan 2017
+  @Date    09 Jul 2017
 
 **)
 Unit DGHIDENotifiersProjectStorageNotifications;
@@ -125,7 +125,7 @@ End;
 
 **)
 Procedure TDGHNotificationsProjectFileStorageNotifier.ProjectLoaded(
-  Const ProjectOrGroup: IOTAModule; Const Node: IXMLNode);
+  Const ProjectOrGroup: IOTAModule; Const Node: IXMLNode); //FI:O804
 
 Begin
   DoNotification(
@@ -145,7 +145,7 @@ End;
 
 **)
 Procedure TDGHNotificationsProjectFileStorageNotifier.ProjectSaving(
-  Const ProjectOrGroup: IOTAModule; Const Node: IXMLNode);
+  Const ProjectOrGroup: IOTAModule; Const Node: IXMLNode); //FI:O804
 
 Begin
   DoNotification(

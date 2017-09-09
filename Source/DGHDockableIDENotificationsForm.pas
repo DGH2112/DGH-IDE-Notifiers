@@ -5,7 +5,7 @@
 
   @Author  David Hoyle
   @Version 1.0
-  @date    06 Jan 2017
+  @date    15 Jul 2017
 
 **)
 Unit DGHDockableIDENotificationsForm;
@@ -13,6 +13,10 @@ Unit DGHDockableIDENotificationsForm;
 Interface
 
 {$INCLUDE 'CompilerDefinitions.inc'}
+
+{$IFDEF DXE00}
+{$DEFINE REGULAREXPRESSIONS}
+{$ENDIF}
 
 Uses
   Windows,
@@ -35,9 +39,49 @@ Uses
   {$IFDEF DXE70} // Might need adjusting for XE 3 through 6 - don't have these.
   Actions,
   {$ENDIF}
-  DGHIDENotificationTypes;
+  DGHIDENotificationTypes,
+  VirtualTrees,
+  {$IFDEF REGULAREXPRESSIONS}
+  RegularExpressions,
+  {$ENDIF}
+  Generics.Collections;
 
 Type
+  (** This record describes the message information to be stored. **)
+  TMsgNotification = Record
+  Strict Private
+    //: @nohint - Workaround for BaDI bug
+    FDateTime: TDateTime;
+    //: @nohint - Workaround for BaDI bug
+    FMessage: String;
+    //: @nohint - Workaround for BaDI bug
+    FNotificationType: TDGHIDENotification;
+  Public
+    Constructor Create(Const dtDateTime: TDateTime; Const strMsg: String;
+      Const eNotificationType: TDGHIDENotification);
+    (**
+      This property returns the date and time of the messages.
+      @precon  None.
+      @postcon Returns the date and time of the messages.
+      @return  a TDateTime
+    **)
+    Property DateTime: TDateTime Read FDateTime;
+    (**
+      This property returns the text of the messages.
+      @precon  None.
+      @postcon Returns the text of the messages.
+      @return  a String
+    **)
+    Property Message: String Read FMessage;
+    (**
+      This property returns the type of the messages.
+      @precon  None.
+      @postcon Returns the type of the messages.
+      @return  a TDGHIDENotification
+    **)
+    Property NotificationType: TDGHIDENotification Read FNotificationType;
+  End;
+
   (** This class presents a dockable form for the RAD Studio IDE. **)
   TfrmDockableIDENotifications = Class(TDockableForm)
     tbrMessageFilter: TToolBar;
@@ -46,36 +90,51 @@ Type
     tbtnCapture: TToolButton;
     tbtnSep1: TToolButton;
     actCapture: TAction;
-    lbxNotifications: TListBox;
     tbtnClear: TToolButton;
     actClear: TAction;
+    stbStatusBar: TStatusBar;
     Procedure actCaptureExecute(Sender: TObject);
     Procedure actCaptureUpdate(Sender: TObject);
-    Procedure lbxNotificationsDrawItem(Control: TWinControl; Index: Integer; Rect: TRect;
-      State: TOwnerDrawState);
     Procedure actClearExecute(Sender: TObject);
   Strict Private
-    FMessageList : TStringList;
-    FMessageFilter : TDGHIDENotifications;
-    FCapture : Boolean;
+    FLogView              : TVirtualStringTree;
+    FMessageList          : TList<TMsgNotification>;
+    FMessageFilter        : TDGHIDENotifications;
+    FCapture              : Boolean;
+    FLogFileName          : String;
+    FRetensionPeriodInDays: Integer;
+    FRegExFilter          : String;
+    FIsFiltering          : Boolean;
+    {$IFDEF REGULAREXPRESSIONS}
+    FRegExEng             : TRegEx;
+    {$ENDIF}
   Strict Protected
     Procedure CreateFilterButtons;
-    Procedure ActionExecute(Sender : TObject);
-    Procedure ActionUpdate(Sender : TObject);
+    Procedure ActionExecute(Sender: TObject);
+    Procedure ActionUpdate(Sender: TObject);
     Procedure LoadSettings;
     Procedure SaveSettings;
-    Function  AddListViewItem(strMessage: string;
-      iNotification: TDGHIDENotification) : Integer;
-  Private
-    {Private declarations}
+    Function AddViewItem(Const iMsgNotiticationIndex: Integer): PVirtualNode;
+    Function  ConstructorLogFileName: String;
+    Procedure LoadLogFile;
+    Procedure SaveLogFile;
+    Procedure CreateVirtualStringTreeLog;
+    Procedure LogViewGetText(Sender: TBaseVirtualTree; Node: PVirtualNode; Column: TColumnIndex;
+      TextType: TVSTTextType; Var CellText: String);
+    Procedure LogViewGetImageIndex(Sender: TBaseVirtualTree; Node: PVirtualNode; Kind: TVTImageKind;
+      Column: TColumnIndex; Var Ghosted: Boolean; Var ImageIndex: Integer);
+    Procedure LogViewAfterCellPaint(Sender: TBaseVirtualTree; TargetCanvas: TCanvas; Node: PVirtualNode;
+      Column: TColumnIndex; CellRect: TRect);
+    Procedure LogViewKeyPress(Sender : TObject; Var Key : Char);
+    Procedure FilterMessages;
   Public
-    {Public declarations}
     Constructor Create(AOwner: TComponent); Override;
     Destructor Destroy; Override;
     Class Procedure RemoveDockableBrowser;
     Class Procedure CreateDockableBrowser;
     Class Procedure ShowDockableBrowser;
-    Class Procedure AddNotification(iNotification : TDGHIDENotification; strMessage: String);
+    Class Procedure AddNotification(Const iNotification: TDGHIDENotification;
+      Const strMessage: String);
   End;
 
   (** This is a class references for the dockable form which is required by some of the OTA
@@ -86,14 +145,136 @@ Implementation
 
 {$R *.dfm}
 
-
 Uses
+  {$IFDEF DEBUG}
+  CodeSiteLogging,
+  {$ENDIF}
   DeskUtil,
-  Registry;
+  Registry,
+  ShlObj,
+  {$IFNDEF D2010}
+  SHFolder,
+  {$ENDIF}
+  DGHIDENotifiersMessageTokens,
+  ToolsAPI,
+  StrUtils,
+  {$IFDEF REGULAREXPRESSIONS}
+  RegularExpressionsCore,
+  {$ENDIF}
+  Types;
+
+Type
+  (** A tree node record which contains the index of the message to display. **)
+  TTreeNodeData = Record
+    FNotificationIndex: Integer;
+  End;
+  (** A pointer to the above structure. **)
+  PTreeNodeData = ^TTreeNodeData;
+  (** A type to define an array of strings. **)
+  TDGHArrayOfString = Array Of String;
+
+Const
+  (** Treeview margin. **)
+  iMargin = 4;
+  (** Treeview spacing. **)
+  iSpace = 4;
 
 Var
   (** This is a private reference for the form to implement a singleton pattern. **)
   FormInstance: TfrmDockableIDENotifications;
+
+(**
+
+  This function returns the first position of the delimiter character in the given string on or
+  after the starting point.
+
+  @precon  None.
+  @postcon Returns the position of the firrst delimiter after the starting point.
+
+  @note    Used to workaround backward compatability issues with String.Split and StringSplit.
+
+  @param   cDelimiter as a Char as a constant
+  @param   strText    as a String as a constant
+  @param   iStartPos  as an Integer as a constant
+  @return  an Integer
+
+**)
+Function DGHPos(Const cDelimiter : Char; Const strText : String; Const iStartPos : Integer) : Integer;
+
+Var
+  I : Integer;
+
+Begin
+  Result := 0;
+  For i := iStartPos To Length(strText) Do
+    If strText[i] = cDelimiter Then
+      Begin
+        Result := i;
+        Break;
+      End;
+End;
+
+(**
+
+  This function splits a string into an array of strings based on the given delimiter character.
+
+  @precon  None.
+  @postcon Splits the given string by the delimmiters and returns an array of strings.
+
+  @note    Used to workaround backward compatability issues with String.Split and StringSplit.
+
+  @param   strText    as a String as a constant
+  @param   cDelimiter as a Char as a constant
+  @return  a TDGHArrayOfString
+
+**)
+Function DGHSplit(Const strText : String; Const cDelimiter : Char) : TDGHArrayOfString;
+
+Var
+  iSplits : Integer;
+  i: Integer;
+  iStart, iEnd : Integer;
+
+Begin
+  iSplits := 0;
+  For i := 1 To Length(strText) Do
+    If strText[i] = cDelimiter Then
+      Inc(iSplits);
+  SetLength(Result, Succ(iSplits));
+  i := 0;
+  iStart := 1;
+  While DGHPos(cDelimiter, strText, iStart) > 0 Do
+    Begin
+      iEnd := DGHPos(cDelimiter, strText, iStart);
+      Result[i] := Copy(strText, iStart, iEnd - iStart);
+      Inc(i);
+      iStart := iEnd + 1;
+    End;
+  Result[i] := Copy(strText, iStart, Length(strText) - iStart + 1);
+End;
+
+{ TMsgNotification }
+
+(**
+
+  This is a constructor for the TMsgNotification record.
+
+  @precon  None.
+  @postcon Initialises the record.
+
+  @param   dtDateTime        as a TDateTime as a constant
+  @param   strMsg            as a String as a constant
+  @param   eNotificationType as a TDGHIDENotification as a constant
+
+**)
+Constructor TMsgNotification.Create(Const dtDateTime: TDateTime; Const strMsg: String;
+  Const eNotificationType: TDGHIDENotification);
+
+Begin
+  FDateTime := dtDateTime;
+  FMessage := strMsg;
+  FNotificationType := eNotificationType;
+End;
 
 (**
 
@@ -153,7 +334,7 @@ End;
   @param   FormVar  as   @param   FormName as a String as a constant
 
 **)
-Procedure UnRegisterDockableForm(Var FormVar; Const FormName: String);
+Procedure UnRegisterDockableForm(Var FormVar; Const FormName: String); //FI:O804
 
 Begin
   If @UnRegisterFieldAddress <> Nil Then
@@ -201,6 +382,40 @@ End;
 
 (**
 
+  This method returns the file name for the log file based on the location of the user profile and
+  where Microsft state you should store your information.
+
+  @precon  None.
+  @postcon The filename for the log file is returned.
+
+  @return  a String
+
+**)
+Function TfrmDockableIDENotifications.ConstructorLogFileName : String;
+
+Const
+  strSeasonsFall = '\Season''s Fall\';
+
+Var
+  iSize: Integer;
+  strBuffer: String;
+
+Begin
+  iSize := MAX_PATH;
+  SetLength(Result, iSize);
+  iSize := GetModuleFileName(HInstance, PChar(Result), iSize);
+  SetLength(Result, iSize);
+  SetLength(strBuffer, MAX_PATH);
+  SHGetFolderPath(0, CSIDL_APPDATA Or CSIDL_FLAG_CREATE, 0, SHGFP_TYPE_CURRENT, PChar(strBuffer));
+  strBuffer := StrPas(PChar(strBuffer));
+  strBuffer := strBuffer + strSeasonsFall;
+  If Not DirectoryExists(strBuffer) Then
+    ForceDirectories(strBuffer);
+  Result := strBuffer + ChangeFileExt(ExtractFileName(Result), '.log');
+End;
+
+(**
+
   A constructor for the TfrmDockableIDENotifications class.
 
   @precon  AOwner must be a valid reference.
@@ -216,12 +431,14 @@ Begin
   DeskSection := Name;
   AutoSave := True;
   SaveStateNecessary := True;
+  FIsFiltering := False;
   FCapture := True;
-  lbxNotifications.DoubleBuffered := True;
-  FMessageList := TStringList.Create;
-  FMessageFilter := [Low(TDGHIDENotification)..High(TDGHIDENotification)];
+  CreateVirtualStringTreeLog;
+  FMessageList := TList<TMsgNotification>.Create;
+  FMessageFilter := [Low(TDGHIDENotification) .. High(TDGHIDENotification)];
   CreateFilterButtons;
   LoadSettings;
+  LoadLogFile;
 End;
 
 (**
@@ -234,17 +451,9 @@ End;
 **)
 Destructor TfrmDockableIDENotifications.Destroy;
 
-Var
-  iSize : Integer;
-  strLogFile : String;
-
 Begin
   SaveSettings;
-  iSize := MAX_PATH;
-  SetLength(strLogFile, iSize);
-  iSize := GetModuleFileName(HInstance, PChar(strLogFile), iSize);
-  SetLength(strLogFile, iSize);
-  FMessageList.SaveToFile(ChangeFileExt(strLogFile, '.log'));
+  SaveLogFile;
   FreeAndNil(FMessageList);
   SaveStateNecessary := True;
   Inherited Destroy;
@@ -252,138 +461,121 @@ End;
 
 (**
 
-  This is an on DrawItem event handler for the notifications listbox.
+  This method filters the list of messages based on matches to the regular expression.
 
   @precon  None.
-  @postcon Custom draws each list view item based on its information.
-
-  @param   Control as a TWinControl
-  @param   Index   as an Integer
-  @param   Rect    as a TRect
-  @param   State   as a TOwnerDrawState
+  @postcon The mesage list is filtered for matches to the filter regular expression.
 
 **)
-Procedure TfrmDockableIDENotifications.lbxNotificationsDrawItem(Control: TWinControl;
-  Index: Integer; Rect: TRect; State: TOwnerDrawState);
-
-  (**
-
-    This method draw the given text with the given colour and font style on the listbox canvas
-    starting at the given left point.
-
-    @precon  None.
-    @postcon The text is drawn on the listbox canvas.
-
-    @param   strText  as a String
-    @param   iLeft    as an Integer
-    @param   boolBold as a Boolean
-    @param   iColour  as a TColor
-    @return  an Integer
-
-  **)
-  Function DrawTextOnCanvas(strText : String; iLeft : Integer; boolBold : Boolean;
-    iColour : TColor) : Integer;
-
-  Const
-    iFormat = DT_LEFT Or DT_VCENTER Or DT_SINGLELINE;
-
-  Var
-    R, S : TRect;
-
-  Begin
-    R := Rect;
-    R.Left := iLeft;
-    R.Right := iLeft;
-    S := R;
-    If boolBold Then
-      lbxNotifications.Canvas.Font.Style := [fsBold]
-    Else
-      lbxNotifications.Canvas.Font.Style := [];
-    lbxNotifications.Canvas.Font.Color := iColour;
-    DrawText(lbxNotifications.Canvas.Handle, PChar(strText), Length(strText), S,
-      iFormat or DT_CALCRECT);
-    R.Right := R.left + (S.Right - S.Left);
-    DrawText(lbxNotifications.Canvas.Handle, PChar(strText), Length(strText), R, iFormat);
-    Result := R.Right;
-  End;
-
-  (**
-
-    This method parses the given text using the given delimiter and returns the first portion of
-    the text up to but not including the delimiter.
-
-    @precon  None.
-    @postcon The first portion of the text up to the delimiter is returned and that portion of the
-             text is removed from the original text.
-
-    @param   strText      as a String as a reference
-    @param   strDelimiter as a String
-    @return  a String
-
-  **)
-  Function ParseText(var strText : String; strDelimiter : String) : String;
-
-  Var
-    iPos : Integer;
-
-  Begin
-    If strText <> '' Then
-      Begin
-        iPos := Pos(strDelimiter, strText);
-        If iPos > 0 Then
-          Begin
-            Result := Copy(strText, 1, Pred(iPos));
-            Delete(strText, 1, Pred(iPos));
-          End
-        Else
-          Begin
-            Result := strText;
-            strText := '';
-          End;
-      End;
-  End;
+Procedure TfrmDockableIDENotifications.FilterMessages;
 
 Var
-  strText : String;
-  iPos : Integer;
-  iNotification: TDGHIDENotification;
-  iBrushColor: TColor;
-  iLeft : Integer;
-  strSubText: String;
+  N: PVirtualNode;
 
 Begin
-  // Detect selected state
-  If odSelected In State Then
-    lbxNotifications.Canvas.Brush.Color := clHighlight
-  Else
-    lbxNotifications.Canvas.Brush.Color := clWindow;
-  // Draw background
-  lbxNotifications.Canvas.FillRect(Rect);
-  // Draw circle / icon
-  iBrushColor := lbxNotifications.Canvas.Brush.Color;
-  iNotification := TDGHIDENotification(Integer(lbxNotifications.Items.Objects[Index]));
-  lbxNotifications.Canvas.Brush.Color := iNotificationColours[iNotification];
-  lbxNotifications.Canvas.Ellipse(Rect.Left + 1, Rect.Top + 1, Rect.Left + 15, Rect.Top + 15);
-  // Draw Time Text
-  lbxNotifications.Canvas.Brush.Color := iBrushColor;
-  iPos := Pos('|', lbxNotifications.Items[Index]);
-  strText := Copy(lbxNotifications.Items[Index], 1, Pred(iPos));
-  iLeft := 20;
-  iLeft := DrawTextOnCanvas(strText, iLeft, False, clMaroon) + 10;
-  // Draw Time Text
-  strText := Copy(lbxNotifications.Items[Index], Succ(iPos),
-    Length(lbxNotifications.Items[Index]) - iPos);
-  strSubText := ParseText(strText, '=');
-  iLeft := DrawTextOnCanvas(strSubText, iLeft, True, clBlack);
-  While strText <> '' Do
-    Begin
-      strSubText := ParseText(strText, ':');
-      iLeft := DrawTextOnCanvas(strSubText, iLeft, True, clBlack);
-      strSubText := ParseText(strText, ',');
-      iLeft := DrawTextOnCanvas(strSubText, iLeft, False, clBlue);
+  FIsFiltering := False;
+  stbStatusBar.SimplePanel := False;
+  {$IFDEF REGULAREXPRESSIONS}
+  Try
+  {$ENDIF}
+    If FRegExFilter <> '' Then
+      Begin
+        {$IFDEF REGULAREXPRESSIONS}
+        FRegExEng := TRegEx.Create(FRegExFilter, [roIgnoreCase, roCompiled, roSingleLine]);
+        {$ENDIF}
+        FIsFiltering := True;
+      End;
+    FLogView.BeginUpdate;
+    Try
+      N := FLogView.RootNode.FirstChild;
+      While N <> Nil Do
+        Begin
+          {$IFDEF REGULAREXPRESSIONS}
+          FLogView.IsVisible[N] := Not FIsFiltering Or FRegExEng.IsMatch(FLogView.Text[N, 1]);
+          {$ELSE}
+          FLogView.IsVisible[N] := Not FIsFiltering Or
+            (Pos(LowerCase(FRegExFilter), LowerCase(FLogView.Text[N, 1])) > 0);
+          {$ENDIF}
+          N := FLogView.GetNextSibling(N);
+        End;
+    Finally
+      FLogView.EndUpdate;
     End;
-  If iLeft > lbxNotifications.ScrollWidth Then
-    lbxNotifications.ScrollWidth := iLeft;
+    If FRegExFilter <> '' Then
+      stbStatusBar.Panels[1].Text := Format('Filtering for "%s" (%1.0n messages)...', [
+        FRegExFilter,
+        Int(FLogView.VisibleCount)
+      ])
+    Else
+      stbStatusBar.Panels[1].Text := 'No filtering in effect';
+  {$IFDEF REGULAREXPRESSIONS}
+  Except
+    On E : ERegularExpressionError Do
+      stbStatusBar.Panels[1].Text := Format('(%s) %s', [FRegExFilter, E.Message]);
+  End;
+  {$ENDIF}
+End;
+
+(**
+
+  This method loads an existing log file information into the listview.
+
+  @precon  None.
+  @postcon Any existing log file information is loaded.
+
+**)
+Procedure TfrmDockableIDENotifications.LoadLogFile;
+
+Var
+  slLog: TStringList;
+  iLogMsg: Integer;
+  astrMsg: TDGHArrayOfString;
+  dtDate: TDateTime;
+  iMsgType: Integer;
+  iErrorCode: Integer;
+  SSS : IOTASplashScreenServices;
+
+Begin
+  FLogFileName := ConstructorLogFileName;
+  If Not FileExists(FLogFileName) Then
+    Exit;
+  If Supports(SplashScreenServices, IOTASplashScreenServices, SSS) Then
+    SSS.StatusMessage(Format('Loading log file: "%s"', [ExtractFileName(FLogFileName)]));
+  slLog := TStringList.Create;
+  Try
+    slLog.LoadFromFile(FLogFileName);
+    For iLogMsg := 0 To slLog.Count - 1 Do
+      If slLog[iLogMsg] <> '' Then
+        Begin
+          If (iLogMsg Mod 100 = 0) And Assigned(SSS) Then
+            SSS.StatusMessage(Format('Loading log file (%1.1f%%): "%s"', [
+              Int(Succ(iLogMsg)) / Int(slLog.Count) * 100.0,
+              ExtractFileName(FLogFileName)
+            ]));
+          astrMsg := DGHSplit(slLog[iLogMsg], '|');
+          If (Length(astrMsg) = 3) Then
+            Begin
+              Val(astrMsg[0], dtDate, iErrorCode);
+              Val(astrMsg[2], iMsgType, iErrorCode);
+              If dtDate >= Now() - FRetensionPeriodInDays Then
+                FMessageList.Add(
+                  TMsgNotification.Create(
+                    dtDate,
+                    astrMsg[1],
+                    TDGHIDENotification(iMsgType)
+                  )
+                );
+            End;
+        End;
+    If Assigned(SSS) Then
+      SSS.StatusMessage(Format('Log file "%s" Loaded! (%1.0n records)', [
+        ExtractFileName(FLogFileName),
+        Int(slLog.Count)
+      ]));
+  Finally
+    slLog.Free;
+  End;
+  ActionExecute(Nil);
 End;
 
 (**
@@ -397,7 +589,7 @@ End;
 Procedure TfrmDockableIDENotifications.LoadSettings;
 
 Var
-  R : TRegIniFile;
+  R: TRegIniFile;
   iNotification: TDGHIDENotification;
 
 Begin
@@ -408,8 +600,180 @@ Begin
     For iNotification := Low(TDGHIDENotification) To High(TDGHIDENotification) Do
       If R.ReadBool('Notifications', strNotificationLabel[iNotification], True) Then
         Include(FMessageFilter, iNotification);
+    FRetensionPeriodInDays := R.ReadInteger('Setup', 'RetensionPeriodInDays', 30);
+    FLogView.Header.Columns[0].Width := R.ReadInteger('LogView', 'DateTimeWidth', 175);
+    FLogView.Header.Columns[1].Width := R.ReadInteger('LogView', 'MessageWidth', 500);
   Finally
     R.Free;
+  End;
+End;
+
+(**
+
+  This is an on after cell paint event handler for the log view.
+
+  @precon  None.
+  @postcon Overwrites the message with a syntax highlighted message.
+
+  @param   Sender       as a TBaseVirtualTree
+  @param   TargetCanvas as a TCanvas
+  @param   Node         as a PVirtualNode
+  @param   Column       as a TColumnIndex
+  @param   CellRect     as a TRect
+
+**)
+Procedure TfrmDockableIDENotifications.LogViewAfterCellPaint(Sender: TBaseVirtualTree;
+  TargetCanvas: TCanvas; Node: PVirtualNode; Column: TColumnIndex; CellRect: TRect);
+
+Var
+  NodeData : PTreeNodeData;
+  Tokenizer : TDNMessageTokenizer;
+  iToken: Integer;
+  R : TRect;
+  T : TDNToken;
+  strText: String;
+  iBrushColour: Integer;
+
+Begin
+  If Column = 1 Then
+    Begin
+      NodeData := Sender.GetNodeData(Node);
+      R := CellRect;
+      Inc(R.Left, iMargin + ilButtons.Width + iSpace);
+      iBrushColour := TargetCanvas.Brush.Color;
+      TargetCanvas.FillRect(R);
+      Tokenizer := TDNMessageTokenizer.Create(
+        FMessageList[NodeData.FNotificationIndex].Message,
+        FRegExFilter);
+      Try
+        For iToken := 0 To Tokenizer.Count - 1 Do
+          Begin
+            T := Tokenizer[iToken];
+            Case T.TokenType Of
+              ttIdentifier: TargetCanvas.Font.Color := clNavy;
+              ttKeyword:    TargetCanvas.Font.Color := clBlack;
+              ttSymbol:     TargetCanvas.Font.Color := clMaroon;
+              ttUnknown:    TargetCanvas.Font.Color := clRed;
+            Else
+              TargetCanvas.Font.Color := clWindowText;
+            End;
+            Case T.TokenType Of
+              ttIdentifier: TargetCanvas.Font.Style := [];
+              ttKeyword:    TargetCanvas.Font.Style := [fsBold];
+              ttSymbol:     TargetCanvas.Font.Style := [];
+              ttUnknown:    TargetCanvas.Font.Style := [];
+            Else
+              TargetCanvas.Font.Style := [];
+            End;
+            If T.RegExMatch Then
+              TargetCanvas.Brush.Color := clAqua
+            Else
+              TargetCanvas.Brush.Color := iBrushColour;
+            strText := T.Text;
+            TargetCanvas.TextRect(R, strText, [tfLeft, tfVerticalCenter]);
+            Inc(R.Left, TargetCanvas.TextWidth(strText));
+          End;
+      Finally
+        Tokenizer.Free;
+      End;
+    End;
+End;
+
+(**
+
+  This is an on get image index event handler for the virtual string tree.
+
+  @precon  None.
+  @postcon Returns the image index for the message column.
+
+  @param   Sender     as a TBaseVirtualTree
+  @param   Node       as a PVirtualNode
+  @param   Kind       as a TVTImageKind
+  @param   Column     as a TColumnIndex
+  @param   Ghosted    as a Boolean as a reference
+  @param   ImageIndex as a Integer as a reference
+
+**)
+Procedure TfrmDockableIDENotifications.LogViewGetImageIndex(Sender: TBaseVirtualTree;
+  Node: PVirtualNode; Kind: TVTImageKind; Column: TColumnIndex; Var Ghosted: Boolean;
+  Var ImageIndex: Integer);
+
+Var
+  NodeData : PTreeNodeData;
+
+Begin
+  NodeData := Sender.GetNodeData(Node);
+  ImageIndex := -1;
+  If Kind In [ikNormal, ikSelected] Then
+    Case Column Of
+      1: ImageIndex := 2 + Integer(FMessageList[NodeData.FNotificationIndex].NotificationType);
+    End;
+End;
+
+(**
+
+  This method is an on get text event handler for the virtual string tree.
+
+  @precon  None.
+  @postcon Returns the text for the appropriate column in the message log.
+
+  @param   Sender   as a TBaseVirtualTree
+  @param   Node     as a PVirtualNode
+  @param   Column   as a TColumnIndex
+  @param   TextType as a TVSTTextType
+  @param   CellText as a String as a reference
+
+**)
+Procedure TfrmDockableIDENotifications.LogViewGetText(Sender: TBaseVirtualTree; Node: PVirtualNode;
+  Column: TColumnIndex; TextType: TVSTTextType; Var CellText: String);
+
+Var
+  NodeData: PTreeNodeData;
+  R: TMsgNotification;
+
+Begin
+  NodeData := Sender.GetNodeData(Node);
+  R := FMessageList[NodeData.FNotificationIndex];
+  Case Column Of
+    0: CellText := FormatDateTime('ddd dd/mmm/yyyy hh:nn:ss.zzz', R.DateTime);
+    1: CellText := R.Message;
+  End;
+End;
+
+(**
+
+  This is an on KeyPress event handler for the virtual string tree log.
+
+  @precon  None.
+  @postcon Captures filter text and stores it internally and triggers a filtering of the message
+           view.
+
+  @param   Sender as a TObject
+  @param   Key    as a Char as a reference
+
+**)
+Procedure TfrmDockableIDENotifications.LogViewKeyPress(Sender: TObject; Var Key: Char);
+
+Begin
+  Case Key Of
+    #08:
+      Begin
+        FRegExFilter :=  Copy(FRegExFilter, 1, Length(FRegExFilter) - 1);
+        FilterMessages;
+        Key := #0;
+      End;
+    #27:
+      Begin
+        FRegExFilter := '';
+        FilterMessages;
+        Key := #0;
+      End;
+    #32..#128:
+      Begin
+        FRegExFilter := FRegExFilter + Key;
+        FilterMessages;
+        Key := #0;
+      End;
   End;
 End;
 
@@ -445,10 +809,10 @@ Const
 
 Var
   iFilter: TDGHIDENotification;
-  BM : TBitMap;
-  B : TToolButton;
-  A: Taction;
-  iIndex : Integer;
+  BM: TBitMap;
+  B: TToolButton;
+  A: TAction;
+  iIndex: Integer;
 
 Begin
   For iFilter := Low(TDGHIDENotification) To High(TDGHIDENotification) Do
@@ -487,6 +851,243 @@ End;
 
 (**
 
+  This method creates the virtual string tree for the log in code so the compoent doesnt need to
+  be loaded in the target IDE.
+
+  @precon  None.
+  @postcon The virtual string tree is created and setup to the log messages.
+
+**)
+Procedure TfrmDockableIDENotifications.CreateVirtualStringTreeLog;
+
+Var
+  C: TVirtualTreeColumn;
+
+Begin //FI:C101
+  // Creating in code so you don't ave to have the components installed into the IDE to open the form.
+  FLogView := TVirtualStringTree.Create(Self);
+  FLogView.Parent := Self;
+  FLogView.Align := alClient;
+  FLogView.NodeDataSize := SizeOf(TTreeNodeData);
+  //FLogView.DefaultNodeHeight := 20;
+  FLogView.Font.Name := 'Tahoma';
+  FLogView.Font.Size := 10;
+  FLogView.Font.Style := [];
+  //FLogView.ParentFont := True;
+  FLogView.Colors.BorderColor := clBtnFace;
+  FLogView.Colors.DisabledColor := clBtnShadow;
+  FLogView.Colors.DropMarkColor := clHighlight;
+  FLogView.Colors.DropTargetColor := clHighlight;
+  FLogView.Colors.DropTargetBorderColor := clHighlight;
+  FLogView.Colors.FocusedSelectionColor := clHighlight;
+  FLogView.Colors.GridLineColor := clBlack; // clBtnFace;
+  FLogView.Colors.HeaderHotColor := clBtnShadow;
+  FLogView.Colors.SelectionRectangleBlendColor := clHighlight;
+  FLogView.Colors.SelectionRectangleBorderColor := clHighlight;
+  FLogView.Colors.SelectionTextColor := clHighlightText;
+  FLogView.Colors.TreeLineColor := clBtnShadow;
+  //FLogView.Colors.UnfocusedColor := clHighlight; // clBtnFace;
+  FLogView.Colors.UnfocusedSelectionColor := clHighlight; // clBtnFace;
+  FLogView.Colors.UnfocusedSelectionBorderColor := clHighlight; // clBtnFace;
+  FLogView.Header.DefaultHeight := 17;
+  FLogView.Header.Font.Charset := DEFAULT_CHARSET;
+  FLogView.Header.Font.Color := clWindowText;
+  //FLogView.Header.Font.Height := 20; // -11;
+  //FLogView.Header.Font.Name := 'Tahoma';
+  //FLogView.Header.Font.Size := 10;
+  //FLogView.Header.Font.Style := [];
+  FLogView.Header.ParentFont := True;
+  FLogView.Header.Options := [
+    //hoAutoResize,            // Adjust a column so that the header never exceeds the client width of the owner control.
+    hoColumnResize,          // Resizing columns with the mouse is allowed.
+    hoDblClickResize,        // Allows a column to resize itself to its largest entry.
+    hoDrag,                  // Dragging columns is allowed.
+    //hoHotTrack,              // Header captions are highlighted when mouse is over a particular column.
+    //hoOwnerDraw,             // Header items with the owner draw style can be drawn by the application via event.
+    hoRestrictDrag,          // Header can only be dragged horizontally.
+    //hoShowHint,              // Show application defined header hint.
+    //hoShowImages,            // Show header images.
+    hoShowSortGlyphs,        // Allow visible sort glyphs.
+    hoVisible                // Header is visible.
+    //hoAutoSpring,            // Distribute size changes of the header to all columns, which are sizable and have the
+                             // coAutoSpring option enabled.
+    //hoFullRepaintOnResize,   // Fully invalidate the header (instead of subsequent columns only) when a column is resized.
+    //hoDisableAnimatedResize, // Disable animated resize for all columns.
+    //hoHeightResize,          // Allow resizing header height via mouse.
+    //hoHeightDblClickResize,  // Allow the header to resize itself to its default height.
+    //hoHeaderClickAutoSort,    // Clicks on the header will make the clicked column the SortColumn or toggle sort direction if
+                             // it already was the sort column
+    //hoAutoColumnPopupMenu    // Show a context menu for activating and deactivating columns on right click
+  ];
+  FLogView.Header.Style := hsFlatButtons;
+  //FLogView.HintMode := hmHint;
+  FLogView.Images := ilButtons;
+  FLogView.LineStyle := lsDotted;
+  FLogView.ParentShowHint := False;
+  //FLogView.PopupMenu := pabTreeContext;
+  //FLogView.ShowHint := True;
+  FLogView.TabOrder := 0;
+  FLogView.TreeOptions.AnimationOptions := [
+    //toAnimatedToggle,          // Expanding and collapsing a node is animated (quick window scroll).
+                               // **See note above.
+    //toAdvancedAnimatedToggle   // Do some advanced animation effects when toggling a node.
+  ];
+  FLogView.TreeOptions.AutoOptions := [
+    toAutoDropExpand,           // Expand node if it is the drop target for more than a certain time.
+    //toAutoExpand,               // Nodes are expanded (collapsed) when getting (losing) the focus.
+    //toAutoScroll,               // Scroll if mouse is near the border while dragging or selecting.
+    toAutoScrollOnExpand,       // Scroll as many child nodes in view as possible after expanding a node.
+    toAutoSort,                 // Sort tree when Header.SortColumn or Header.SortDirection change or sort node if
+                                // child nodes are added.
+    //toAutoSpanColumns,          // Large entries continue into next column(s) if there's no text in them (no clipping).
+    toAutoTristateTracking,     // Checkstates are automatically propagated for tri state check boxes.
+    //toAutoHideButtons,          // Node buttons are hidden when there are child nodes, but all are invisible.
+    toAutoDeleteMovedNodes,     // Delete nodes which where moved in a drag operation (if not directed otherwise).
+    //toDisableAutoscrollOnFocus, // Disable scrolling a node or column into view if it gets focused.
+    toAutoChangeScale           // Change default node height automatically if the system's font scale is set to big fonts.
+    //toAutoFreeOnCollapse,       // Frees any child node after a node has been collapsed (HasChildren flag stays there).
+    //toDisableAutoscrollOnEdit,  // Do not center a node horizontally when it is edited.
+    //toAutoBidiColumnOrdering    // When set then columns (if any exist) will be reordered from lowest index to highest index
+                                // and vice versa when the tree's bidi mode is changed.
+  ];
+  FLogView.TreeOptions.ExportMode :=
+    emAll                    // export all records (regardless checked state)
+    //emChecked,               // export checked records only
+    //emUnchecked,             // export unchecked records only
+    //emVisibleDueToExpansion, //Do not export nodes that are not visible because their parent is not expanded
+    //emSelected               // export selected nodes only
+  ;
+  FLogView.TreeOptions.MiscOptions := [
+    //toAcceptOLEDrop,            // Register tree as OLE accepting drop target
+    toCheckSupport,             // Show checkboxes/radio buttons.
+    //toEditable,                 // Node captions can be edited.
+    toFullRepaintOnResize,      // Fully invalidate the tree when its window is resized (CS_HREDRAW/CS_VREDRAW).
+    //toGridExtensions,           // Use some special enhancements to simulate and support grid behavior.
+    toInitOnSave,               // Initialize nodes when saving a tree to a stream.
+    toReportMode,               // Tree behaves like TListView in report mode.
+    toToggleOnDblClick,         // Toggle node expansion state when it is double clicked.
+    toWheelPanning             // Support for mouse panning (wheel mice only). This option and toMiddleClickSelect are
+                                // mutal exclusive, where panning has precedence.
+    //toReadOnly,                 // CAUSES AV!!!! The tree does not allow to be modified in any way. No action is executed and
+                                // node editing is not possible.
+    //toVariableNodeHeight,       // When set then GetNodeHeight will trigger OnMeasureItem to allow variable node heights.
+    //toFullRowDrag,              // Start node dragging by clicking anywhere in it instead only on the caption or image.
+                                // Must be used together with toDisableDrawSelection.
+    //toNodeHeightResize,         // Allows changing a node's height via mouse.
+    //toNodeHeightDblClickResize, // Allows to reset a node's height to FDefaultNodeHeight via a double click.
+    //toEditOnClick,              // Editing mode can be entered with a single click
+    //toEditOnDblClick,           // Editing mode can be entered with a double click
+    //toReverseFullExpandHotKey   // Used to define Ctrl+'+' instead of Ctrl+Shift+'+' for full expand (and similar for collapsing)
+  ];
+  FLogView.TreeOptions.PaintOptions := [
+    //toHideFocusRect,           // Avoid drawing the dotted rectangle around the currently focused node.
+    //toHideSelection,           // Selected nodes are drawn as unselected nodes if the tree is unfocused.
+    //toHotTrack,                // Track which node is under the mouse cursor.
+    //toPopupMode,               // Paint tree as would it always have the focus (useful for tree combo boxes etc.)
+    //toShowBackground,          // Use the background image if there's one.
+    toShowButtons,             // Display collapse/expand buttons left to a node.
+    toShowDropmark,            // Show the dropmark during drag'n drop operations.
+    toShowHorzGridLines,       // Display horizontal lines to simulate a grid.
+    //toShowRoot,                // Show lines also at top level (does not show the hidden/internal root node).
+    //toShowTreeLines,           // Display tree lines to show hierarchy of nodes.
+    toShowVertGridLines,       // Display vertical lines (depending on columns) to simulate a grid.
+    toThemeAware,              // Draw UI elements (header, tree buttons etc.) according to the current theme if
+                               // enabled (Windows XP+ only, application must be themed).
+    toUseBlendedImages         // Enable alpha blending for ghosted nodes or those which are being cut/copied.
+    //toGhostedIfUnfocused,      // Ghosted images are still shown as ghosted if unfocused (otherwise the become non-ghosted
+                               // images).
+    //toFullVertGridLines,       // Display vertical lines over the full client area, not only the space occupied by nodes.
+                               // This option only has an effect if toShowVertGridLines is enabled too.
+    //toAlwaysHideSelection,     // Do not draw node selection, regardless of focused state.
+    //toUseBlendedSelection,     // Enable alpha blending for node selections.
+    //toStaticBackground,        // Show simple static background instead of a tiled one.
+    //toChildrenAbove,           // Display child nodes above their parent.
+    //toFixedIndent,             // Draw the tree with a fixed indent.
+    //toUseExplorerTheme,        // Use the explorer theme if run under Windows Vista (or above).
+    //toHideTreeLinesIfThemed,   // Do not show tree lines if theming is used.
+    //toShowFilteredNodes        // Draw nodes even if they are filtered out.
+  ];
+  FLogView.TreeOptions.SelectionOptions := [
+    //toDisableDrawSelection,    // Prevent user from selecting with the selection rectangle in multiselect mode.
+    //toExtendedFocus,           // Entries other than in the main column can be selected, edited etc.
+    toFullRowSelect            // Hit test as well as selection highlight are not constrained to the text of a node.
+    //toLevelSelectConstraint,   // Constrain selection to the same level as the selection anchor.
+    //toMiddleClickSelect,       // Allow selection, dragging etc. with the middle mouse button. This and toWheelPanning
+                               // are mutual exclusive.
+    //toMultiSelect,             // Allow more than one node to be selected.
+    //toRightClickSelect,        // Allow selection, dragging etc. with the right mouse button.
+    //toSiblingSelectConstraint, // Constrain selection to nodes with same parent.
+    //toCenterScrollIntoView,    // Center nodes vertically in the client area when scrolling into view.
+    //toSimpleDrawSelection,     // Simplifies draw selection, so a node's caption does not need to intersect with the
+                               // selection rectangle.
+    //toAlwaysSelectNode,        // If this flag is set to true, the tree view tries to always have a node selected.
+                               // This behavior is closer to the Windows TreeView and useful in Windows Explorer style applications.
+    //toRestoreSelection         // Set to true if upon refill the previously selected nodes should be selected again.
+                               // The nodes will be identified by its caption only.
+  ];
+  FLogView.TreeOptions.StringOptions := [
+    toSaveCaptions,          // If set then the caption is automatically saved with the tree node, regardless of what is
+                             // saved in the user data.
+    //toShowStaticText,        // Show static text in a caption which can be differently formatted than the caption
+                             // but cannot be edited.
+    toAutoAcceptEditChange   // Automatically accept changes during edit if the user finishes editing other then
+                             // VK_RETURN or ESC. If not set then changes are cancelled.
+  ];
+  //FLogView.TreeOptions.EditOptions :=
+  //  toDefaultEdit             // Standard behaviour for end of editing (after VK_RETURN stay on edited cell).
+  //  //toVerticalEdit,            // After VK_RETURN switch to next column.
+  //  //toHorizontalEdit           // After VK_RETURN switch to next row.
+  //;
+  C := FLogView.Header.Columns.Add;
+  C.Position := 0;
+  C.Text := 'Date & Time';
+  C.Width := 185;
+  C.Margin := iMargin;
+  C.Spacing := iSpace;
+  C.Style := vsText;
+  C.Options := [
+    coAllowClick,            // Column can be clicked (must be enabled too).
+    coDraggable,             // Column can be dragged.
+    coEnabled,               // Column is enabled.
+    coParentBidiMode,        // Column uses the parent's bidi mode.
+    coParentColor,           // Column uses the parent's background color.
+    coResizable,             // Column can be resized.
+    coShowDropMark,          // Column shows the drop mark if it is currently the drop target.
+    coVisible,               // Column is shown.
+    //coAutoSpring,            // Column takes part in the auto spring feature of the header (must be resizable too).
+    coFixed,                 // Column is fixed and can not be selected or scrolled etc.
+    //coSmartResize,           // Column is resized to its largest entry which is in view (instead of its largest
+                             // visible entry).
+    coAllowFocus             // Column can be focused.
+    //coDisableAnimatedResize, // Column resizing is not animated.
+    //coWrapCaption,           // Caption could be wrapped across several header lines to fit columns width.
+    //coUseCaptionAlignment,   // Column's caption has its own aligment.
+    //coEditable,              // Column can be edited
+    //coStyleColor             // Prefer background color of VCL style over TVirtualTreeColumn.Color
+  ];
+  C.Options := C.Options + [coFixed];
+  C.Alignment := taRightJustify;
+  C := FLogView.Header.Columns.Add;
+  C.Position := 1;
+  C.Text := 'Message';
+  C.Width := 640;
+  C.Margin := iMargin;
+  C.Spacing := iSpace;
+  C.Style := vsText;
+  FLogView.OnAfterCellPaint := LogViewAfterCellPaint;  // Use to Owner draw cell information.
+//  FLogView.OnAfterItemErase :=                       // Use to change the node background colour.
+//  FLogView.OnChange := ;                             // Use to do something when the selection changes.
+//  FLogView.OnColumnResize :=                         // Use to manually resize column
+//  FLogView.OnGetHint := ;                            // Use to return a custom hint
+  FLogView.OnGetImageIndex := LogViewGetImageIndex;    // Use to get the image index to display
+  FLogView.OnGetText := LogViewGetText;                // Use to get the text to display in the node
+//  FLogView.OnMeasureItem :=                          // Use to measure the item height.
+//  FLogView.OnPaintText :=                            // Use to change the font colour, name, stylke, etc.
+  FLogView.OnKeyPress := LogViewKeyPress;
+End;
+
+(**
+
   This method frees the dockable form.
 
   @precon  None.
@@ -520,6 +1121,9 @@ Begin
     For iNotification := Low(TDGHIDENotification) To High(TDGHIDENotification) Do
       R.WriteBool('Notifications', strNotificationLabel[iNotification],
         iNotification In FMessageFilter);
+    R.WriteInteger('Setup', 'RetensionPeriodInDays', FRetensionPeriodInDays);
+    R.WriteInteger('LogView', 'DateTimeWidth', FLogView.Header.Columns[0].Width);
+    R.WriteInteger('LogView', 'MessageWidth', FLogView.Header.Columns[1].Width);
   Finally
     R.Free;
   End;
@@ -587,7 +1191,7 @@ Procedure TfrmDockableIDENotifications.actClearExecute(Sender: TObject);
 
 Begin
   FMessageList.Clear;
-  lbxNotifications.Clear;
+  FLogView.Clear;
 End;
 
 (**
@@ -603,10 +1207,10 @@ End;
 Procedure TfrmDockableIDENotifications.ActionExecute(Sender: TObject);
 
 Var
-  A : TAction;
-  iMessage : Integer;
-  iNotification : TDGHIDENotification;
-  iItem: Integer;
+  A: TAction;
+  iMessage: Integer;
+  R : TMsgNotification;
+  N: PVirtualNode;
 
 Begin
   If Sender Is TAction Then
@@ -617,20 +1221,25 @@ Begin
       Else
         Include(FMessageFilter, TDGHIDENotification(A.Tag));
     End;
-  lbxNotifications.Items.BeginUpdate;
+  N := Nil;
+  FRegExFilter := '';
+  FilterMessages;
+  FLogView.BeginUpdate;
   Try
-    lbxNotifications.Clear;
-    For iMessage := 0 To FMessageList.Count - 1  Do
+    FLogView.Clear;
+    For iMessage := 0 To FMessageList.Count - 1 Do
       Begin
-        iNotification := TDGHIDENotification(FMessageList.Objects[iMessage]);
-        If iNotification In FMessageFilter Then
-          Begin
-            iItem := AddListViewItem(FMessageList[iMessage], iNotification);
-            lbxNotifications.ItemIndex := iItem;
-          End;
+        R := FMessageList[iMessage];
+        If R.NotificationType In FMessageFilter Then
+          N := AddViewItem(iMessage);
       End;
   Finally
-    lbxNotifications.Items.EndUpdate;
+    FLogView.EndUpdate;
+    If Assigned(N) Then
+      Begin
+        FLogView.FocusedNode := N;
+        FLogView.Selected[N] := True;
+      End;
   End;
 End;
 
@@ -648,7 +1257,7 @@ End;
 Procedure TfrmDockableIDENotifications.ActionUpdate(Sender: TObject);
 
 Var
-  A : TAction;
+  A: TAction;
 
 Begin
   If Sender Is TAction Then
@@ -665,16 +1274,26 @@ End;
   @precon  None.
   @postcon An item is added to the end of the list box.
 
-  @param   strMessage    as a string
-  @param   iNotification as a TDGHIDENotification
-  @return  an Integer
+  @param   iMsgNotiticationIndex as an Integer as a constant
+  @return  a PVirtualNode
 
 **)
-Function TfrmDockableIDENotifications.AddListViewItem(strMessage: string;
-  iNotification: TDGHIDENotification) : Integer;
+Function TfrmDockableIDENotifications.AddViewItem(Const iMsgNotiticationIndex: Integer)
+  : PVirtualNode;
+
+Var
+  NodeData: PTreeNodeData;
 
 Begin
-  Result := lbxNotifications.Items.AddObject(strMessage, TObject(iNotification));
+  Result := FLogView.AddChild(Nil);
+  NodeData := FLogView.GetNodeData(Result);
+  NodeData.FNotificationIndex := iMsgNotiticationIndex;
+  FLogView.Selected[Result] := True;
+  FLogView.FocusedNode := Result;
+  stbStatusBar.Panels[0].Text := Format('Showing %1.0n of %1.0n Messages', [
+    Int(FLogView.RootNodeCount),
+    Int(FMessageList.Count)
+  ]);
 End;
 
 (**
@@ -685,37 +1304,71 @@ End;
   @postcon A notification message is aded to the list if included in the filter else just stored
            internally.
 
-  @param   iNotification as a TDGHIDENotification
-  @param   strMessage    as a String
+  @param   iNotification as a TDGHIDENotification as a constant
+  @param   strMessage    as a String as a constant
 
 **)
 Class Procedure TfrmDockableIDENotifications.AddNotification(
-  iNotification : TDGHIDENotification; strMessage: String);
+  Const iNotification: TDGHIDENotification; Const strMessage: String);
 
 Var
-  iItem : Integer;
+  dtDateTime: TDateTime;
+  strMsg: String;
+  iIndex: Integer;
 
 Begin
   If Assigned(FormInstance) And (FormInstance.FCapture) Then
     Begin
+      dtDateTime := Now();
+      strMsg := StringReplace(strMessage, #13#10, '\n', [rfReplaceAll]);
       // Add ALL message to the message list.
       If Assigned(FormInstance.FMessageList) Then
-        FormInstance.FMessageList.AddObject(FormatDateTime('dd/mmm hh:mm:ss.zzz',
-          Now()) + '|' + strMessage, TObject(iNotification));
-      // Only add filtered messages to the listbox
-      If iNotification In FormInstance.FMessageFilter Then
         Begin
-          FormInstance.lbxNotifications.Items.BeginUpdate;
-          Try
-            iItem := FormInstance.AddListViewItem(
-              FormInstance.FMessageList[FormInstance.FMessageList.Count - 1],
-              iNotification);
-            FormInstance.lbxNotifications.ItemIndex := iItem;
-          Finally
-            FormInstance.lbxNotifications.Items.EndUpdate;
-          End;
+          FormInstance.FRegExFilter := '';
+          FormInstance.FilterMessages;
+          iIndex := FormInstance.FMessageList.Add(
+            TMsgNotification.Create(
+              dtDateTime,
+              strMsg,
+              iNotification
+            )
+          );
+          // Only add filtered messages to the listbox
+          If iNotification In FormInstance.FMessageFilter Then
+            FormInstance.AddViewItem(iIndex);
         End;
     End;
+End;
+
+(**
+
+  This method saves the log information to a log file.
+
+  @precon  None.
+  @postcon Any log file information is saved.
+
+**)
+Procedure TfrmDockableIDENotifications.SaveLogFile;
+
+Var
+  slLog: TStringList;
+  iLogItem: Integer;
+  iMsgType: Integer;
+  R: TMsgNotification;
+
+Begin
+  slLog := TStringList.Create;
+  Try
+    For iLogItem := 0 To FMessageList.Count - 1 Do
+      Begin
+        R := FMessageList[iLogItem];
+        iMsgType := Integer(R.NotificationType);
+        slLog.Add(Format('%1.12f|%s|%d', [R.DateTime, R.Message, iMsgType]));
+      End;
+    slLog.SaveToFile(FLogFileName);
+  Finally
+    slLog.Free;
+  End;
 End;
 
 End.

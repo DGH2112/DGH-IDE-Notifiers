@@ -1,0 +1,48 @@
+﻿<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+    <PropertyGroup>
+        <ProjectGuid>{1F3BB7DC-F91A-43A6-B9C7-280226808B64}</ProjectGuid>
+    </PropertyGroup>
+    <ItemGroup>
+        <Projects Include="DGHIDENotifiersXE102Tests.dproj">
+            <Dependencies/>
+        </Projects>
+        <Projects Include="DLLs\DGHIDENotifiersXE102.dproj">
+            <Dependencies/>
+        </Projects>
+    </ItemGroup>
+    <ProjectExtensions>
+        <Borland.Personality>Default.Personality.12</Borland.Personality>
+        <Borland.ProjectType/>
+        <BorlandProject>
+            <Default.Personality/>
+        </BorlandProject>
+    </ProjectExtensions>
+    <Target Name="DGHIDENotifiersXE102Tests">
+        <MSBuild Projects="DGHIDENotifiersXE102Tests.dproj"/>
+    </Target>
+    <Target Name="DGHIDENotifiersXE102Tests:Clean">
+        <MSBuild Projects="DGHIDENotifiersXE102Tests.dproj" Targets="Clean"/>
+    </Target>
+    <Target Name="DGHIDENotifiersXE102Tests:Make">
+        <MSBuild Projects="DGHIDENotifiersXE102Tests.dproj" Targets="Make"/>
+    </Target>
+    <Target Name="DGHIDENotifiersXE102">
+        <MSBuild Projects="DLLs\DGHIDENotifiersXE102.dproj"/>
+    </Target>
+    <Target Name="DGHIDENotifiersXE102:Clean">
+        <MSBuild Projects="DLLs\DGHIDENotifiersXE102.dproj" Targets="Clean"/>
+    </Target>
+    <Target Name="DGHIDENotifiersXE102:Make">
+        <MSBuild Projects="DLLs\DGHIDENotifiersXE102.dproj" Targets="Make"/>
+    </Target>
+    <Target Name="Build">
+        <CallTarget Targets="DGHIDENotifiersXE102Tests;DGHIDENotifiersXE102"/>
+    </Target>
+    <Target Name="Clean">
+        <CallTarget Targets="DGHIDENotifiersXE102Tests:Clean;DGHIDENotifiersXE102:Clean"/>
+    </Target>
+    <Target Name="Make">
+        <CallTarget Targets="DGHIDENotifiersXE102Tests:Make;DGHIDENotifiersXE102:Make"/>
+    </Target>
+    <Import Project="$(BDS)\Bin\CodeGear.Group.Targets" Condition="Exists('$(BDS)\Bin\CodeGear.Group.Targets')"/>
+</Project>

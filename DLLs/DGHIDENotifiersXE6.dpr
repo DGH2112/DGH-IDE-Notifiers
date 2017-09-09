@@ -8,7 +8,7 @@
   @Date    09 Jul 2017
 
 **)
-Library DGHIDENotifiers2009;
+Library DGHIDENotifiersXE6;
 
 { Important note about DLL memory management: ShareMem must be the
   first unit in your library's USES clause AND your project's (select

@@ -5,7 +5,7 @@
 
   @Author  David Hoyle
   @Version 1.0
-  @Date    06 Jan 2017
+  @Date    09 Jul 2017
 
 **)
 Library DGHIDENotifiersXE101;
@@ -39,7 +39,11 @@ uses
   DGHIDENotificationsSplashScreen in '..\Source\DGHIDENotificationsSplashScreen.pas',
   DGHIDENotifiersProjectStorageNotifications in '..\Source\DGHIDENotifiersProjectStorageNotifications.pas',
   DGHIDENotifiersEditorNotifications in '..\Source\DGHIDENotifiersEditorNotifications.pas',
-  DGHIDENotifiersDebuggerNotifications in '..\Source\DGHIDENotifiersDebuggerNotifications.pas';
+  DGHIDENotifiersDebuggerNotifications in '..\Source\DGHIDENotifiersDebuggerNotifications.pas',
+  DGHIDENotifiersModuleNotifications in '..\Source\DGHIDENotifiersModuleNotifications.pas',
+  DGHIDENotifiersProjectNotifications in '..\Source\DGHIDENotifiersProjectNotifications.pas',
+  DGHIDENotifiersFormNotifications in '..\Source\DGHIDENotifiersFormNotifications.pas',
+  DGHIDENotifiersMessageTokens in '..\Source\DGHIDENotifiersMessageTokens.pas';
 
 {$R *.res}
 

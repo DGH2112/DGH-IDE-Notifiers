@@ -5,7 +5,7 @@
 
   @Author  David Hoyle
   @Version 1.0
-  @Date    06 Jan 2017
+  @Date    11 Jul 2017
 
 **)
 Unit DGHIDENotificationTypes;
@@ -28,7 +28,9 @@ Type
     dinIDEInsightNotifier,
     dinProjectFileStorageNotifier,
     dinEditorNotifier,
-    dinDebuggerNotifier
+    dinDebuggerNotifier,
+    dinModuleNotifier,
+    dinProjectNotifier
   );
 
   (** A set of the above notification type so that they can be filtered. **)
@@ -37,19 +39,33 @@ Type
   (** A base notifier object to provide common notification messaging in all notifiers. **)
   TDGHNotifierObject = Class(TNotifierObject, IOTANotifier)
   Strict Private
-    FNotification : TDGHIDENotification;
-    FNotifier     : String;
+    FNotification     : TDGHIDENotification;
+    FNotifier         : String;
+    FFileName         : String;
   Strict Protected
-    Procedure DoNotification(strMessage: String);
-  Public
-    Constructor Create(strNotifier : String; iNotification : TDGHIDENotification);
     // IOTANotifier
     Procedure AfterSave;
     Procedure BeforeSave;
     Procedure Destroyed;
     Procedure Modified;
+    // Implementation Methods
+    Procedure DoNotification(Const strMessage: String);
+    Function  GetFileName : String;
+  Public
+    Constructor Create(Const strNotifier, strFileName : String; Const iNotification : TDGHIDENotification);
+      Virtual;
+    // TInterfaceObject
     Procedure AfterConstruction; Override;
     Procedure BeforeDestruction; Override;
+    (**
+      A property to read and write the module file name to the notifier knows the file name it is
+      associated with.
+      @note    Must be set once the notifier is created.
+      @precon  None.
+      @postcon Returns the filename of the module associated with the notifier.
+      @return  a String
+    **)
+    Property FileName : String Read FFileName Write FFileName;
   End;
 
 Const
@@ -65,8 +81,10 @@ Const
     clOlive,
     clYellow,
     clGreen,
-    //clLime // no used as its the BitMap mask colour
-    clPurple
+    //clLime // not used as its the BitMap mask colour
+    clPurple,
+    clFuchsia,
+    clDkGray
   );
 
   (** A constant array of boolean to provide a string representation of a boolean value. **)
@@ -84,12 +102,15 @@ Const
     'IDE Insight Notifications',
     'Project File Storage Notifications',
     'Editor Notifications',
-    'Debugger Notifications'
+    'Debugger Notifications',
+    'Module Notifications',
+    'Project Notifications'
   );
 
 Implementation
 
 Uses
+  SysUtils,
   DGHDockableIDENotificationsForm;
 
 (**
@@ -104,7 +125,7 @@ Procedure TDGHNotifierObject.AfterConstruction;
 
 Begin
   Inherited AfterConstruction;
-  DoNotification(FNotifier + '.AfterConstruction');
+  DoNotification(Format('%s.AfterConstruction', [GetFileName]));
 End;
 
 (**
@@ -118,7 +139,7 @@ End;
 Procedure TDGHNotifierObject.AfterSave;
 
 Begin
-  DoNotification(FNotifier + '.AfterSave');
+  DoNotification(Format('%s.AfterSave', [GetFileName]));
 End;
 
 (**
@@ -133,7 +154,7 @@ Procedure TDGHNotifierObject.BeforeDestruction;
 
 Begin
   Inherited BeforeDestruction;
-  DoNotification(FNotifier + '.BeforeDestruction');
+  DoNotification(Format('%s.BeforeDestruction', [GetFileName]));
 End;
 
 (**
@@ -147,7 +168,7 @@ End;
 Procedure TDGHNotifierObject.BeforeSave;
 
 Begin
-  DoNotification(FNotifier + '.BeforeSave');
+  DoNotification(Format('%s.BeforeSave', [GetFileName]));
 End;
 
 (**
@@ -157,15 +178,17 @@ End;
   @precon  None.
   @postcon Stores the notifier object name and notifier type.
 
-  @param   strNotifier   as a String
-  @param   iNotification as a TDGHIDENotification
+  @param   strNotifier   as a String as a constant
+  @param   strFileName   as a String as a constant
+  @param   iNotification as a TDGHIDENotification as a constant
 
 **)
-Constructor TDGHNotifierObject.Create(strNotifier : String;
-  iNotification: TDGHIDENotification);
+Constructor TDGHNotifierObject.Create(Const strNotifier, strFileName : String; Const iNotification : TDGHIDENotification);
 
 Begin
+  Inherited Create;
   FNotifier := strNotifier;
+  FFileName := strFileName;
   FNotification := iNotification;
 End;
 
@@ -180,7 +203,7 @@ End;
 Procedure TDGHNotifierObject.Destroyed;
 
 Begin
-  DoNotification(FNotifier + '.Destroyed');
+  DoNotification(Format('%s.Destroyed', [GetFileName]));
 End;
 
 (**
@@ -190,16 +213,34 @@ End;
   @precon  None.
   @postcon A notification is aded to the dockable form.
 
-  @param   strMessage as a String
+  @param   strMessage as a String as a constant
 
 **)
-Procedure TDGHNotifierObject.DoNotification(strMessage: String);
+Procedure TDGHNotifierObject.DoNotification(Const strMessage: String);
 
 Begin
   TfrmDockableIDENotifications.AddNotification(
     FNotification,
     FNotifier + strMessage
   );
+End;
+
+(**
+
+  Returns the filename associated with the notifier if set.
+
+  @precon  None.
+  @postcon Returns the filename associated with the notifier if set.
+
+  @return  a String
+
+**)
+Function TDGHNotifierObject.GetFileName: String;
+
+Begin
+  Result := '';
+  If Length(FFileName) > 0 Then
+    Result := '(' + ExtractFileName(FFileName) + ')';
 End;
 
 (**
@@ -213,7 +254,7 @@ End;
 Procedure TDGHNotifierObject.Modified;
 
 Begin
-  DoNotification(FNotifier + '.Modified');
+  DoNotification(Format('%s.Modified', [GetFileName]));
 End;
 
 End.

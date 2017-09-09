@@ -7,22 +7,44 @@
   the dockable form) and installs the notifiers on creation and remoces them on destruction.
 
   The following notifiers are currently implemented:
-   * IOTAIDENotifier;
-   * IOTAVersionControlNotifier;
-   * IOTACompileNotifier;
-   * IOTAIDEInsightNotifier;
-   * IOTAMessageNotifier;
-   * IOTAProjectFileStorageNotifier;
-   * IOTAEditorNotifier;
-   * INTAEditServicesNotifier;
-   * IOTADebuggerNotifier;
-   * IOTADebuggerNotifier90;
-   * IOTADebuggerNotifier100;
-   * IOTADebuggerNotifier110.
+   * IOTAIDENotifier                via IOTAIDEServices.AddNotifier();
+   * IOTAVersionControlNotifier     via IOTAVersionControlServices.AddNotifier();
+   * IOTACompileNotifier            via IOTACompileServices.AddNotifier();
+   * IOTAIDEInsightNotifier         via IOTAIDEInsightService.AddNotifier();
+   * IOTAMessageNotifier            via IOTAMessageServices60.AddNotifier();
+   * IOTAProjectFileStorageNotifier via IOTAProjectFileStorage.AddNotifier();
+   * IOTAEditorNotifier             via IOTAEditorServices.AddNotifier();
+   * INTAEditServicesNotifier       via IOTAEditorServices.AddNotifier();
+   * IOTADebuggerNotifier           via IOTADebuggerServices60.AddNotifier();
+   * IOTADebuggerNotifier90         via IOTADebuggerServices60.AddNotifier();
+   * IOTADebuggerNotifier100        via IOTADebuggerServices60.AddNotifier();
+   * IOTADebuggerNotifier110        via IOTADebuggerServices60.AddNotifier();
+   * IOTAModuleNotifier             via IOTAModule40.AddNotifier();
+   * IOTAModuleNotifier80           via IOTAModule40.AddNotifier();
+   * IOTAModuleNotifier90           via IOTAModule40.AddNotifier();
+   * IOTAProjectNotifier            via IOTAModule40.AddNotifier();
+
+  The following notifiers are STILL to be implemented:
+   * IOTANotifier = interface(IUnknown)
+   * IOTAFormNotifier, IOTAModule40.AddNotifier();
+   * IOTAEditor.AddNotifier(IOTANotifier)
+   * IOTAToolsFilter.AddNotifier(IOTANotifier)... IOTAToolsFilterNotifier = interface(IOTANotifier)
+   * IOTAEditBlock.AddNotifier(IOTASyncEditNotifier)
+   * IOTAEditView.AddNotifier(INTAEditViewNotifier)
+   * IOTAEditLineTracker.AddNotifier(IOTAEditLineNotifier)
+   * IOTAEditBlock, IOTASyncEditNotifier = interface
+   * IOTABreakpoint40.AddNotifier(IOTABreakpointNotifier)
+   * IOTAThread50.AddNotifier(IOTAThreadNotifier, IOTAThreadNotifier160)
+   * IOTAProcessModule80.AddNotifier(IOTAProcessModNotifier)
+   * IOTAProcess60.AddNotifier(IOTAProcessNotifier, IOTAProcessNotifier90)
+   * IOTAToDoServices.AddNotifier(IOTAToDoManager)
+   * IOTAProjectBuilder, IOTAProjectCompileNotifier = interface
+   * IOTADesignerCommandNotifier = interface(IOTANotifier)
+   * IOTAProjectMenuItemCreatorNotifier = interface(IOTANotifier)
 
   @Author  David Hoyle
   @Version 1.0
-  @Date    06 Jan 2017
+  @Date    11 Jul 2017
 
 **)
 Unit DGHIDENotifiersWizard;
@@ -53,7 +75,8 @@ Type
     FDebuggerNotifier : integer;
   Strict Protected
   Public
-    Constructor Create;
+    Constructor Create(Const strNotifier, strFileName : String;
+      Const iNotification : TDGHIDENotification); Override;
     Destructor Destroy; Override;
     // IOTAWizard
     Procedure Execute;
@@ -67,7 +90,6 @@ Type
 Implementation
 
 Uses
-  //: @debug CodeSiteLogging,
   SysUtils,
   TypInfo,
   DGHDockableIDENotificationsForm,
@@ -84,8 +106,6 @@ Uses
   DGHIDENotificationsSplashScreen,
   DGHIDENotificationsAboutBox;
 
-{ TDGHIDENotifiersWizard }
-
 (**
 
   A constructor for the TDGHIDENotifierWizard class.
@@ -93,90 +113,41 @@ Uses
   @precon  None.
   @postcon Installs all the notifiers.
 
-**)
-Constructor TDGHIDENotifiersWizard.Create;
+  @param   strNotifier   as a String as a constant
+  @param   strFileName   as a String as a constant
+  @param   iNotification as a TDGHIDENotification as a constant
 
-{: @debug Var
-  S : IInterface;}
+**)
+Constructor TDGHIDENotifiersWizard.Create(Const strNotifier, strFileName : String;
+  Const iNotification : TDGHIDENotification);
 
 Begin
-  Inherited Create('IOTAWizard', dinWizard);
+  Inherited Create('IOTAWizard', strFileName, dinWizard);
   AddSplashScreen;
   AddAboutBoxEntry;
   FIDENotifier := (BorlandIDEServices As IOTAServices).AddNotifier(
-    TDGHNotificationsIDENotifier.Create('IOTAIDENotifier', dinIDENotifier));
+    TDGHNotificationsIDENotifier.Create('IOTAIDENotifier', '', dinIDENotifier));
   {$IFDEF D2010}
   FVersionControlNotifier := (BorlandIDEServices As IOTAVersionControlServices).AddNotifier(
-    TDGHIDENotificationsVersionControlNotifier.Create('IOTAVersionControlNotifier',
+    TDGHIDENotificationsVersionControlNotifier.Create('IOTAVersionControlNotifier', '',
     dinVersionControlNotifier));
   FCompileNotifier := (BorlandIDEServices As IOTACompileServices).AddNotifier(
-    TDGHIDENotificationsCompileNotifier.Create('IOTACompileNotifier', dinCompileNotifier));
+    TDGHIDENotificationsCompileNotifier.Create('IOTACompileNotifier', '', dinCompileNotifier));
   FIDEInsightNotifier := (BorlandIDEServices As IOTAIDEInsightService).AddNotifier(
-    TDGHIDENotificationsIDEInsightNotifier.Create('IOTAIDEInsightNotifier',
+    TDGHIDENotificationsIDEInsightNotifier.Create('IOTAIDEInsightNotifier', '',
     dinIDEInsightNotifier));
   {$ENDIF}
   FMessageNotfier := (BorlandIDEServices As IOTAMessageServices).AddNotifier(
-    TDGHIDENotificationsMessageNotifier.Create('IOTAMessageNotifier', dinMessageNotifier));
+    TDGHIDENotificationsMessageNotifier.Create('IOTAMessageNotifier', '', dinMessageNotifier));
   FProjectFileStorageNotifier := (BorlandIDEServices As IOTAProjectFileStorage).AddNotifier(
-    TDGHNotificationsProjectFileStorageNotifier.Create('IOTAProjectFileStorageNotifier',
+    TDGHNotificationsProjectFileStorageNotifier.Create('IOTAProjectFileStorageNotifier', '',
     dinProjectFileStorageNotifier));
   FEditorNotifier := (BorlandIDEServices As IOTAEditorServices).AddNotifier(
-    TDGHNotificationsEditorNotifier.Create('INTAEditorServicesNotifier', dinEditorNotifier)
+    TDGHNotificationsEditorNotifier.Create('INTAEditorServicesNotifier', '', dinEditorNotifier)
     );
   FDebuggerNotifier := (BorlandIDEServices As IOTADebuggerServices).AddNotifier(
-    TDGHNotificationsDebuggerNotifier.Create('IOTADebufferNotifier', dinDebuggerNotifier));
-
-  {: @debug CodeSite.Send(
-    'BorlandIDEServices Supports IOTAToDoServices = ',
-    Supports(BorlandIDEServices, IOTAToDoServices, S)
-  );}
-
-(**
-
-  Implemented
-  ===========
-  IOTAServices50.AddNotifier(IOTAIDENotifier)
-  IOTAVersionControlServices.AddNotifier(IOTAVersionControlNotifier)
-  IOTACompileServices.AddNotifier(IOTACompileNotifier)
-  IOTAIDEInsightService.AddNotifier(IOTAIDEInsightNotifier)
-  IOTAMessageServices60.AddNotifier(IOTAMessageNotifier)
-  IOTAProjectFileStorage.AddNotifier(IOTAProjectFileStorageNotifier)
-  IOTAEditorServices.AddNotifier(IOTAEditorNotifier, INTAEditServicesNotifier)
-  IOTADebuggerServices60.AddNotifier(IOTADebuggerNotifier, IOTADebuggerNotifier90,
-    IOTADebuggerNotifier100, IOTADebuggerNotifier110)
-
-  Under Implementation
-  ====================
-
-  To Implement
-  ============
-  IOTAEditor.AddNotifier(IOTANotifier)
-  IOTAToolsFilter.AddNotifier(IOTANotifier)... IOTAToolsFilterNotifier = interface(IOTANotifier)
-  IOTAEditBlock.AddNotifier(IOTASyncEditNotifier)
-  IOTAEditView.AddNotifier(INTAEditViewNotifier)
-  IOTAModule40.AddNotifier(IOTAModuleNotifier, IOTAModuleNotifier80, IOTAModuleNotifier90)
-  IOTABreakpoint40.AddNotifier(IOTABreakpointNotifier)
-  IOTAThread50.AddNotifier(IOTAThreadNotifier, IOTAThreadNotifier160)
-  IOTAProcessModule80.AddNotifier(IOTAProcessModNotifier)
-  IOTAProcess60.AddNotifier(IOTAProcessNotifier, IOTAProcessNotifier90)
-  IOTAEditLineTracker.AddNotifier(IOTAEditLineNotifier)
-  IOTAToDoServices.AddNotifier(IOTAToDoManager)
-
-
-  IOTANotifier = interface(IUnknown)
-
-  IOTAFormNotifier = interface(IOTANotifier)
-
-  IOTAEditBlock, IOTASyncEditNotifier = interface
-
-  IOTAProjectBuilder, IOTAProjectCompileNotifier = interface
-
-  IOTAProjectNotifier = interface(IOTAModuleNotifier)
-
-  IOTADesignerCommandNotifier = interface(IOTANotifier)
-  IOTAProjectMenuItemCreatorNotifier = interface(IOTANotifier)
-
-**)
+    TDGHNotificationsDebuggerNotifier.Create('IOTADebufferNotifier', '', dinDebuggerNotifier));
+  TfrmDockableIDENotifications.CreateDockableBrowser;
 End;
 
 (**
@@ -209,6 +180,7 @@ Begin
   If FDebuggerNotifier > -1 Then
     (BorlandIDEServices As IOTADebuggerServices).RemoveNotifier(FDebuggerNotifier);
   RemoveAboutBoxEntry;
+  TfrmDockableIDENotifications.RemoveDockableBrowser;
   Inherited Destroy;
 End;
 

@@ -5,7 +5,7 @@
 
   @Author  David Hoyle
   @Version 1.0
-  @Date    06 Jan 2017
+  @Date    09 Jul 2017
 
 **)
 Unit DGHIDENotificationsCommon;
@@ -18,6 +18,7 @@ Uses
   Procedure BuildNumber(var iMajor, iMinor, iBugFix, iBuild : Integer);
   Function GetProjectFileName(Project : IOTAProject) : String;
 
+{$IFNDEF _FIXINSIGHT_}
 Resourcestring
   (** This resource string is used for the bug fix number in the splash screen and about box
       entries. **)
@@ -29,7 +30,8 @@ Resourcestring
 
 Const
   (** A constant to define the failed state for a notifier not installed. **)
-  iWizardFailState = -1;
+  iWizardFailState = -1; //FI:O803
+{$ENDIF}
 
 Implementation
 

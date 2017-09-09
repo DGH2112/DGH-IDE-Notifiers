@@ -6,7 +6,7 @@
 
   @Author  David Hoyle
   @Version 1.0
-  @Date    06 Jan 2017
+  @Date    11 Jul 2017
 
 **)
 Unit DGHIDENotifiersMainUnit;
@@ -28,7 +28,7 @@ Implementation
 
 Uses
   DGHIDENotifiersWizard,
-  DGHDockableIDENotificationsForm;
+  DGHIDENotificationTypes;
 
 (**
 
@@ -41,7 +41,7 @@ Uses
 Procedure Register;
 
 Begin
-  RegisterPackageWizard(TDGHIDENotifiersWizard.Create);
+  RegisterPackageWizard(TDGHIDENotifiersWizard.Create('IOTAWizard', '', dinWizard));
 End;
 
 (**
@@ -59,17 +59,11 @@ End;
 **)
 Function InitWizard(Const BorlandIDEServices: IBorlandIDEServices;
   RegisterProc: TWizardRegisterProc;
-  Var Terminate: TWizardTerminateProc): Boolean; StdCall;
+  Var Terminate: TWizardTerminateProc): Boolean; StdCall; //FI:O804
 
 Begin
   Result := BorlandIDEServices <> Nil;
-  RegisterProc(TDGHIDENotifiersWizard.Create);
+  RegisterProc(TDGHIDENotifiersWizard.Create('IOTAWizard', '', dinWizard));
 End;
 
-(** Creates the dockable notification form on unit initialisation. **)
-Initialization
-  TfrmDockableIDENotifications.CreateDockableBrowser;
-(** Destroys the dockable notification form on unit finalisation. **)
-Finalization
-  TfrmDockableIDENotifications.RemoveDockableBrowser;
 End.

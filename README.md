@@ -4,7 +4,7 @@ Author: David Hoyle
 
 Version: 1.0
 
-Date: 17 Dec 2016
+Date: 09 Sep 2017
 
 Web Page: http://www.davidghoyle.co.uk/WordPress/?page_id=1449
 
@@ -28,6 +28,10 @@ The plug-in current implements the following notifiers:
  * IOTADebuggerNotifier;
  * IOTADebuggerNotifier90;
  * IOTADebuggerNotifier100;
- * IOTADebuggerNotifier110.
+ * IOTADebuggerNotifier110;
+ * IOTAModuleNotifier;
+ * IOTAModuleNotifier80;
+ * IOTAModuleNotifier90;
+ * IOTAProjectNotifier.
 
 More notifiers will be added in later releases.

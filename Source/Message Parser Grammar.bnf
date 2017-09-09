@@ -1,0 +1,24 @@
+/**
+
+  This file contains the Backus-Naur Grammar for the Messag parser that allows the notification
+  form to syntax highlight the messages.
+
+  @Author  David Hoyle
+  @Version 1.0
+  @Date    09 Jul 2017
+
+**/
+<Goal>           ::= <Interface> [ <ModuleName> ] '.' <MethodName> [ <Parameters> ]
+<Interface>      ::= <KeyWord>
+<ModuleName>     ::= '(' <FileName> ')'
+<Parameters>     ::= '=' <Parameter> [ ',' <Parameter> ]*
+<Parameter>      ::= <ParameterName> ':' <ParameterValue>
+<ParameterName>  ::= <KeyWord>
+<ParameterValue> ::= ? Any character other than a comma which denotes the next parameter ?
+<FileName>       ::= ? Any character other than a closing parenthesis ?
+<MethodName>     ::= <KeyWord>
+<KeyWord>        ::= <Identifier>
+<Identifier>     ::= <Character> <AlphaNumeric>*
+<AlphaNumeric>   ::= <Character> | <Digit>
+<Character>      ::= 'a'..'z' | 'A'..'Z'
+<Digit>          ::= '0'..'9'

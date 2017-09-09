@@ -5,7 +5,7 @@
 
   @Author  David Hoyle
   @Version 1.0
-  @Date    06 Jan 2017
+  @Date    06 Jul 2017
 
 **)
 Unit DGHIDENotifiersEditorNotifications;
@@ -98,7 +98,7 @@ Begin
     Begin
       Result := '(no form)';
       If EditWindow.Form <> Nil Then
-        Result := EditWindow.Form.Caption;
+        Result := ExtractFileName(EditWindow.Form.Caption);
     End;
 End;
 
@@ -178,8 +178,10 @@ Procedure TDGHNotificationsEditorNotifier.DockFormRefresh(Const EditWindow: INTA
 Begin
   DoNotification(Format(
     '.DockFormRefresh = EditWindow: %s.%s, DockForm: %s.%s', [
-      GetEditWindowFormClassName(EditWindow), GetEditWindowFormCaption(EditWindow),
-        GetDockFormClassName(DockForm), GetDockFormCaption(DockForm)
+      GetEditWindowFormClassName(EditWindow),
+      GetEditWindowFormCaption(EditWindow),
+      GetDockFormClassName(DockForm),
+      GetDockFormCaption(DockForm)
     ]
   ));
 End;
@@ -201,8 +203,10 @@ Procedure TDGHNotificationsEditorNotifier.DockFormUpdated(Const EditWindow: INTA
 Begin
   DoNotification(Format(
     '.DockFormUpdated = EditWindow: %s.%s, DockForm: %s.%s', [
-      GetEditWindowFormClassName(EditWindow), GetEditWindowFormCaption(EditWindow),
-        GetDockFormClassName(DockForm), GetDockFormCaption(DockForm)
+      GetEditWindowFormClassName(EditWindow),
+      GetEditWindowFormCaption(EditWindow),
+      GetDockFormClassName(DockForm),
+      GetDockFormCaption(DockForm)
     ]
   ));
 End;
@@ -224,8 +228,10 @@ Procedure TDGHNotificationsEditorNotifier.DockFormVisibleChanged(Const EditWindo
 Begin
   DoNotification(Format(
     '.DockFormVisibleChanged = EditWindow: %s.%s, DockForm: %s.%s', [
-      GetEditWindowFormClassName(EditWindow), GetEditWindowFormCaption(EditWindow),
-        GetDockFormClassName(DockForm), GetDockFormCaption(DockForm)
+      GetEditWindowFormClassName(EditWindow),
+      GetEditWindowFormCaption(EditWindow),
+      GetDockFormClassName(DockForm),
+      GetDockFormCaption(DockForm)
     ]
   ));
 End;
@@ -248,8 +254,9 @@ Procedure TDGHNotificationsEditorNotifier.EditorViewActivated(Const EditWindow
 Begin
   DoNotification(Format(
     '.EditorViewActivated = EditWindow: %s.%s, EditView.TopRow: %d', [
-      GetEditWindowFormClassName(EditWindow), GetEditWindowFormCaption(EditWindow),
-        GetEditViewTopRow(EditView)
+      GetEditWindowFormClassName(EditWindow),
+      GetEditWindowFormCaption(EditWindow),
+      GetEditViewTopRow(EditView)
     ]
   ));
 End;
@@ -271,8 +278,9 @@ Procedure TDGHNotificationsEditorNotifier.EditorViewModified(Const EditWindow
 Begin
   DoNotification(Format(
     '.EditorViewModified = EditWindow: %s.%s, EditView.TopRow: %d', [
-      GetEditWindowFormClassName(EditWindow), GetEditWindowFormCaption(EditWindow),
-        GetEditViewTopRow(EditView)
+      GetEditWindowFormClassName(EditWindow),
+      GetEditWindowFormCaption(EditWindow),
+      GetEditViewTopRow(EditView)
     ]
   ));
 End;
@@ -311,8 +319,10 @@ Procedure TDGHNotificationsEditorNotifier.ViewNotification(Const View: IOTAEditV
 
 Begin
   DoNotification(
-    Format('.ViewNotification = View.TopRow: %d, Operation: %s', [GetEditViewTopRow(View),
-      GetEnumName(TypeInfo(TOperation), Ord(Operation))])
+    Format('.ViewNotification = View.TopRow: %d, Operation: %s', [
+      GetEditViewTopRow(View),
+      GetEnumName(TypeInfo(TOperation), Ord(Operation))
+    ])
   );
 End;
 
@@ -332,7 +342,9 @@ Procedure TDGHNotificationsEditorNotifier.WindowActivated(Const EditWindow
 Begin
   DoNotification(
     Format('.WindowActiviated = EditWindow: %s.%s', [
-      GetEditWindowFormClassName(EditWindow), GetEditWindowFormCaption(EditWindow)])
+      GetEditWindowFormClassName(EditWindow),
+      GetEditWindowFormCaption(EditWindow)]
+    )
   );
 End;
 
@@ -357,8 +369,11 @@ Begin
   DoNotification(
     Format(
       '.WindowCommand = EditWindow: %s.%s, Command: %d, Param: %d, Handled: %s', [
-        GetEditWindowFormClassName(EditWindow), GetEditWindowFormCaption(EditWindow),
-        Command, Param, strBoolean[Handled]
+        GetEditWindowFormClassName(EditWindow),
+        GetEditWindowFormCaption(EditWindow),
+        Command,
+        Param,
+        strBoolean[Handled]
       ])
   );
 End;
@@ -381,7 +396,8 @@ Begin
   DoNotification(
     Format(
       '.WindowNotification = EditWindow: %s.%s, Operation: %s', [
-        GetEditWindowFormClassName(EditWindow), GetEditWindowFormCaption(EditWindow),
+        GetEditWindowFormClassName(EditWindow),
+        GetEditWindowFormCaption(EditWindow),
         GetEnumName(TypeInfo(TOperation), Ord(Operation))
       ])
   );
@@ -407,8 +423,10 @@ Begin
   DoNotification(
     Format(
       '.WindowShow = EditWindow: %s.%s, Show: %s, LoadedFromDesktop: %s', [
-        GetEditWindowFormClassName(EditWindow), GetEditWindowFormCaption(EditWindow),
-        strBoolean[Show], strBoolean[LoadedFromDesktop]
+        GetEditWindowFormClassName(EditWindow),
+        GetEditWindowFormCaption(EditWindow),
+        strBoolean[Show],
+        strBoolean[LoadedFromDesktop]
       ])
   );
 End;

@@ -5,7 +5,7 @@
 
   @Author  David Hoyle
   @Version 1.0
-  @Date    06 Jan 2017
+  @Date    09 Jul 2017
 
 **)
 Unit DGHIDENotificationsSplashScreen;
@@ -42,7 +42,7 @@ Var
   iBuild : Integer;
   bmSplashScreen : HBITMAP;
 
-Begin
+Begin //FI:W519
   {$IFDEF D2005}
   BuildNumber(iMajor, iMinor, iBugFix, iBuild);
   {$IFDEF D2007}
