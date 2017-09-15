@@ -9,8 +9,8 @@ IncludeInProject=0
 CompileWithBRCC32=0
 MajorVer=1
 MinorVer=1
-ReleaseVer=0
-BuildVer=423
+ReleaseVer=1
+BuildVer=428
 ResourceName=..\DGHIDENotITHVerInfo
 
 [Zipping]
@@ -19,19 +19,19 @@ ZipFile=D:\HoylD\Web Page\Zips\DGHIDENotifiers.zip
 BasePath=D:\HoylD\RAD Studio\
 ExclusionFiles=
 
+[Additional Zip Files]
+Item0=D:\HoylD\RAD Studio\IDE Addins\DGH IDE Notifiers\Icons\*.bmp
+Item1=D:\HoylD\RAD Studio\Library (LIVE)\Virtual Treeview 5.3\Source\*.*
+
 [VersionInfo]
 CompanyName=Season's Fall Music
 FileDescription=DGHIDENotifier
-FileVersion=1.1.0.423
+FileVersion=1.1.1.428
 InternalName=DGHIDENotifier
 LegalCopyright=Season's Fall Music
 LegalTrademarks=Season's Fall Music
 OriginalFilename=DGHIDENotifier
 ProductName=DGHIDENotifier
-ProductVersion=1.1
+ProductVersion=1.1a
 Comments=An IDE Plugin to provide notifications for all sorts of things.
-
-[Additional Zip Files]
-Item0=D:\HoylD\RAD Studio\IDE Addins\DGH IDE Notifiers\Icons\*.bmp
-Item1=D:\HoylD\RAD Studio\Library (LIVE)\Virtual Treeview 5.3\Source\*.*
 

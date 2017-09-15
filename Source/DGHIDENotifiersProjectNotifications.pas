@@ -5,7 +5,7 @@
 
   @Author  David Hoyle
   @Version 1.0
-  @Date    09 Sep 2017
+  @Date    15 Sep 2017
 
 **)
 Unit DGHIDENotifiersProjectNotifications;
@@ -38,7 +38,7 @@ Uses
 (**
 
   This method of the notifier is called when a module is added to a project or a project is added
-  to a prject group.
+  to a project group.
 
   @precon  None.
   @postcon Logs the file added.
