@@ -5,7 +5,7 @@
 
   @Author  David Hoyle
   @Version 1.0
-  @date    15 Jul 2017
+  @date    15 Sep 2017
 
 **)
 Unit DGHDockableIDENotificationsForm;
@@ -36,7 +36,7 @@ Uses
   ComCtrls,
   ActnList,
   ImgList,
-  {$IFDEF DXE70} // Might need adjusting for XE 3 through 6 - don't have these.
+  {$IFDEF DXE70}
   Actions,
   {$ENDIF}
   DGHIDENotificationTypes,
@@ -600,7 +600,7 @@ Begin
     For iNotification := Low(TDGHIDENotification) To High(TDGHIDENotification) Do
       If R.ReadBool('Notifications', strNotificationLabel[iNotification], True) Then
         Include(FMessageFilter, iNotification);
-    FRetensionPeriodInDays := R.ReadInteger('Setup', 'RetensionPeriodInDays', 30);
+    FRetensionPeriodInDays := R.ReadInteger('Setup', 'RetensionPeriodInDays', 7);
     FLogView.Header.Columns[0].Width := R.ReadInteger('LogView', 'DateTimeWidth', 175);
     FLogView.Header.Columns[1].Width := R.ReadInteger('LogView', 'MessageWidth', 500);
   Finally
@@ -1324,8 +1324,11 @@ Begin
       // Add ALL message to the message list.
       If Assigned(FormInstance.FMessageList) Then
         Begin
-          FormInstance.FRegExFilter := '';
-          FormInstance.FilterMessages;
+          If FormInstance.FRegExFilter <> '' Then
+            Begin
+              FormInstance.FRegExFilter := '';
+              FormInstance.FilterMessages;
+            End;
           iIndex := FormInstance.FMessageList.Add(
             TMsgNotification.Create(
               dtDateTime,
@@ -1372,3 +1375,5 @@ Begin
 End;
 
 End.
+
+
