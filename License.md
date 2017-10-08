@@ -2,9 +2,9 @@
 
 Author: David Hoyle
 
-Version: 1.1
+Version: 1.1b
 
-Date: 09 Sep 2017
+Date: 01 Oct 2017
 
 Web Page: http://www.davidghoyle.co.uk/WordPress/?page_id=1449
 
@@ -25,7 +25,7 @@ the code be used in a commercial product with out the author's consent.
 
 regards
 
-David Hoyle (c) 09 Sep 2017
+David Hoyle (c) 01 Oct 2017
 
 davidghoyle@gmail.com
 

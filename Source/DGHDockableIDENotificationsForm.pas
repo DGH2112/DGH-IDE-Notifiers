@@ -5,7 +5,7 @@
 
   @Author  David Hoyle
   @Version 1.0
-  @date    15 Sep 2017
+  @date    29 Sep 2017
 
 **)
 Unit DGHDockableIDENotificationsForm;
@@ -44,7 +44,8 @@ Uses
   {$IFDEF REGULAREXPRESSIONS}
   RegularExpressions,
   {$ENDIF}
-  Generics.Collections;
+  Generics.Collections,
+  ExtCtrls;
 
 Type
   (** This record describes the message information to be stored. **)
@@ -93,6 +94,11 @@ Type
     tbtnClear: TToolButton;
     actClear: TAction;
     stbStatusBar: TStatusBar;
+    pnlTop: TPanel;
+    pnlRetention: TPanel;
+    lblLogRetention: TLabel;
+    edtLogRetention: TEdit;
+    udLogRetention: TUpDown;
     Procedure actCaptureExecute(Sender: TObject);
     Procedure actCaptureUpdate(Sender: TObject);
     Procedure actClearExecute(Sender: TObject);
@@ -102,12 +108,13 @@ Type
     FMessageFilter        : TDGHIDENotifications;
     FCapture              : Boolean;
     FLogFileName          : String;
-    FRetensionPeriodInDays: Integer;
     FRegExFilter          : String;
     FIsFiltering          : Boolean;
     {$IFDEF REGULAREXPRESSIONS}
     FRegExEng             : TRegEx;
     {$ENDIF}
+    FLastUpdate           : UInt64;
+    FUpdateTimer          : TTimer;
   Strict Protected
     Procedure CreateFilterButtons;
     Procedure ActionExecute(Sender: TObject);
@@ -127,6 +134,7 @@ Type
       Column: TColumnIndex; CellRect: TRect);
     Procedure LogViewKeyPress(Sender : TObject; Var Key : Char);
     Procedure FilterMessages;
+    Procedure UpdateTimer(Sender : TObject);
   Public
     Constructor Create(AOwner: TComponent); Override;
     Destructor Destroy; Override;
@@ -135,6 +143,12 @@ Type
     Class Procedure ShowDockableBrowser;
     Class Procedure AddNotification(Const iNotification: TDGHIDENotification;
       Const strMessage: String);
+    (**
+      This property gets and set the number of days to retain log entries.
+      @precon  None.
+      @postcon Gets and set the number of days to retain log entries.
+      @return  an Integer
+    **)
   End;
 
   (** This is a class references for the dockable form which is required by some of the OTA
@@ -205,6 +219,7 @@ Var
   I : Integer;
 
 Begin
+  {$IFDEF DEBUG}CodeSite.TraceMethod('DGHPos', tmoTiming);{$ENDIF}
   Result := 0;
   For i := iStartPos To Length(strText) Do
     If strText[i] = cDelimiter Then
@@ -236,6 +251,7 @@ Var
   iStart, iEnd : Integer;
 
 Begin
+  {$IFDEF DEBUG}CodeSite.TraceMethod('DGHSplit', tmoTiming);{$ENDIF}
   iSplits := 0;
   For i := 1 To Length(strText) Do
     If strText[i] = cDelimiter Then
@@ -289,6 +305,7 @@ End;
 Procedure ShowDockableForm(Form: TfrmDockableIDENotifications);
 
 Begin
+  {$IFDEF DEBUG}CodeSite.TraceMethod('ShowDockableForm', tmoTiming);{$ENDIF}
   If Not Assigned(Form) Then
     Exit;
   If Not Form.Floating Then
@@ -319,6 +336,7 @@ Procedure RegisterDockableForm(FormClass: TfrmDockableIDENotificationsClass; Var
   Const FormName: String);
 
 Begin
+  {$IFDEF DEBUG}CodeSite.TraceMethod('RegisterDockableForm', tmoTiming);{$ENDIF}
   If @RegisterFieldAddress <> Nil Then
     RegisterFieldAddress(FormName, @FormVar);
   RegisterDesktopFormClass(FormClass, FormName, FormName);
@@ -337,6 +355,7 @@ End;
 Procedure UnRegisterDockableForm(Var FormVar; Const FormName: String); //FI:O804
 
 Begin
+  {$IFDEF DEBUG}CodeSite.TraceMethod('UnRegisterDockableForm', tmoTiming);{$ENDIF}
   If @UnRegisterFieldAddress <> Nil Then
     UnRegisterFieldAddress(@FormVar);
 End;
@@ -356,6 +375,7 @@ Procedure CreateDockableForm(Var FormVar: TfrmDockableIDENotifications;
   FormClass: TfrmDockableIDENotificationsClass);
 
 Begin
+  {$IFDEF DEBUG}CodeSite.TraceMethod('CreateDockableForm', tmoTiming);{$ENDIF}
   TCustomForm(FormVar) := FormClass.Create(Nil);
   RegisterDockableForm(FormClass, FormVar, TCustomForm(FormVar).Name);
 End;
@@ -373,6 +393,7 @@ End;
 Procedure FreeDockableForm(Var FormVar: TfrmDockableIDENotifications);
 
 Begin
+  {$IFDEF DEBUG}CodeSite.TraceMethod('FreeDockableForm', tmoTiming);{$ENDIF}
   If Assigned(FormVar) Then
     Begin
       UnRegisterDockableForm(FormVar, FormVar.Name);
@@ -401,6 +422,7 @@ Var
   strBuffer: String;
 
 Begin
+  {$IFDEF DEBUG}CodeSite.TraceMethod('TfrmDockableIDENotifications.ConstructorLogFileName', tmoTiming);{$ENDIF}
   iSize := MAX_PATH;
   SetLength(Result, iSize);
   iSize := GetModuleFileName(HInstance, PChar(Result), iSize);
@@ -427,18 +449,25 @@ End;
 Constructor TfrmDockableIDENotifications.Create(AOwner: TComponent);
 
 Begin
+  {$IFDEF DEBUG}CodeSite.TraceMethod('TfrmDockableIDENotifications.Create', tmoTiming);{$ENDIF}
   Inherited Create(AOwner);
   DeskSection := Name;
   AutoSave := True;
   SaveStateNecessary := True;
   FIsFiltering := False;
   FCapture := True;
+  FLastUpdate := 0;
   CreateVirtualStringTreeLog;
   FMessageList := TList<TMsgNotification>.Create;
   FMessageFilter := [Low(TDGHIDENotification) .. High(TDGHIDENotification)];
   CreateFilterButtons;
   LoadSettings;
+  {$IFDEF DEBUG}CodeSite.Enabled := False;{$ENDIF}
   LoadLogFile;
+  {$IFDEF DEBUG}CodeSite.Enabled := True;{$ENDIF}
+  FUpdateTimer := TTimer.Create(Nil);
+  FUpdateTimer.Interval := 250;
+  FUpdateTimer.OnTimer := UpdateTimer;
 End;
 
 (**
@@ -452,6 +481,8 @@ End;
 Destructor TfrmDockableIDENotifications.Destroy;
 
 Begin
+  {$IFDEF DEBUG}CodeSite.TraceMethod('TfrmDockableIDENotifications.Destroy', tmoTiming);{$ENDIF}
+  FUpdateTimer.Free;
   SaveSettings;
   SaveLogFile;
   FreeAndNil(FMessageList);
@@ -473,6 +504,7 @@ Var
   N: PVirtualNode;
 
 Begin
+  {$IFDEF DEBUG}CodeSite.TraceMethod('TfrmDockableIDENotifications.FilterMessages', tmoTiming);{$ENDIF}
   FIsFiltering := False;
   stbStatusBar.SimplePanel := False;
   {$IFDEF REGULAREXPRESSIONS}
@@ -536,6 +568,7 @@ Var
   SSS : IOTASplashScreenServices;
 
 Begin
+  {$IFDEF DEBUG}CodeSite.TraceMethod('TfrmDockableIDENotifications.LoadLogFile', tmoTiming);{$ENDIF}
   FLogFileName := ConstructorLogFileName;
   If Not FileExists(FLogFileName) Then
     Exit;
@@ -557,7 +590,7 @@ Begin
             Begin
               Val(astrMsg[0], dtDate, iErrorCode);
               Val(astrMsg[2], iMsgType, iErrorCode);
-              If dtDate >= Now() - FRetensionPeriodInDays Then
+              If dtDate >= Now() - udLogRetention.Position Then
                 FMessageList.Add(
                   TMsgNotification.Create(
                     dtDate,
@@ -593,14 +626,15 @@ Var
   iNotification: TDGHIDENotification;
 
 Begin
+  {$IFDEF DEBUG}CodeSite.TraceMethod('TfrmDockableIDENotifications.LoadSettings', tmoTiming);{$ENDIF}
   R := TRegIniFile.Create('Software\Season''s Fall\DGHIDENotifications');
   Try
-    FCapture := R.ReadBool('Setup', 'Capture', True);
+    FCapture := R.ReadBool('Setup', 'Capture', False);
     FMessageFilter := [];
     For iNotification := Low(TDGHIDENotification) To High(TDGHIDENotification) Do
       If R.ReadBool('Notifications', strNotificationLabel[iNotification], True) Then
         Include(FMessageFilter, iNotification);
-    FRetensionPeriodInDays := R.ReadInteger('Setup', 'RetensionPeriodInDays', 7);
+    udLogRetention.Position := R.ReadInteger('Setup', 'RetensionPeriodInDays', 7);
     FLogView.Header.Columns[0].Width := R.ReadInteger('LogView', 'DateTimeWidth', 175);
     FLogView.Header.Columns[1].Width := R.ReadInteger('LogView', 'MessageWidth', 500);
   Finally
@@ -788,6 +822,7 @@ End;
 Class Procedure TfrmDockableIDENotifications.CreateDockableBrowser;
 
 Begin
+  {$IFDEF DEBUG}CodeSite.TraceMethod('TfrmDockableIDENotifications.CreateDockableBrowser', tmoTiming);{$ENDIF}
   If Not Assigned(FormInstance) Then
     CreateDockableForm(FormInstance, TfrmDockableIDENotifications);
 End;
@@ -815,6 +850,7 @@ Var
   iIndex: Integer;
 
 Begin
+  {$IFDEF DEBUG}CodeSite.TraceMethod('TfrmDockableIDENotifications.CreateFilterButtons', tmoTiming);{$ENDIF}
   For iFilter := Low(TDGHIDENotification) To High(TDGHIDENotification) Do
     Begin
       // Create image for toolbar and add to image list
@@ -864,6 +900,7 @@ Var
   C: TVirtualTreeColumn;
 
 Begin //FI:C101
+  {$IFDEF DEBUG}CodeSite.TraceMethod('TfrmDockableIDENotifications.CreateVirtualStringTreeLog', tmoTiming);{$ENDIF}
   // Creating in code so you don't ave to have the components installed into the IDE to open the form.
   FLogView := TVirtualStringTree.Create(Self);
   FLogView.Parent := Self;
@@ -1097,6 +1134,7 @@ End;
 Class Procedure TfrmDockableIDENotifications.RemoveDockableBrowser;
 
 Begin
+  {$IFDEF DEBUG}CodeSite.TraceMethod('TfrmDockableIDENotifications.RemoveDockableBrowser', tmoTiming);{$ENDIF}
   FreeDockableForm(FormInstance);
 End;
 
@@ -1115,13 +1153,14 @@ Var
   iNotification: TDGHIDENotification;
 
 Begin
+  {$IFDEF DEBUG}CodeSite.TraceMethod('TfrmDockableIDENotifications.SaveSettings', tmoTiming);{$ENDIF}
   R := TRegIniFile.Create('Software\Season''s Fall\DGHIDENotifications');
   Try
     R.WriteBool('Setup', 'Capture', FCapture);
     For iNotification := Low(TDGHIDENotification) To High(TDGHIDENotification) Do
       R.WriteBool('Notifications', strNotificationLabel[iNotification],
         iNotification In FMessageFilter);
-    R.WriteInteger('Setup', 'RetensionPeriodInDays', FRetensionPeriodInDays);
+    R.WriteInteger('Setup', 'RetensionPeriodInDays', udLogRetention.Position);
     R.WriteInteger('LogView', 'DateTimeWidth', FLogView.Header.Columns[0].Width);
     R.WriteInteger('LogView', 'MessageWidth', FLogView.Header.Columns[1].Width);
   Finally
@@ -1140,8 +1179,42 @@ End;
 Class Procedure TfrmDockableIDENotifications.ShowDockableBrowser;
 
 Begin
+  {$IFDEF DEBUG}CodeSite.TraceMethod('TfrmDockableIDENotifications.ShowDockableBrowser', tmoTiming);{$ENDIF}
   CreateDockableBrowser;
   ShowDockableForm(FormInstance);
+End;
+
+(**
+
+  This update timer updates the focused log entry after a period of time after the last notification
+  and updates the statusbar.
+
+  @precon  None.
+  @postcon Updates the focused node and the statusbar.
+
+  @param   Sender as a TObject
+
+**)
+Procedure TfrmDockableIDENotifications.UpdateTimer(Sender: TObject);
+
+Const
+  iUpdateInterval = 250;
+
+Var
+  Node: PVirtualNode;
+
+Begin
+  If (FLastUpdate > 0) And (GetTickCount > FLastUpdate + iUpdateInterval) Then
+    Begin
+      Node := FLogView.GetLastChild(FLogView.RootNode);
+      FLogView.Selected[Node] := True;
+      FLogView.FocusedNode := Node;
+      stbStatusBar.Panels[0].Text := Format('Showing %1.0n of %1.0n Messages', [
+        Int(FLogView.RootNodeCount),
+        Int(FMessageList.Count)
+      ]);
+      FLastUpdate := 0;
+    End;
 End;
 
 (**
@@ -1288,12 +1361,7 @@ Begin
   Result := FLogView.AddChild(Nil);
   NodeData := FLogView.GetNodeData(Result);
   NodeData.FNotificationIndex := iMsgNotiticationIndex;
-  FLogView.Selected[Result] := True;
-  FLogView.FocusedNode := Result;
-  stbStatusBar.Panels[0].Text := Format('Showing %1.0n of %1.0n Messages', [
-    Int(FLogView.RootNodeCount),
-    Int(FMessageList.Count)
-  ]);
+  FLastUpdate := GetTickCount;
 End;
 
 (**
@@ -1360,6 +1428,7 @@ Var
   R: TMsgNotification;
 
 Begin
+  {$IFDEF DEBUG}CodeSite.TraceMethod('TfrmDockableIDENotifications.SaveLogFile', tmoTiming);{$ENDIF}
   slLog := TStringList.Create;
   Try
     For iLogItem := 0 To FMessageList.Count - 1 Do
@@ -1375,5 +1444,4 @@ Begin
 End;
 
 End.
-
 

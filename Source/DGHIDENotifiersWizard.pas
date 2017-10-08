@@ -44,7 +44,7 @@
 
   @Author  David Hoyle
   @Version 1.0
-  @Date    11 Jul 2017
+  @Date    29 Sep 2017
 
 **)
 Unit DGHIDENotifiersWizard;
@@ -90,6 +90,9 @@ Type
 Implementation
 
 Uses
+  {$IFDEF DEBUG}
+  CodeSiteLogging,
+  {$ENDIF}
   SysUtils,
   TypInfo,
   DGHDockableIDENotificationsForm,
@@ -122,6 +125,7 @@ Constructor TDGHIDENotifiersWizard.Create(Const strNotifier, strFileName : Strin
   Const iNotification : TDGHIDENotification);
 
 Begin
+  {$IFDEF DEBUG}CodeSite.TraceMethod(Self, 'Create', tmoTiming);{$ENDIF}
   Inherited Create('IOTAWizard', strFileName, dinWizard);
   AddSplashScreen;
   AddAboutBoxEntry;
@@ -161,6 +165,7 @@ End;
 Destructor TDGHIDENotifiersWizard.Destroy;
 
 Begin
+  {$IFDEF DEBUG}CodeSite.TraceMethod(Self, 'Destroy', tmoTiming);{$ENDIF}
   If FIDENotifier > -1 Then
     (BorlandIDEServices As IOTAServices).RemoveNotifier(FIDENotifier);
   {$IFDEF D2010}
@@ -195,6 +200,7 @@ End;
 Procedure TDGHIDENotifiersWizard.Execute;
 
 Begin
+  {$IFDEF DEBUG}CodeSite.TraceMethod(Self, 'Execute', tmoTiming);{$ENDIF}
   DoNotification('IOTAWizard.Execute');
   TfrmDockableIDENotifications.ShowDockableBrowser;
 End;
@@ -246,6 +252,7 @@ End;
 Function TDGHIDENotifiersWizard.GetName: String;
 
 Begin
+  {$IFDEF DEBUG}CodeSite.TraceMethod(Self, 'GetName', tmoTiming);{$ENDIF}
   Result := 'DGHIDENotifiers';
   DoNotification(Format('IOTAWizard.GetName = Result: %s', [Result]));
 End;
@@ -268,3 +275,4 @@ Begin
 End;
 
 End.
+

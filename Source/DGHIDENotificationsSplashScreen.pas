@@ -5,7 +5,7 @@
 
   @Author  David Hoyle
   @Version 1.0
-  @Date    09 Jul 2017
+  @Date    29 Sep 2017
 
 **)
 Unit DGHIDENotificationsSplashScreen;
@@ -19,6 +19,9 @@ Interface
 Implementation
 
 Uses
+  {$IFDEF DEBUG}
+  CodeSiteLogging,
+  {$ENDIF}
   ToolsAPI,
   SysUtils,
   Windows,
@@ -43,6 +46,7 @@ Var
   bmSplashScreen : HBITMAP;
 
 Begin //FI:W519
+  {$IFDEF DEBUG}CodeSite.TraceMethod('AddSplashScreen', tmoTiming);{$ENDIF}
   {$IFDEF D2005}
   BuildNumber(iMajor, iMinor, iBugFix, iBuild);
   {$IFDEF D2007}
@@ -61,3 +65,4 @@ Begin //FI:W519
 End;
 
 End.
+

@@ -5,7 +5,7 @@
 
   @Author  David Hoyle
   @Version 1.0
-  @Date    09 Sep 2017
+  @Date    01 Oct 2017
 
 **)
 Unit DGHIDENotifiersModuleNotifications;
@@ -23,6 +23,7 @@ Type
   TDNModuleNotifier = Class(TDGHNotifierObject, IOTAModuleNotifier, IOTAModuleNotifier80,
     IOTAModuleNotifier90)
   Strict Private
+    FModuleNotiferList: IDINModuleNotifierList;
   {$IFDEF D2010} Strict {$ENDIF} Protected
     // IOTAModuleNotifier
     Function CheckOverwrite: Boolean;
@@ -35,12 +36,27 @@ Type
     // IOTAModuleNotifier90
     Procedure BeforeRename(Const OldFileName, NewFileName: String);
     Procedure AfterRename(Const OldFileName, NewFileName: String);
+    // General Properties
+    (**
+      A property the exposes to this class and descendants an interface for notifying the module notifier
+      collections of a change of module name.
+      @precon  None.
+      @postcon Returns the IDINRenameModule reference.
+      @return  an IDINModuleNotifierList
+    **)
+    Property RenameModule : IDINModuleNotifierList Read FModuleNotiferList;
   Public
+    Constructor Create(Const strNotifier, strFileName: String;
+      Const iNotification : TDGHIDENotification; Const RenameModule: IDINModuleNotifierList);
+        Reintroduce; Overload;
   End;
 
 Implementation
 
 Uses
+  {$IFDEF DEBUG}
+  CodeSiteLogging,
+  {$ENDIF}
   SysUtils;
 
 (**
@@ -67,6 +83,9 @@ Begin
         ExtractFileName(NewFileName)
       ])
   );
+  FileName := NewFileName;
+  If Assigned(RenameModule) Then
+    RenameModule.Rename(OldFileName, NewFileName);
 End;
 
 (**
@@ -130,6 +149,28 @@ Function TDNModuleNotifier.CheckOverwrite: Boolean;
 Begin
   Result := True;
   DoNotification(Format('(%s).CheckOverwrite = Result: True', [ExtractFileName(FileName)]));
+End;
+
+(**
+
+  A constructor for the TDNModuleNotfier class.
+
+  @precon  None.
+  @postcon Initialises the module.
+
+  @param   strNotifier   as a String as a constant
+  @param   strFileName   as a String as a constant
+  @param   iNotification as a TDGHIDENotification as a constant
+  @param   RenameModule  as an IDINModuleNotifierList as a constant
+
+**)
+Constructor TDNModuleNotifier.Create(Const strNotifier, strFileName: String;
+  Const iNotification: TDGHIDENotification; Const RenameModule: IDINModuleNotifierList);
+
+Begin
+  {$IFDEF DEBUG}CodeSite.TraceMethod(Self, 'Create', tmoTiming);{$ENDIF}
+  Inherited Create(strNotifier, strFileName, iNotification);
+  FModuleNotiferList := RenameModule;
 End;
 
 (**
@@ -220,3 +261,4 @@ Begin
 End;
 
 End.
+

@@ -43,7 +43,8 @@ uses
   DGHIDENotifiersModuleNotifications in '..\Source\DGHIDENotifiersModuleNotifications.pas',
   DGHIDENotifiersProjectNotifications in '..\Source\DGHIDENotifiersProjectNotifications.pas',
   DGHIDENotifiersFormNotifications in '..\Source\DGHIDENotifiersFormNotifications.pas',
-  DGHIDENotifiersMessageTokens in '..\Source\DGHIDENotifiersMessageTokens.pas';
+  DGHIDENotifiersMessageTokens in '..\Source\DGHIDENotifiersMessageTokens.pas',
+  DGHIDENotifiersModuleNotiferCollection in '..\Source\DGHIDENotifiersModuleNotiferCollection.pas';
 
 {$R *.res}
 

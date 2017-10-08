@@ -6,7 +6,7 @@
 
   @Author  David Hoyle
   @Version 1.0
-  @Date    11 Jul 2017
+  @Date    29 Sep 2017
 
 **)
 Unit DGHIDENotifiersMainUnit;
@@ -27,6 +27,9 @@ Exports
 Implementation
 
 Uses
+  {$IFDEF DEBUG}
+  CodeSiteLogging,
+  {$ENDIF}
   DGHIDENotifiersWizard,
   DGHIDENotificationTypes;
 
@@ -41,6 +44,7 @@ Uses
 Procedure Register;
 
 Begin
+  {$IFDEF DEBUG}CodeSite.TraceMethod('Register', tmoTiming);{$ENDIF}
   RegisterPackageWizard(TDGHIDENotifiersWizard.Create('IOTAWizard', '', dinWizard));
 End;
 
@@ -62,8 +66,10 @@ Function InitWizard(Const BorlandIDEServices: IBorlandIDEServices;
   Var Terminate: TWizardTerminateProc): Boolean; StdCall; //FI:O804
 
 Begin
+  {$IFDEF DEBUG}CodeSite.TraceMethod('InitWizard', tmoTiming);{$ENDIF}
   Result := BorlandIDEServices <> Nil;
   RegisterProc(TDGHIDENotifiersWizard.Create('IOTAWizard', '', dinWizard));
 End;
 
 End.
+

@@ -5,7 +5,7 @@
 
   @Author  David Hoyle
   @Version 1.0
-  @Date    11 Jul 2017
+  @Date    30 Sep 2017
 
 **)
 Unit DGHIDENotificationTypes;
@@ -54,18 +54,27 @@ Type
   Public
     Constructor Create(Const strNotifier, strFileName : String; Const iNotification : TDGHIDENotification);
       Virtual;
+    Destructor Destroy; Override;
     // TInterfaceObject
     Procedure AfterConstruction; Override;
     Procedure BeforeDestruction; Override;
     (**
-      A property to read and write the module file name to the notifier knows the file name it is
+      A property to read and write the module file name so the notifier knows the file name it is
       associated with.
-      @note    Must be set once the notifier is created.
       @precon  None.
       @postcon Returns the filename of the module associated with the notifier.
       @return  a String
     **)
     Property FileName : String Read FFileName Write FFileName;
+  End;
+
+  (** This interface allows a module notifier to have the indexed file renamed for removing the
+      notifier from the IDE. **)
+  IDINModuleNotifierList = Interface
+  ['{60E0D688-F529-4798-A06C-C283F800B7FE}']
+    Procedure Add(Const strFileName : String; Const iIndex : Integer);
+    Function  Remove(Const strFileName: String): Integer;
+    Procedure Rename(Const strOldFileName, strNewFileName : String);
   End;
 
 Const
@@ -110,6 +119,9 @@ Const
 Implementation
 
 Uses
+  {$IFDEF DEBUG}
+  CodeSiteLogging,
+  {$ENDIF}
   SysUtils,
   DGHDockableIDENotificationsForm;
 
@@ -186,10 +198,26 @@ End;
 Constructor TDGHNotifierObject.Create(Const strNotifier, strFileName : String; Const iNotification : TDGHIDENotification);
 
 Begin
+  {$IFDEF DEBUG}CodeSite.TraceMethod(Self, 'Create', tmoTiming);{$ENDIF}
   Inherited Create;
   FNotifier := strNotifier;
   FFileName := strFileName;
   FNotification := iNotification;
+End;
+
+(**
+
+  A destructor for the TDGHNotifierObject class.
+
+  @precon  None.
+  @postcon Does nothing.
+
+**)
+Destructor TDGHNotifierObject.Destroy;
+
+Begin
+  {$IFDEF DEBUG}CodeSite.TraceMethod(Self, 'Destroy', tmoTiming);{$ENDIF}
+  Inherited Destroy;
 End;
 
 (**
@@ -258,3 +286,5 @@ Begin
 End;
 
 End.
+
+

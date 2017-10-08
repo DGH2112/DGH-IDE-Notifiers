@@ -5,7 +5,7 @@
 
   @Author  David Hoyle
   @Version 1.0
-  @Date    15 Jul 2017
+  @Date    29 Sep 2017
 
 **)
 Unit DGHIDENotifiersMessageTokens;
@@ -157,7 +157,7 @@ End;
 
 **)
 Procedure TDNMessageTokenizer.AddToken(Const strToken : String; Const eTokenType : TDNTokenType;
-  Const iPosition : Integer);
+  Const iPosition : Integer); //FI:O804
 
 {$IFDEF REGULAREXPRESSIONS}
 Var

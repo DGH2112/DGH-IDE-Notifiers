@@ -5,7 +5,7 @@
 
   @Author  David Hoyle
   @Version 1.0
-  @Date    15 Sep 2017
+  @Date    29 Sep 2017
 
 **)
 Unit DGHIDENotifiersProjectNotifications;
@@ -88,6 +88,8 @@ Begin
   DoNotification(Format('(%s).ModuleRenamed = AOldFileName: %s, ANewFileName: %s',
     [FileName, ExtractFileName(AOldFileName), ExtractFileName(ANewFileName)]));
   FileName := ANewFileName;
+  If Assigned(RenameModule) Then
+    RenameModule.Rename(AOldFileName, ANewFileName);
 End;
 
 End.

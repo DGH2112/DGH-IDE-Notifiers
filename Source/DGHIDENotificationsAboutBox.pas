@@ -5,7 +5,7 @@
 
   @Author  David Hoyle
   @Version 1.0
-  @Date    09 Jul 2017
+  @Date    29 Sep 2017
 
 **)
 Unit DGHIDENotificationsAboutBox;
@@ -20,6 +20,9 @@ Interface
 Implementation
 
 Uses
+  {$IFDEF DEBUG}
+  CodeSiteLogging,
+  {$ENDIF}
   ToolsAPI,
   SysUtils,
   Windows,
@@ -51,6 +54,7 @@ Var
   bmSplashScreen : HBITMAP;
 
 Begin //FI:W519
+  {$IFDEF DEBUG}CodeSite.TraceMethod('AddAboutBoxEntry', tmoTiming);{$ENDIF}
   {$IFDEF D2005}
   BuildNumber(iMajor, iMinor, iBugFix, iBuild);
   bmSplashScreen := LoadBitmap(hInstance, 'DGHIDENotificationsSplashScreenBitMap48x48');
@@ -76,6 +80,7 @@ End;
 Procedure RemoveAboutBoxEntry;
 
 Begin //FI:W519
+  {$IFDEF DEBUG}CodeSite.TraceMethod('RemoveAboutBoxEntry', tmoTiming);{$ENDIF}
   {$IFDEF D2010}
   If iAboutPlugin > iWizardFailState Then
     (BorlandIDEServices As IOTAAboutBoxServices).RemovePluginInfo(iAboutPlugin);
@@ -83,3 +88,4 @@ Begin //FI:W519
 End;
 
 End.
+

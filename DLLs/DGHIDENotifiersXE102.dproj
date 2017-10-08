@@ -115,6 +115,7 @@
         <DCCReference Include="..\Source\DGHIDENotifiersProjectNotifications.pas"/>
         <DCCReference Include="..\Source\DGHIDENotifiersFormNotifications.pas"/>
         <DCCReference Include="..\Source\DGHIDENotifiersMessageTokens.pas"/>
+        <DCCReference Include="..\Source\DGHIDENotifiersModuleNotiferCollection.pas"/>
         <RcCompile Include="..\DGHIDENotITHVerInfo.RC">
             <Form>DGHIDENotITHVerInfo.res</Form>
         </RcCompile>
