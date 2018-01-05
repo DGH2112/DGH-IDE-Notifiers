@@ -44,7 +44,18 @@ uses
   DGHIDENotifiersProjectNotifications in '..\Source\DGHIDENotifiersProjectNotifications.pas',
   DGHIDENotifiersFormNotifications in '..\Source\DGHIDENotifiersFormNotifications.pas',
   DGHIDENotifiersMessageTokens in '..\Source\DGHIDENotifiersMessageTokens.pas',
-  DGHIDENotifiersModuleNotiferCollection in '..\Source\DGHIDENotifiersModuleNotiferCollection.pas';
+  DGHIDENotifiersModuleNotiferCollection in '..\Source\DGHIDENotifiersModuleNotiferCollection.pas',
+  VirtualTrees.Actions in '..\..\..\Library\Virtual Treeview 6.5.0\Source\VirtualTrees.Actions.pas',
+  VirtualTrees.Classes in '..\..\..\Library\Virtual Treeview 6.5.0\Source\VirtualTrees.Classes.pas',
+  VirtualTrees.ClipBoard in '..\..\..\Library\Virtual Treeview 6.5.0\Source\VirtualTrees.ClipBoard.pas',
+  VirtualTrees.Export in '..\..\..\Library\Virtual Treeview 6.5.0\Source\VirtualTrees.Export.pas',
+  VirtualTrees in '..\..\..\Library\Virtual Treeview 6.5.0\Source\VirtualTrees.pas',
+  VirtualTrees.StyleHooks in '..\..\..\Library\Virtual Treeview 6.5.0\Source\VirtualTrees.StyleHooks.pas',
+  VirtualTrees.Utils in '..\..\..\Library\Virtual Treeview 6.5.0\Source\VirtualTrees.Utils.pas',
+  VirtualTrees.WorkerThread in '..\..\..\Library\Virtual Treeview 6.5.0\Source\VirtualTrees.WorkerThread.pas',
+  VTAccessibility in '..\..\..\Library\Virtual Treeview 6.5.0\Source\VTAccessibility.pas',
+  VTAccessibilityFactory in '..\..\..\Library\Virtual Treeview 6.5.0\Source\VTAccessibilityFactory.pas',
+  VTHeaderPopup in '..\..\..\Library\Virtual Treeview 6.5.0\Source\VTHeaderPopup.pas';
 
 {$R *.res}
 

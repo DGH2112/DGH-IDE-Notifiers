@@ -36,16 +36,13 @@ Uses
   ComCtrls,
   ActnList,
   ImgList,
-  {$IFDEF DXE70}
-  Actions,
-  {$ENDIF}
   DGHIDENotificationTypes,
   VirtualTrees,
   {$IFDEF REGULAREXPRESSIONS}
   RegularExpressions,
   {$ENDIF}
   Generics.Collections,
-  ExtCtrls;
+  ExtCtrls, System.Actions, System.ImageList;
 
 Type
   (** This record describes the message information to be stored. **)
@@ -129,7 +126,7 @@ Type
     Procedure LogViewGetText(Sender: TBaseVirtualTree; Node: PVirtualNode; Column: TColumnIndex;
       TextType: TVSTTextType; Var CellText: String);
     Procedure LogViewGetImageIndex(Sender: TBaseVirtualTree; Node: PVirtualNode; Kind: TVTImageKind;
-      Column: TColumnIndex; Var Ghosted: Boolean; Var ImageIndex: Integer);
+      Column: TColumnIndex; Var Ghosted: Boolean; Var ImageIndex: TImageIndex);
     Procedure LogViewAfterCellPaint(Sender: TBaseVirtualTree; TargetCanvas: TCanvas; Node: PVirtualNode;
       Column: TColumnIndex; CellRect: TRect);
     Procedure LogViewKeyPress(Sender : TObject; Var Key : Char);
@@ -730,7 +727,7 @@ End;
 **)
 Procedure TfrmDockableIDENotifications.LogViewGetImageIndex(Sender: TBaseVirtualTree;
   Node: PVirtualNode; Kind: TVTImageKind; Column: TColumnIndex; Var Ghosted: Boolean;
-  Var ImageIndex: Integer);
+  Var ImageIndex: TImageIndex);
 
 Var
   NodeData : PTreeNodeData;

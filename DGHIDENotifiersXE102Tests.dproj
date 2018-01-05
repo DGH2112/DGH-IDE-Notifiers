@@ -1,7 +1,7 @@
 ﻿<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
     <PropertyGroup>
         <ProjectGuid>{6EBCF63F-3722-4703-A92F-7B33EF4CC1C6}</ProjectGuid>
-        <ProjectVersion>18.2</ProjectVersion>
+        <ProjectVersion>18.3</ProjectVersion>
         <FrameworkType>None</FrameworkType>
         <MainSource>DGHIDENotifiersXE102Tests.dpr</MainSource>
         <Base>True</Base>

@@ -1,7 +1,7 @@
 ﻿<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
     <PropertyGroup>
         <ProjectGuid>{DCB54BDF-2ED8-4BC8-A266-A47825BBE161}</ProjectGuid>
-        <ProjectVersion>18.2</ProjectVersion>
+        <ProjectVersion>18.3</ProjectVersion>
         <FrameworkType>VCL</FrameworkType>
         <MainSource>DGHIDENotifiersXE102.dpr</MainSource>
         <Base>True</Base>
@@ -116,6 +116,17 @@
         <DCCReference Include="..\Source\DGHIDENotifiersFormNotifications.pas"/>
         <DCCReference Include="..\Source\DGHIDENotifiersMessageTokens.pas"/>
         <DCCReference Include="..\Source\DGHIDENotifiersModuleNotiferCollection.pas"/>
+        <DCCReference Include="..\..\..\Library\Virtual Treeview 6.5.0\Source\VirtualTrees.Actions.pas"/>
+        <DCCReference Include="..\..\..\Library\Virtual Treeview 6.5.0\Source\VirtualTrees.Classes.pas"/>
+        <DCCReference Include="..\..\..\Library\Virtual Treeview 6.5.0\Source\VirtualTrees.ClipBoard.pas"/>
+        <DCCReference Include="..\..\..\Library\Virtual Treeview 6.5.0\Source\VirtualTrees.Export.pas"/>
+        <DCCReference Include="..\..\..\Library\Virtual Treeview 6.5.0\Source\VirtualTrees.pas"/>
+        <DCCReference Include="..\..\..\Library\Virtual Treeview 6.5.0\Source\VirtualTrees.StyleHooks.pas"/>
+        <DCCReference Include="..\..\..\Library\Virtual Treeview 6.5.0\Source\VirtualTrees.Utils.pas"/>
+        <DCCReference Include="..\..\..\Library\Virtual Treeview 6.5.0\Source\VirtualTrees.WorkerThread.pas"/>
+        <DCCReference Include="..\..\..\Library\Virtual Treeview 6.5.0\Source\VTAccessibility.pas"/>
+        <DCCReference Include="..\..\..\Library\Virtual Treeview 6.5.0\Source\VTAccessibilityFactory.pas"/>
+        <DCCReference Include="..\..\..\Library\Virtual Treeview 6.5.0\Source\VTHeaderPopup.pas"/>
         <RcCompile Include="..\DGHIDENotITHVerInfo.RC">
             <Form>DGHIDENotITHVerInfo.res</Form>
         </RcCompile>

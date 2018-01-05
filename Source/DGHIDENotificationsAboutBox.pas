@@ -5,7 +5,7 @@
 
   @Author  David Hoyle
   @Version 1.0
-  @Date    29 Sep 2017
+  @Date    05 Jan 2018
 
 **)
 Unit DGHIDENotificationsAboutBox;
@@ -63,7 +63,7 @@ Begin //FI:W519
       Application.Title]),
     'An IDE expert to log IDE notifications.',
     bmSplashScreen,
-    False,
+    {$IFDEF DEBUG} True {$ELSE} False {$ENDIF},
     Format(strSplashScreenBuild, [iMajor, iMinor, iBugfix, iBuild]),
     Format('SKU Build %d.%d.%d.%d', [iMajor, iMinor, iBugfix, iBuild]));
   {$ENDIF}

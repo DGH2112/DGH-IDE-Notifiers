@@ -5,7 +5,7 @@
 
   @Author  David Hoyle
   @Version 1.0
-  @Date    29 Sep 2017
+  @Date    05 Jan 2018
 
 **)
 Unit DGHIDENotificationsSplashScreen;
@@ -58,7 +58,7 @@ Begin //FI:W519
     Format(strSplashScreenName, [iMajor, iMinor, Copy(strRevision, iBugFix + 1, 1),
       Application.Title]),
     bmSplashScreen,
-    False,
+    {$IFDEF DEBUG} True {$ELSE} False {$ENDIF},
     Format(strSplashScreenBuild, [iMajor, iMinor, iBugfix, iBuild]), ''
     );
   {$ENDIF}
