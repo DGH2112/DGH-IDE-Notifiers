@@ -5,7 +5,7 @@
 
   @Author  David Hoyle
   @Version 1.0
-  @Date    29 Sep 2017
+  @Date    05 Jan 2018
 
 **)
 Unit DGHIDENotifiersProjectNotifications;
@@ -48,8 +48,11 @@ Uses
 **)
 Procedure TDNProjectNotifier.ModuleAdded(Const AFileName: String);
 
+ResourceString
+  strModuleAdded = '(%s).ModuleAdded = AFileName: %s';
+
 Begin
-  DoNotification(Format('(%s).ModuleAdded = AFileName: %s', [FileName,
+  DoNotification(Format(strModuleAdded, [FileName,
     ExtractFileName(AFileName)]));
 End;
 
@@ -66,8 +69,11 @@ End;
 **)
 Procedure TDNProjectNotifier.ModuleRemoved(Const AFileName: String);
 
+ResourceString
+  strModuleRemoved = '(%s).ModuleRemoved = AFileName: %s';
+
 Begin
-  DoNotification(Format('(%s).ModuleRemoved = AFileName: %s', [FileName,
+  DoNotification(Format(strModuleRemoved, [FileName,
     ExtractFileName(AFileName)]));
 End;
 
@@ -84,8 +90,11 @@ End;
 **)
 Procedure TDNProjectNotifier.ModuleRenamed(Const AOldFileName, ANewFileName: String);
 
+ResourceString
+  strModuleRenamed = '(%s).ModuleRenamed = AOldFileName: %s, ANewFileName: %s';
+
 Begin
-  DoNotification(Format('(%s).ModuleRenamed = AOldFileName: %s, ANewFileName: %s',
+  DoNotification(Format(strModuleRenamed,
     [FileName, ExtractFileName(AOldFileName), ExtractFileName(ANewFileName)]));
   FileName := ANewFileName;
   If Assigned(RenameModule) Then

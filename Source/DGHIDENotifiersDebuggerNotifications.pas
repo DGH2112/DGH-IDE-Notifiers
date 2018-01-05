@@ -6,7 +6,7 @@
 
   @Author  David Hoyle
   @Version 1.0
-  @Date    06 Jan 2017
+  @Date    05 Jan 2018
 
 **)
 Unit DGHIDENotifiersDebuggerNotifications;
@@ -55,14 +55,19 @@ Uses
   @precon  None.
   @postcon The breakpoint filename is returned.
 
+  @nocheck MissingCONSTInParam
+  
   @param   Breakpoint as an IOTABreakpoint
   @return  a String
 
 **)
 Function GetBreakpointFileName(Breakpoint : IOTABreakpoint) : String;
 
+ResourceString
+  strNoBreakpoint = '(no breakpoint)';
+
 Begin
-  Result := '(no breakpoint)';
+  Result := strNoBreakpoint;
   If Breakpoint <> Nil Then
     Result := ExtractFileName(Breakpoint.FileName);
 End;
@@ -74,6 +79,8 @@ End;
   @precon  None.
   @postcon The breakpoint line number is returned.
 
+  @nocheck MissingCONSTInParam
+  
   @param   Breakpoint as an IOTABreakpoint
   @return  an Integer
 
@@ -93,14 +100,19 @@ End;
   @precon  None.
   @postcon the executable filename is returned.
 
+  @nocheck MissingCONSTInParam
+  
   @param   Process as an IOTAProcess
   @return  a String
 
 **)
 Function GetProcessEXEName(Process : IOTAProcess) : String;
 
+ResourceString
+  strNoProcess = '(no process)';
+
 Begin
-  Result := '(no process)';
+  Result := strNoProcess;
   If Process <> Nil Then
     Result := ExtractFileName(Process.ExeName);
 End;
@@ -121,10 +133,13 @@ End;
 Function TDGHNotificationsDebuggerNotifier.BeforeProgramLaunch(
   Const Project: IOTAProject): Boolean;
 
+ResourceString
+  strBeforeProgramLaunch = '90.BeforeProgramLaunch = Project: %s, Result: True';
+
 Begin
   Result := True;
   DoNotification(Format(
-    '90.BeforeProgramLaunch = Project: %s, Result: True', [GetProjectFileName(Project)]));
+    strBeforeProgramLaunch, [GetProjectFileName(Project)]));
 End;
 
 (**
@@ -139,9 +154,12 @@ End;
 **)
 Procedure TDGHNotificationsDebuggerNotifier.BreakpointAdded(Const Breakpoint : IOTABreakpoint);
 
+ResourceString
+  strBreakpointAdded = '.BreakpointAdded = Breakpoint: %s @ %d';
+
 Begin
   DoNotification(
-    Format('.BreakpointAdded = Breakpoint: %s @ %d', [GetBreakpointFileName(Breakpoint),
+    Format(strBreakpointAdded, [GetBreakpointFileName(Breakpoint),
       GetBreakPointLineNumber(Breakpoint)])
   );
 End;
@@ -158,9 +176,12 @@ End;
 **)
 Procedure TDGHNotificationsDebuggerNotifier.BreakpointChanged(Const Breakpoint : IOTABreakpoint);
 
+ResourceString
+  strBreakpointChanged = '.BreakpointChanged = Breakpoint: %s @ %d';
+
 Begin
   DoNotification(
-    Format('.BreakpointChanged = Breakpoint: %s @ %d', [GetBreakpointFileName(Breakpoint),
+    Format(strBreakpointChanged, [GetBreakpointFileName(Breakpoint),
       GetBreakPointLineNumber(Breakpoint)])
   );
 End;
@@ -177,9 +198,12 @@ End;
 **)
 Procedure TDGHNotificationsDebuggerNotifier.BreakpointDeleted(Const Breakpoint : IOTABreakpoint);
 
+ResourceString
+  strBreakpointDeleted = '.BreakpointDeleted = Breakpoint: %s @ %d';
+
 Begin
   DoNotification(
-    Format('.BreakpointDeleted = Breakpoint: %s @ %d', [GetBreakpointFileName(Breakpoint),
+    Format(strBreakpointDeleted, [GetBreakpointFileName(Breakpoint),
       GetBreakPointLineNumber(Breakpoint)])
   );
 End;
@@ -196,10 +220,13 @@ End;
 **)
 Procedure TDGHNotificationsDebuggerNotifier.CurrentProcessChanged(Const Process: IOTAProcess);
 
+ResourceString
+  strCurrentProcessChanged = '90.CurrentProcessChanged = Process: %s';
+
 Begin
   DoNotification(
     Format(
-      '90.CurrentProcessChanged = Process: %s',
+      strCurrentProcessChanged,
       [GetProcessExeName(Process)]
     )
   );
@@ -215,8 +242,11 @@ End;
 **)
 Procedure TDGHNotificationsDebuggerNotifier.DebuggerOptionsChanged;
 
+ResourceString
+  strDebuggerOptionsChanged = '100.DebuggerOptionsChanged';
+
 Begin
-  DoNotification('100.DebuggerOptionsChanged');
+  DoNotification(strDebuggerOptionsChanged);
 End;
 
 (**
@@ -231,10 +261,13 @@ End;
 **)
 Procedure TDGHNotificationsDebuggerNotifier.ProcessCreated(Const Process: IOTAProcess);
 
+ResourceString
+  strProcessCreated = '90.ProcessCreated = Process: %s';
+
 Begin
   DoNotification(
     Format(
-      '90.ProcessCreated = Process: %s',
+      strProcessCreated,
       [GetProcessExeName(Process)]
     )
   );
@@ -252,32 +285,16 @@ End;
 **)
 Procedure TDGHNotificationsDebuggerNotifier.ProcessDestroyed(Const Process: IOTAProcess);
 
+ResourceString
+  strProcessDestroyed = '90.ProcessDestroyed = Process: %s';
+
 Begin
   DoNotification(
     Format(
-      '90.ProcessDestroyed = Process: %s',
+      strProcessDestroyed,
       [GetProcessExeName(Process)]
     )
   );
-End;
-
-(**
-
-  This method is called when the debugged process has had memory changed (i.e. updates a raw CPU
-  value or evaluated variable).
-
-  @precon  None.
-  @postcon EIPChanged will be true for instances where the Instruction Pointer has been changed (
-           think Set Next Statement).
-
-  @param   EIPChanged as a Boolean
-
-**)
-Procedure TDGHNotificationsDebuggerNotifier.ProcessMemoryChanged(EIPChanged: Boolean);
-
-Begin
-  DoNotification(Format('110.DebuggerOptionsChanged',
-    [strBoolean[EIPChanged]]));
 End;
 
 (**
@@ -291,8 +308,35 @@ End;
 **)
 Procedure TDGHNotificationsDebuggerNotifier.ProcessMemoryChanged;
 
+ResourceString
+  strProcessMemoryChanged = '90.ProcessMemoryChanged';
+
 Begin
-  DoNotification('90.ProcessMemoryChanged');
+  DoNotification(strProcessMemoryChanged);
+End;
+
+(**
+
+  This method is called when the debugged process has had memory changed (i.e. updates a raw CPU
+  value or evaluated variable).
+
+  @precon  None.
+  @postcon EIPChanged will be true for instances where the Instruction Pointer has been changed (
+           think Set Next Statement).
+
+  @nocheck MissingCONSTInParam
+  
+  @param   EIPChanged as a Boolean
+
+**)
+Procedure TDGHNotificationsDebuggerNotifier.ProcessMemoryChanged(EIPChanged: Boolean);
+
+ResourceString
+  strDebuggerOptionsChanged = '110.DebuggerOptionsChanged';
+
+Begin
+  DoNotification(Format(strDebuggerOptionsChanged,
+    [strBoolean[EIPChanged]]));
 End;
 
 (**
@@ -307,10 +351,13 @@ End;
 **)
 Procedure TDGHNotificationsDebuggerNotifier.ProcessStateChanged(Const Process: IOTAProcess);
 
+ResourceString
+  strProcessStateChanged = '90.ProcessStateChanged = Process: %s';
+
 Begin
   DoNotification(
     Format(
-      '90.ProcessStateChanged = Process: %s',
+      strProcessStateChanged,
       [GetProcessExeName(Process)]
     )
   );

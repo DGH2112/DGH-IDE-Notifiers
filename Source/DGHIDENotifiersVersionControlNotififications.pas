@@ -6,7 +6,7 @@
 
   @Author  David Hoyle
   @Version 1.0
-  @Date    06 Jan 2017
+  @Date    05 Jan 2018
 
 **)
 Unit DGHIDENotifiersVersionControlNotififications;
@@ -69,10 +69,13 @@ Uses
 Function TDGHIDENotificationsVersionControlNotifier.AddNewProject(
   Const Project: IOTAProject): Boolean;
 
+ResourceString
+  strAddNewProjectProject = '.AddNewProject = Project: %s';
+
 Begin
   Result := True;
   DoNotification(
-    Format('.AddNewProject = Project: %s', [GetProjectFileName(Project)])
+    Format(strAddNewProjectProject, [GetProjectFileName(Project)])
   );
 End;
 
@@ -91,10 +94,13 @@ End;
 Function TDGHIDENotificationsVersionControlNotifier.CheckoutProject(
   Var ProjectName: String): Boolean;
 
+ResourceString
+  strCheckOutProjectProjectName = '150.CheckOutProject = ProjectName: %s';
+
 Begin
   Result := True;
   DoNotification(
-    Format('150.CheckOutProject = ProjectName: %s', [ProjectName])
+    Format(strCheckOutProjectProjectName, [ProjectName])
   );
 End;
 
@@ -113,30 +119,15 @@ End;
 Function TDGHIDENotificationsVersionControlNotifier.CheckoutProjectWithConnection(
   Var ProjectName: String; Const Connection: String): Boolean;
 
+ResourceString
+  strCheckOutProjectWithConnectionProjectNameConnection = '150.CheckOutProjectWithConnection = ' + 
+    'ProjectName: %s, Connection: %s';
+
 Begin
   Result := True;
   DoNotification(
-    Format('150.CheckOutProjectWithConnection = ProjectName: %s, Connection: %s',
+    Format(strCheckOutProjectWithConnectionProjectNameConnection,
     [ProjectName, Connection])
-  );
-End;
-
-(**
-
-  This is a getter method for the Name property.
-
-  @precon  None.
-  @postcon Should return the name of the version control system.
-
-  @return  a String
-
-**)
-Function TDGHIDENotificationsVersionControlNotifier.GetName: String;
-
-Begin
-  Result := 'DGHIDENotifier';
-  DoNotification(
-    Format('.GetName = %s', [Result])
   );
 End;
 {$ENDIF}
@@ -153,12 +144,43 @@ End;
 **)
 Function TDGHIDENotificationsVersionControlNotifier.GetDisplayName: String;
 
+ResourceString
+  strDGHIDENotifier = 'DGH IDE Notifier';
+  strGetDisplayName = '.GetDisplayName = %s';
+
 Begin
-  Result := 'DGH IDE Notifier';
+  Result := strDGHIDENotifier;
   DoNotification(
-    Format('.GetDisplayName = %s', [Result])
+    Format(strGetDisplayName, [Result])
   );
 End;
+
+{$IFDEF DXE00}
+(**
+
+  This is a getter method for the Name property.
+
+  @precon  None.
+  @postcon Should return the name of the version control system.
+
+  @return  a String
+
+**)
+Function TDGHIDENotificationsVersionControlNotifier.GetName: String;
+
+ResourceString
+  strGetName = '.GetName = %s';
+
+Const
+  strDGHIDENotifier = 'DGHIDENotifier';
+
+Begin
+  Result := strDGHIDENotifier;
+  DoNotification(
+    Format(strGetName, [Result])
+  );
+End;
+{$ENDIF}
 
 (**
 
@@ -175,10 +197,13 @@ End;
 Function TDGHIDENotificationsVersionControlNotifier.IsFileManaged(
   Const Project: IOTAProject; Const IdentList: TStrings): Boolean;
 
+ResourceString
+  strIsFileManagedProjectIdentList = '.IsFileManaged = Project: %s, IdentList: %s';
+
 Begin
   Result := False;
   DoNotification(
-    Format('.IsFileManaged = Project: %s, IdentList: %s', [
+    Format(strIsFileManagedProjectIdentList, [
       GetProjectFileName(Project), IdentList.Text])
   );
 End;
@@ -191,6 +216,9 @@ End;
   @postcon Provides access to the project, a list of the selected file identifiers and the
            project manager menu.
 
+  @nohint  ProjectManagerMenuList
+  @nocheck MissingCONSTINParam
+
   @param   Project                as an IOTAProject as a constant
   @param   IdentList              as a TStrings as a constant
   @param   ProjectManagerMenuList as an IInterfaceList as a constant
@@ -199,13 +227,20 @@ End;
 **)
 Procedure TDGHIDENotificationsVersionControlNotifier.ProjectManagerMenu(
   Const Project: IOTAProject; Const IdentList: TStrings;
-  Const ProjectManagerMenuList: IInterfaceList; IsMultiSelect: Boolean);
+  Const ProjectManagerMenuList: IInterfaceList; IsMultiSelect: Boolean); //FI:O804
+
+ResourceString
+  strIsFileManaged = '150.IsFileManaged = Project: %s, IdentList: %s, ProjectManagerMenuList: %s, ' + 
+    'IsMultiSelect: %s';
+
+Const
+  strProjectManagerMenuList = 'ProjectManagerMenuList';
 
 Begin
   If Project = Nil Then
   DoNotification(
-    Format('150.IsFileManaged = Project: %s, IdentList: %s, ProjectManagerMenuList: %s, IsMultiSelect: %s',
-    [GetProjectFileName(Project), IdentList.Text, 'ProjectManagerMenuList',
+    Format(strIsFileManaged,
+    [GetProjectFileName(Project), IdentList.Text, strProjectManagerMenuList,
       strBoolean[IsMultiSelect]])
   );
 End;

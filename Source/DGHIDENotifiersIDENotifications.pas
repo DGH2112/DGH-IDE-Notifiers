@@ -6,7 +6,7 @@
 
   @Author  David Hoyle
   @Version 1.0
-  @Date    01 Oct 2017
+  @Date    05 Jan 2018
 
 **)
 Unit DGHIDENotifiersIDENotifications;
@@ -51,7 +51,7 @@ Type
 Implementation
 
 Uses
-  {$IFDEF DEBUG}
+  {$IFDEF CODESITE}
   CodeSiteLogging,
   {$ENDIF}
   SysUtils,
@@ -67,25 +67,24 @@ Uses
   This method is called after a project is compiled.
 
   @precon  None.
-  @postcon Provides access to the Project, whether the compilation was successful and whether it was
-           invoked by CodeInsight.
+  @postcon Provides access whether the compilation was successful.
 
-  @param   Project       as an IOTAProject as a constant
+  @nocheck MissingCONSTInParam
+  
   @param   Succeeded     as a Boolean
-  @param   IsCodeInsight as a Boolean
 
 **)
-Procedure TDGHNotificationsIDENotifier.AfterCompile(Const Project: IOTAProject;
-  Succeeded, IsCodeInsight: Boolean);
+Procedure TDGHNotificationsIDENotifier.AfterCompile(Succeeded: Boolean);
+
+ResourceString
+  strAfterCompile = '.AfterCompile = Succeeded: %s';
 
 Begin
   DoNotification(
     Format(
-    '80.AfterCompile = Project: %s, Succeeded: %s, IsCodeInsight: %s',
+    strAfterCompile,
       [
-        GetProjectFileName(Project),
-        strBoolean[Succeeded],
-        strBoolean[IsCodeInsight]
+        strBoolean[Succeeded]
       ])
   );
 End;
@@ -98,16 +97,21 @@ End;
   @postcon Provides access whether the compilation was successful and whether it was invoked by
            CodeInsight.
 
+  @nocheck MissingCONSTInParam
+  
   @param   Succeeded     as a Boolean
   @param   IsCodeInsight as a Boolean
 
 **)
 Procedure TDGHNotificationsIDENotifier.AfterCompile(Succeeded, IsCodeInsight: Boolean);
 
+ResourceString
+  strAfterCompile = '50.AfterCompile = Succeeded: %s, IsCodeInsight: %s';
+
 Begin
   DoNotification(
     Format(
-    '50.AfterCompile = Succeeded: %s, IsCodeInsight: %s',
+    strAfterCompile,
       [
         strBoolean[Succeeded],
         strBoolean[IsCodeInsight]
@@ -120,19 +124,30 @@ End;
   This method is called after a project is compiled.
 
   @precon  None.
-  @postcon Provides access whether the compilation was successful.
+  @postcon Provides access to the Project, whether the compilation was successful and whether it was
+           invoked by CodeInsight.
 
+  @nocheck MissingCONSTInParam
+  
+  @param   Project       as an IOTAProject as a constant
   @param   Succeeded     as a Boolean
+  @param   IsCodeInsight as a Boolean
 
 **)
-Procedure TDGHNotificationsIDENotifier.AfterCompile(Succeeded: Boolean);
+Procedure TDGHNotificationsIDENotifier.AfterCompile(Const Project: IOTAProject;
+  Succeeded, IsCodeInsight: Boolean);
+
+ResourceString
+  strAfterCompile = '80.AfterCompile = Project: %s, Succeeded: %s, IsCodeInsight: %s';
 
 Begin
   DoNotification(
     Format(
-    '.AfterCompile = Succeeded: %s',
+    strAfterCompile,
       [
-        strBoolean[Succeeded]
+        GetProjectFileName(Project),
+        strBoolean[Succeeded],
+        strBoolean[IsCodeInsight]
       ])
   );
 End;
@@ -145,6 +160,8 @@ End;
   @postcon Provides access to the Project being compiled and whether the compile was invoked by
            CodeInsight.
 
+  @nocheck MissingCONSTInParam
+  
   @param   Project       as an IOTAProject as a constant
   @param   IsCodeInsight as a Boolean
   @param   Cancel        as a Boolean as a reference
@@ -153,13 +170,44 @@ End;
 Procedure TDGHNotificationsIDENotifier.BeforeCompile(Const Project: IOTAProject;
   IsCodeInsight: Boolean; Var Cancel: Boolean);
 
+ResourceString
+  strBeforeCompile = '50.BeforeCompile = Project: %s, IsCodeInsight: %s, Cancel: %s';
+
 Begin
   DoNotification(
     Format(
-    '50.BeforeCompile = Project: %s, IsCodeInsight: %s, Cancel: %s',
+    strBeforeCompile,
       [
         GetProjectFileName(Project),
         strBoolean[IsCodeInsight],
+        strBoolean[Cancel]
+      ])
+  );
+End;
+
+(**
+
+  This method is called before a project is compiled.
+
+  @precon  None.
+  @postcon Provides access to the Project being compiled.
+
+  @param   Project       as an IOTAProject as a constant
+  @param   Cancel        as a Boolean as a reference
+
+**)
+Procedure TDGHNotificationsIDENotifier.BeforeCompile(Const Project: IOTAProject;
+  Var Cancel: Boolean);
+
+ResourceString
+  strBeforeCompile = '.BeforeCompile = Project: %s, Cancel: %s';
+
+Begin
+  DoNotification(
+    Format(
+    strBeforeCompile,
+      [
+        GetProjectFileName(Project),
         strBoolean[Cancel]
       ])
   );
@@ -181,7 +229,7 @@ Constructor TDGHNotificationsIDENotifier.Create(Const strNotifier, strFileName :
   Const iNotification : TDGHIDENotification);
 
 Begin
-  {$IFDEF DEBUG}CodeSite.TraceMethod('TDGHNotificationsIDENotifier.Create', tmoTiming);{$ENDIF}
+  {$IFDEF CODESITE}CodeSite.TraceMethod('TDGHNotificationsIDENotifier.Create', tmoTiming);{$ENDIF}
   Inherited Create(strNotifier, strFileName, iNotification);
   FModuleNotifiers := TDINModuleNotifierList.Create;
   FProjectNotifiers := TDINModuleNotifierList.Create;
@@ -198,33 +246,8 @@ End;
 Destructor TDGHNotificationsIDENotifier.Destroy;
 
 Begin
-  {$IFDEF DEBUG}CodeSite.TraceMethod('TDGHNotificationsIDENotifier.Destroy', tmoTiming);{$ENDIF}
+  {$IFDEF CODESITE}CodeSite.TraceMethod('TDGHNotificationsIDENotifier.Destroy', tmoTiming);{$ENDIF}
   Inherited Destroy;
-End;
-
-(**
-
-  This method is called before a project is compiled.
-
-  @precon  None.
-  @postcon Provides access to the Project being compiled.
-
-  @param   Project       as an IOTAProject as a constant
-  @param   Cancel        as a Boolean as a reference
-
-**)
-Procedure TDGHNotificationsIDENotifier.BeforeCompile(Const Project: IOTAProject;
-  Var Cancel: Boolean);
-
-Begin
-  DoNotification(
-    Format(
-    '.BeforeCompile = Project: %s, Cancel: %s',
-      [
-        GetProjectFileName(Project),
-        strBoolean[Cancel]
-      ])
-  );
 End;
 
 (**
@@ -234,6 +257,8 @@ End;
   @precon  None.
   @postcon Provides access to the Filename and the operation that occurred.
 
+  @nocheck MissingCONSTInParam
+  
   @param   NotifyCode as a TOTAFileNotification
   @param   FileName   as a String as a constant
   @param   Cancel     as a Boolean as a reference
@@ -256,6 +281,11 @@ Const
     'ofnActiveProjectChanged' {$IFDEF DXE80},
     'ofnProjectOpenedFromTemplate' {$ENDIF}
   );
+  strIOTAProjectNotifier = 'IOTAProjectNotifier';
+  strIOTAModuleNotifier = 'IOTAModuleNotifier';
+
+ResourceString
+  strFileNotificationNotify = '.FileNotification = NotifyCode: %s, FileName: %s, Cancel: %s';
 
 Var
   MS : IOTAModuleServices;
@@ -268,7 +298,7 @@ Var
 Begin
   DoNotification(
     Format(
-    '.FileNotification = NotifyCode: %s, FileName: %s, Cancel: %s',
+    strFileNotificationNotify,
       [
         strNotifyCode[NotifyCode],
         ExtractFileName(FileName),
@@ -282,12 +312,12 @@ Begin
           M := MS.OpenModule(FileName);
           If Supports(M, IOTAProject, P) Then
             Begin
-              MN := TDNProjectNotifier.Create('IOTAProjectNotifier', FileName, dinProjectNotifier,
+              MN := TDNProjectNotifier.Create(strIOTAProjectNotifier, FileName, dinProjectNotifier,
                 FProjectNotifiers);
               FProjectNotifiers.Add(FileName, M.AddNotifier(MN));
             End Else
             Begin
-              MN := TDNModuleNotifier.Create('IOTAModuleNotifier', FileName, dinModuleNotifier,
+              MN := TDNModuleNotifier.Create(strIOTAModuleNotifier, FileName, dinModuleNotifier,
                 FModuleNotifiers);
               FModuleNotifiers.Add(FileName, M.AddNotifier(MN));
             End;

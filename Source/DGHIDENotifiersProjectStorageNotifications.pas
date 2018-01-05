@@ -5,7 +5,7 @@
 
   @Author  David Hoyle
   @Version 1.0
-  @Date    09 Jul 2017
+  @Date    05 Jan 2018
 
 **)
 Unit DGHIDENotifiersProjectStorageNotifications;
@@ -46,14 +46,19 @@ Uses
   @precon  None.
   @postcon the module filename is returned.
 
+  @nocheck  MissingCONSTInParam
+  
   @param   Module as an IOTAModule
   @return  a String
 
 **)
 Function GetModuleFileName(Module : IOTAModule) : String;
 
+ResourceString
+  strNoModule = '(no module)';
+
 Begin
-  Result := '(no module)';
+  Result := strNoModule;
   If Module <> Nil Then
     Result := ExtractFileName(Module.FileName);
 End;
@@ -73,9 +78,12 @@ End;
 Procedure TDGHNotificationsProjectFileStorageNotifier.CreatingProject(
   Const ProjectOrGroup: IOTAModule);
 
+ResourceString
+  strCreatingProjectProjectOrGroup = '.CreatingProject = ProjectOrGroup: %s';
+
 Begin
   DoNotification(
-    Format('.CreatingProject = ProjectOrGroup: %s', [GetModuleFileName(ProjectOrGroup)]));
+    Format(strCreatingProjectProjectOrGroup, [GetModuleFileName(ProjectOrGroup)]));
 End;
 
 (**
@@ -90,9 +98,15 @@ End;
 **)
 Function TDGHNotificationsProjectFileStorageNotifier.GetName: String;
 
+ResourceString
+  strGetNameResult = '.GetName = Result: %s';
+
+Const
+  strTDGHNotificationsProjectFileStorageNotifier = 'TDGHNotifications.ProjectFileStorageNotifier';
+
 Begin
-  Result := 'TDGHNotifications.ProjectFileStorageNotifier';
-  DoNotification(Format('.GetName = Result: %s', [Result]));
+  Result := strTDGHNotificationsProjectFileStorageNotifier;
+  DoNotification(Format(strGetNameResult, [Result]));
 End;
 
 (**
@@ -108,9 +122,12 @@ End;
 Procedure TDGHNotificationsProjectFileStorageNotifier.ProjectClosing(
   Const ProjectOrGroup: IOTAModule);
 
+ResourceString
+  strProjectClosingProjectOrGroup = '.ProjectClosing = ProjectOrGroup: %s';
+
 Begin
   DoNotification(
-    Format('.ProjectClosing = ProjectOrGroup: %s', [GetModuleFileName(ProjectOrGroup)]));
+    Format(strProjectClosingProjectOrGroup, [GetModuleFileName(ProjectOrGroup)]));
 End;
 
 (**
@@ -120,6 +137,8 @@ End;
   @precon  None.
   @postcon Provides access to the project module and an XML Node in the project file.
 
+  @nohint  Node
+  
   @param   ProjectOrGroup as an IOTAModule as a constant
   @param   Node           as an IXMLNode as a constant
 
@@ -127,9 +146,12 @@ End;
 Procedure TDGHNotificationsProjectFileStorageNotifier.ProjectLoaded(
   Const ProjectOrGroup: IOTAModule; Const Node: IXMLNode); //FI:O804
 
+ResourceString
+  strProjectLoadedProjectOrGroupNodeIXMLNode = '.ProjectLoaded = ProjectOrGroup: %s, Node: IXMLNode';
+
 Begin
   DoNotification(
-    Format('.ProjectLoaded = ProjectOrGroup: %s, Node: IXMLNode',
+    Format(strProjectLoadedProjectOrGroupNodeIXMLNode,
       [GetModuleFileName(ProjectOrGroup)]));
 End;
 
@@ -140,6 +162,8 @@ End;
   @precon  None.
   @postcon Provides access to the project module and an XML Node in the project file.
 
+  @nohint  Node
+  
   @param   ProjectOrGroup as an IOTAModule as a constant
   @param   Node           as an IXMLNode as a constant
 
@@ -147,9 +171,12 @@ End;
 Procedure TDGHNotificationsProjectFileStorageNotifier.ProjectSaving(
   Const ProjectOrGroup: IOTAModule; Const Node: IXMLNode); //FI:O804
 
+ResourceString
+  strProjectSavingProjectOrGroupNodeIXMLNode = '.ProjectSaving = ProjectOrGroup: %s, Node: IXMLNode';
+
 Begin
   DoNotification(
-    Format('.ProjectSaving = ProjectOrGroup: %s, Node: IXMLNode',
+    Format(strProjectSavingProjectOrGroupNodeIXMLNode,
       [GetModuleFileName(ProjectOrGroup)]));
 End;
 

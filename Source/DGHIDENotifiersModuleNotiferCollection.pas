@@ -4,7 +4,7 @@
 
   @Author  David Hoyle
   @Version 1.0
-  @Date    30 Sep 2017
+  @Date    05 Jan 2018
 
 **)
 Unit DGHIDENotifiersModuleNotiferCollection;
@@ -59,7 +59,7 @@ Type
 Implementation
 
 Uses
-  {$IFDEF DEBUG}
+  {$IFDEF CODESITE}
   CodeSiteLogging,
   {$ENDIF}
   SysUtils;
@@ -80,7 +80,7 @@ Constructor TDINModuleNotifierList.TModuleNotifierRec.Create(Const strFileName: 
   Const iIndex: Integer {: @ debug Const eNotifierType: TDGHIDENotification } );
 
 Begin
-  {$IFDEF DEBUG}CodeSite.TraceMethod('TDINModuleNotifierList.TModuleNotifierRec.Create', tmoTiming);{$ENDIF}
+  {$IFDEF CODESITE}CodeSite.TraceMethod('TDINModuleNotifierList.TModuleNotifierRec.Create', tmoTiming);{$ENDIF}
   FFileName := strFileName;
   FNotifierIndex := iIndex;
 End;
@@ -101,7 +101,7 @@ End;
 Procedure TDINModuleNotifierList.Add(Const strFileName: String; Const iIndex: Integer);
 
 Begin
-  {$IFDEF DEBUG}CodeSite.TraceMethod(Self, 'Add', tmoTiming);{$ENDIF}
+  {$IFDEF CODESITE}CodeSite.TraceMethod(Self, 'Add', tmoTiming);{$ENDIF}
   FModuleNotifierList.Add(TModuleNotifierRec.Create(strFileName, iIndex));
 End;
 
@@ -116,7 +116,7 @@ End;
 Constructor TDINModuleNotifierList.Create;
 
 Begin
-  {$IFDEF DEBUG}CodeSite.TraceMethod(Self, 'Create', tmoTiming);{$ENDIF}
+  {$IFDEF CODESITE}CodeSite.TraceMethod(Self, 'Create', tmoTiming);{$ENDIF}
   FModuleNotifierList := TList<TModuleNotifierRec>.Create;
 End;
 
@@ -134,10 +134,10 @@ Var
   iModule : Integer;
 
 Begin
-  {$IFDEF DEBUG}CodeSite.TraceMethod(Self, 'Destroy', tmoTiming);{$ENDIF}
+  {$IFDEF CODESITE}CodeSite.TraceMethod(Self, 'Destroy', tmoTiming);{$ENDIF}
   For iModule := FModuleNotifierList.Count - 1 DownTo 0 Do
     Begin
-      {$IFDEF DEBUG}
+      {$IFDEF CODESITE}
       CodeSite.Send('Destroy(Orphaned Module Notifier)', FModuleNotifierList[iModule].FileName);
       {$ENDIF}
       FModuleNotifierList.Delete(iModule);
@@ -168,7 +168,7 @@ Var
   R: TModuleNotifierRec;
 
 Begin
-  {$IFDEF DEBUG}CodeSite.TraceMethod(Self, 'Find', tmoTiming);{$ENDIF}
+  {$IFDEF CODESITE}CodeSite.TraceMethod(Self, 'Find', tmoTiming);{$ENDIF}
   Result := False;
   iIndex := -1;
   For iModNotIdx := 0 To FModuleNotifierList.Count - 1 Do
@@ -201,7 +201,7 @@ Var
   R : TModuleNotifierRec;
 
 Begin
-  {$IFDEF DEBUG}CodeSite.TraceMethod(Self, 'Remove', tmoTiming);{$ENDIF}
+  {$IFDEF CODESITE}CodeSite.TraceMethod(Self, 'Remove', tmoTiming);{$ENDIF}
   Result := -1;
   If Find(strFileName, iModuleIndex) Then
     Begin
@@ -230,7 +230,7 @@ Var
   R : TModuleNotifierRec;
 
 Begin
-  {$IFDEF DEBUG}CodeSite.TraceMethod(Self, 'Rename', tmoTiming);{$ENDIF}
+  {$IFDEF CODESITE}CodeSite.TraceMethod(Self, 'Rename', tmoTiming);{$ENDIF}
   If Find(strOldFileName, iIndex) Then
     Begin
       R := FModuleNotifierList[iIndex];

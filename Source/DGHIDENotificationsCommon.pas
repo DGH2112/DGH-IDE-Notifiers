@@ -5,7 +5,7 @@
 
   @Author  David Hoyle
   @Version 1.0
-  @Date    09 Jul 2017
+  @Date    05 Jan 2018
 
 **)
 Unit DGHIDENotificationsCommon;
@@ -16,7 +16,7 @@ Uses
   ToolsAPI;
 
   Procedure BuildNumber(var iMajor, iMinor, iBugFix, iBuild : Integer);
-  Function GetProjectFileName(Project : IOTAProject) : String;
+  Function GetProjectFileName(Const Project : IOTAProject) : String;
 
 {$IFNDEF _FIXINSIGHT_}
 Resourcestring
@@ -30,7 +30,7 @@ Resourcestring
 
 Const
   (** A constant to define the failed state for a notifier not installed. **)
-  iWizardFailState = -1; //FI:O803
+  iWizardFailState = -1;
 {$ENDIF}
 
 Implementation
@@ -54,6 +54,10 @@ Uses
 **)
 Procedure BuildNumber(var iMajor, iMinor, iBugFix, iBuild : Integer);
 
+Const
+  iWordMask = $FFFF;
+  iBitShift = 16;
+
 Var
   VerInfoSize: DWORD;
   VerInfo: Pointer;
@@ -72,13 +76,10 @@ Begin
       Try
         GetFileVersionInfo(strBuffer, 0, VerInfoSize, VerInfo);
         VerQueryValue(VerInfo, '\', Pointer(VerValue), VerValueSize);
-        With VerValue^ Do
-          Begin
-            iMajor := dwFileVersionMS shr 16;
-            iMinor := dwFileVersionMS and $FFFF;
-            iBugFix := dwFileVersionLS shr 16;
-            iBuild := dwFileVersionLS and $FFFF;
-          End;
+        iMajor := VerValue^.dwFileVersionMS shr iBitShift;
+        iMinor := VerValue^.dwFileVersionMS and iWordMask;
+        iBugFix := VerValue^.dwFileVersionLS shr iBitShift;
+        iBuild := VerValue^.dwFileVersionLS and iWordMask;
       Finally
         FreeMem(VerInfo, VerInfoSize);
       End;
@@ -92,14 +93,17 @@ End;
   @precon  None.
   @postcon The filename of the project is returned if valid.
 
-  @param   Project as an IOTAProject
+  @param   Project as an IOTAProject as a constant
   @return  a String
 
 **)
-Function GetProjectFileName(Project : IOTAProject) : String;
+Function GetProjectFileName(Const Project : IOTAProject) : String;
+
+ResourceString
+  strNoProject = '(no project)';
 
 Begin
-  Result := '(no project)';
+  Result := strNoProject;
   If Project <> Nil Then
     Result := ExtractFileName(Project.FileName);
 End;

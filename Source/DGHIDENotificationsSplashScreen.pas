@@ -19,7 +19,7 @@ Interface
 Implementation
 
 Uses
-  {$IFDEF DEBUG}
+  {$IFDEF CODESITE}
   CodeSiteLogging,
   {$ENDIF}
   ToolsAPI,
@@ -38,6 +38,13 @@ Uses
 **)
 Procedure AddSplashScreen;
 
+Const
+  {$IFDEF D2007}
+  strDGHIDENotificationsSplashScreenBitMap = 'DGHIDENotificationsSplashScreenBitMap24x24';
+  {$ELSE}
+  strDGHIDENotificationsSplashScreenBitMap = 'DGHIDENotificationsSplashScreenBitMap48x48';
+  {$ENDIF}
+
 Var
   iMajor : Integer;
   iMinor : Integer;
@@ -45,15 +52,11 @@ Var
   iBuild : Integer;
   bmSplashScreen : HBITMAP;
 
-Begin //FI:W519
-  {$IFDEF DEBUG}CodeSite.TraceMethod('AddSplashScreen', tmoTiming);{$ENDIF}
+Begin
+  {$IFDEF CODESITE}CodeSite.TraceMethod('AddSplashScreen', tmoTiming);{$ENDIF}
   {$IFDEF D2005}
   BuildNumber(iMajor, iMinor, iBugFix, iBuild);
-  {$IFDEF D2007}
-  bmSplashScreen := LoadBitmap(hInstance, 'DGHIDENotificationsSplashScreenBitMap24x24');
-  {$ELSE}
-  bmSplashScreen := LoadBitmap(hInstance, 'DGHIDENotificationsSplashScreenBitMap48x48');
-  {$ENDIF}
+  bmSplashScreen := LoadBitmap(hInstance, strDGHIDENotificationsSplashScreenBitMap);
   (SplashScreenServices As IOTASplashScreenServices).AddPluginBitmap(
     Format(strSplashScreenName, [iMajor, iMinor, Copy(strRevision, iBugFix + 1, 1),
       Application.Title]),

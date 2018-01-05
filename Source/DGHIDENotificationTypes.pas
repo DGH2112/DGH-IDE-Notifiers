@@ -5,7 +5,7 @@
 
   @Author  David Hoyle
   @Version 1.0
-  @Date    30 Sep 2017
+  @Date    05 Jan 2018
 
 **)
 Unit DGHIDENotificationTypes;
@@ -119,7 +119,7 @@ Const
 Implementation
 
 Uses
-  {$IFDEF DEBUG}
+  {$IFDEF CODESITE}
   CodeSiteLogging,
   {$ENDIF}
   SysUtils,
@@ -135,9 +135,12 @@ Uses
 **)
 Procedure TDGHNotifierObject.AfterConstruction;
 
+ResourceString
+  strAfterConstruction = '%s.AfterConstruction';
+
 Begin
   Inherited AfterConstruction;
-  DoNotification(Format('%s.AfterConstruction', [GetFileName]));
+  DoNotification(Format(strAfterConstruction, [GetFileName]));
 End;
 
 (**
@@ -150,8 +153,11 @@ End;
 **)
 Procedure TDGHNotifierObject.AfterSave;
 
+ResourceString
+  strAfterSave = '%s.AfterSave';
+
 Begin
-  DoNotification(Format('%s.AfterSave', [GetFileName]));
+  DoNotification(Format(strAfterSave, [GetFileName]));
 End;
 
 (**
@@ -164,9 +170,12 @@ End;
 **)
 Procedure TDGHNotifierObject.BeforeDestruction;
 
+ResourceString
+  strBeforeDestruction = '%s.BeforeDestruction';
+
 Begin
   Inherited BeforeDestruction;
-  DoNotification(Format('%s.BeforeDestruction', [GetFileName]));
+  DoNotification(Format(strBeforeDestruction, [GetFileName]));
 End;
 
 (**
@@ -179,8 +188,11 @@ End;
 **)
 Procedure TDGHNotifierObject.BeforeSave;
 
+ResourceString
+  strBeforeSave = '%s.BeforeSave';
+
 Begin
-  DoNotification(Format('%s.BeforeSave', [GetFileName]));
+  DoNotification(Format(strBeforeSave, [GetFileName]));
 End;
 
 (**
@@ -198,7 +210,7 @@ End;
 Constructor TDGHNotifierObject.Create(Const strNotifier, strFileName : String; Const iNotification : TDGHIDENotification);
 
 Begin
-  {$IFDEF DEBUG}CodeSite.TraceMethod(Self, 'Create', tmoTiming);{$ENDIF}
+  {$IFDEF CODESITE}CodeSite.TraceMethod(Self, 'Create', tmoTiming);{$ENDIF}
   Inherited Create;
   FNotifier := strNotifier;
   FFileName := strFileName;
@@ -216,7 +228,7 @@ End;
 Destructor TDGHNotifierObject.Destroy;
 
 Begin
-  {$IFDEF DEBUG}CodeSite.TraceMethod(Self, 'Destroy', tmoTiming);{$ENDIF}
+  {$IFDEF CODESITE}CodeSite.TraceMethod(Self, 'Destroy', tmoTiming);{$ENDIF}
   Inherited Destroy;
 End;
 
@@ -230,8 +242,11 @@ End;
 **)
 Procedure TDGHNotifierObject.Destroyed;
 
+ResourceString
+  strDestroyed = '%s.Destroyed';
+
 Begin
-  DoNotification(Format('%s.Destroyed', [GetFileName]));
+  DoNotification(Format(strDestroyed, [GetFileName]));
 End;
 
 (**
@@ -281,8 +296,11 @@ End;
 **)
 Procedure TDGHNotifierObject.Modified;
 
+ResourceString
+  strModified = '%s.Modified';
+
 Begin
-  DoNotification(Format('%s.Modified', [GetFileName]));
+  DoNotification(Format(strModified, [GetFileName]));
 End;
 
 End.

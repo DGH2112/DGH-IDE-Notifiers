@@ -6,7 +6,7 @@
 
   @Author  David Hoyle
   @Version 1.0
-  @Date    06 Jan 2017
+  @Date    05 Jan 2018
 
 **)
 Unit DGHIDENotifiersIDEInsightNotifications;
@@ -54,13 +54,18 @@ Uses
   @precon  None.
   @postcon Provides a context.
 
+  @nocheck MissingCONSTInParam
+  
   @param   Context as an IInterface
 
 **)
 Procedure TDGHIDENotificationsIDEInsightNotifier.ReleaseItems(Context: IInterface);
 
+ResourceString
+  strReleaseItems = '.ReleaseItems = Context: %x';
+
 Begin
-  DoNotification(Format('.ReleaseItems = Context: %x', [Integer(Context)]));
+  DoNotification(Format(strReleaseItems, [Integer(Context)]));
 End;
 {$ENDIF}
 
@@ -71,6 +76,8 @@ End;
   @precon  None.
   @postcon Povides access to the IDE Inight services and an reserved context value.
 
+  @nocheck MissingCONSTInParam
+  
   @param   IDEInsightService as an IOTAIDEInsightService
   @param   Context           as an IInterface
 
@@ -78,9 +85,12 @@ End;
 Procedure TDGHIDENotificationsIDEInsightNotifier.RequestingItems(
   IDEInsightService: IOTAIDEInsightService; Context: IInterface);
 
+ResourceString
+  strRequestingItems = '.RequestingItems = IDEInsightService.CategoryCount: %s, Context: %x';
+
 Begin
   DoNotification(
-    Format('.RequestingItems = IDEInsightService.CategoryCount: %s, Context: %x', [
+    Format(strRequestingItems, [
       IDEInsightService.CategoryCount, Integer(Context)])
     );
 End;

@@ -5,7 +5,7 @@
 
   @Author  David Hoyle
   @Version 1.0
-  @Date    29 Sep 2017
+  @Date    05 Jan 2018
 
 **)
 Unit DGHIDENotifiersMessageTokens;
@@ -31,11 +31,11 @@ Type
   (** A record to describe the information required to be stored for a message token. **)
   TDNToken = Record
   Strict Private
-    //: @nohint
+    //: @nohints
     FToken      : String;
-    //: @nohint
+    //: @nohints
     FTokenType  : TDNTokenType;
-    //: @nohint
+    //: @nohints
     FRegExMatch : Boolean;
   Public
     Constructor Create(Const strToken : String; Const eTokenType : TDNTokenType;
@@ -146,6 +146,26 @@ End;
 
 (**
 
+  This method adds the passed token to the collection is it is not empty.
+
+  @precon  None.
+  @postcon The token is added to the collection if not empty.
+
+  @param   strToken   as a String as a constant
+  @param   eTokenType as a TDNTokenType as a constant
+  @param   boolMatch  as a Boolean as a constant
+
+**)
+Procedure TDNMessageTokenizer.AddToken(Const strToken: String; Const eTokenType: TDNTokenType;
+  Const boolMatch : Boolean);
+
+Begin
+  If Length(strToken) > 0 Then
+    FTokens.Add(TDNToken.Create(strToken, eTokenType, boolMatch));
+End;
+
+(**
+
   This method breaks down the token into sub tokens if it matches the search criteria.
 
   @precon  None.
@@ -203,26 +223,6 @@ Begin
       End Else
     {$ENDIF}
         AddToken(strToken, eTokenType, False);
-End;
-
-(**
-
-  This method adds the passed token to the collection is it is not empty.
-
-  @precon  None.
-  @postcon The token is added to the collection if not empty.
-
-  @param   strToken   as a String as a constant
-  @param   eTokenType as a TDNTokenType as a constant
-  @param   boolMatch  as a Boolean as a constant
-
-**)
-Procedure TDNMessageTokenizer.AddToken(Const strToken: String; Const eTokenType: TDNTokenType;
-  Const boolMatch : Boolean);
-
-Begin
-  If Length(strToken) > 0 Then
-    FTokens.Add(TDNToken.Create(strToken, eTokenType, boolMatch));
 End;
 
 (**

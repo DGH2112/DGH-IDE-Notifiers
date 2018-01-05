@@ -20,7 +20,7 @@ Interface
 Implementation
 
 Uses
-  {$IFDEF DEBUG}
+  {$IFDEF CODESITE}
   CodeSiteLogging,
   {$ENDIF}
   ToolsAPI,
@@ -46,6 +46,13 @@ Var
 **)
 Procedure AddAboutBoxEntry;
 
+Const
+  strSplashScreenResName = 'DGHIDENotificationsSplashScreenBitMap48x48';
+
+ResourceString
+  strIDEExpertToLogIDENotifications = 'An IDE expert to log IDE notifications.';
+  strSKUBuild = 'SKU Build %d.%d.%d.%d';
+
 Var
   iMajor : Integer;
   iMinor : Integer;
@@ -53,19 +60,19 @@ Var
   iBuild : Integer;
   bmSplashScreen : HBITMAP;
 
-Begin //FI:W519
-  {$IFDEF DEBUG}CodeSite.TraceMethod('AddAboutBoxEntry', tmoTiming);{$ENDIF}
+Begin
+  {$IFDEF CODESITE}CodeSite.TraceMethod('AddAboutBoxEntry', tmoTiming);{$ENDIF}
   {$IFDEF D2005}
   BuildNumber(iMajor, iMinor, iBugFix, iBuild);
-  bmSplashScreen := LoadBitmap(hInstance, 'DGHIDENotificationsSplashScreenBitMap48x48');
+  bmSplashScreen := LoadBitmap(hInstance, strSplashScreenResName);
   iAboutPlugin := (BorlandIDEServices As IOTAAboutBoxServices).AddPluginInfo(
     Format(strSplashScreenName, [iMajor, iMinor, Copy(strRevision, iBugFix + 1, 1),
       Application.Title]),
-    'An IDE expert to log IDE notifications.',
+    strIDEExpertToLogIDENotifications,
     bmSplashScreen,
     {$IFDEF DEBUG} True {$ELSE} False {$ENDIF},
     Format(strSplashScreenBuild, [iMajor, iMinor, iBugfix, iBuild]),
-    Format('SKU Build %d.%d.%d.%d', [iMajor, iMinor, iBugfix, iBuild]));
+    Format(strSKUBuild, [iMajor, iMinor, iBugfix, iBuild]));
   {$ENDIF}
 End;
 
@@ -79,8 +86,8 @@ End;
 **)
 Procedure RemoveAboutBoxEntry;
 
-Begin //FI:W519
-  {$IFDEF DEBUG}CodeSite.TraceMethod('RemoveAboutBoxEntry', tmoTiming);{$ENDIF}
+Begin
+  {$IFDEF CODESITE}CodeSite.TraceMethod('RemoveAboutBoxEntry', tmoTiming);{$ENDIF}
   {$IFDEF D2010}
   If iAboutPlugin > iWizardFailState Then
     (BorlandIDEServices As IOTAAboutBoxServices).RemovePluginInfo(iAboutPlugin);

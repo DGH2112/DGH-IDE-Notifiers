@@ -5,7 +5,7 @@
 
   @Author  David Hoyle
   @Version 1.0
-  @Date    01 Oct 2017
+  @Date    05 Jan 2018
 
 **)
 Unit DGHIDENotifiersModuleNotifications;
@@ -54,7 +54,7 @@ Type
 Implementation
 
 Uses
-  {$IFDEF DEBUG}
+  {$IFDEF CODESITE}
   CodeSiteLogging,
   {$ENDIF}
   SysUtils;
@@ -73,10 +73,13 @@ Uses
 **)
 Procedure TDNModuleNotifier.AfterRename(Const OldFileName, NewFileName: String);
 
+ResourceString
+  strAfterRename = '90(%s).AfterRename = OldFileName: %s, NewFileName: %s';
+
 Begin
   DoNotification(
     Format(
-    '90(%s).AfterRename = OldFileName: %s, NewFileName: %s',
+    strAfterRename,
       [
         ExtractFileName(FileName),
         ExtractFileName(OldFileName),
@@ -102,9 +105,12 @@ End;
 **)
 Function TDNModuleNotifier.AllowSave: Boolean;
 
+ResourceString
+  strAllowSave = '80(%s).AllowSave = Result: True';
+
 Begin
   Result := True;
-  DoNotification(Format('80(%s).AllowSave = Result: True', [ExtractFileName(FileName)]));
+  DoNotification(Format(strAllowSave, [ExtractFileName(FileName)]));
 End;
 
 (**
@@ -121,10 +127,13 @@ End;
 **)
 Procedure TDNModuleNotifier.BeforeRename(Const OldFileName, NewFileName: String);
 
+ResourceString
+  strBeforeRename = '90(%s).BeforeRename = OldFileName: %s, NewFileName: %s';
+
 Begin
   DoNotification(
     Format(
-    '90(%s).BeforeRename = OldFileName: %s, NewFileName: %s',
+    strBeforeRename,
       [
         ExtractFileName(FileName),
         ExtractFileName(OldFileName),
@@ -146,9 +155,12 @@ End;
 **)
 Function TDNModuleNotifier.CheckOverwrite: Boolean;
 
+ResourceString
+  strCheckOverwrite = '(%s).CheckOverwrite = Result: True';
+
 Begin
   Result := True;
-  DoNotification(Format('(%s).CheckOverwrite = Result: True', [ExtractFileName(FileName)]));
+  DoNotification(Format(strCheckOverwrite, [ExtractFileName(FileName)]));
 End;
 
 (**
@@ -168,7 +180,7 @@ Constructor TDNModuleNotifier.Create(Const strNotifier, strFileName: String;
   Const iNotification: TDGHIDENotification; Const RenameModule: IDINModuleNotifierList);
 
 Begin
-  {$IFDEF DEBUG}CodeSite.TraceMethod(Self, 'Create', tmoTiming);{$ENDIF}
+  {$IFDEF CODESITE}CodeSite.TraceMethod(Self, 'Create', tmoTiming);{$ENDIF}
   Inherited Create(strNotifier, strFileName, iNotification);
   FModuleNotiferList := RenameModule;
 End;
@@ -181,15 +193,20 @@ End;
   @precon  None.
   @postcon Returns an empty string but isn
 
+  @nocheck MissingCONSTInParam
+  
   @param   Index as an Integer
   @return  a String
 
 **)
 Function TDNModuleNotifier.GetOverwriteFileName(Index: Integer): String;
 
+ResourceString
+  strGetOverwriteFileName = '(%s).GetOverwriteFileName = Index: %d, Result: ''''';
+
 Begin
   Result := '';
-  DoNotification(Format('(%s).GetOverwriteFileName = Index: %d, Result: ''''', [
+  DoNotification(Format(strGetOverwriteFileName, [
     ExtractFileName(FileName), Index]));
 End;
 
@@ -207,9 +224,12 @@ End;
 **)
 Function TDNModuleNotifier.GetOverwriteFileNameCount: Integer;
 
+ResourceString
+  strGetOverwriteFileName = '(%s).GetOverwriteFileNameCount = Result: 0';
+
 Begin
   Result := 0;
-  DoNotification(Format('(%s).GetOverwriteFileNameCount = Result: 0', [ExtractFileName(FileName)]));
+  DoNotification(Format(strGetOverwriteFileName, [ExtractFileName(FileName)]));
 End;
 
 (**
@@ -224,10 +244,13 @@ End;
 **)
 Procedure TDNModuleNotifier.ModuleRenamed(Const NewName: String);
 
+ResourceString
+  strModuleRenamed = '80(%s).ModuleRenamed = NewName: %s';
+
 Begin
   DoNotification(
     Format(
-    '80(%s).ModuleRenamed = NewName: %s',
+    strModuleRenamed,
       [
         ExtractFileName(FileName),
         ExtractFileName(NewName)
@@ -249,10 +272,13 @@ End;
 **)
 Procedure TDNModuleNotifier.SetSaveFileName(Const FileName: String);
 
+ResourceString
+  strSetSaveFileName = '80(%s).SetSaveFileName = FileName: %s';
+
 Begin
   DoNotification(
     Format(
-    '80(%s).SetSaveFileName = FileName: %s',
+    strSetSaveFileName,
       [
         ExtractFileName(FileName),
         ExtractFileName(FileName)

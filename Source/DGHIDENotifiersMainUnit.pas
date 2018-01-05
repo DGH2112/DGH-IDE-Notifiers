@@ -6,7 +6,7 @@
 
   @Author  David Hoyle
   @Version 1.0
-  @Date    29 Sep 2017
+  @Date    05 Jan 2018
 
 **)
 Unit DGHIDENotifiersMainUnit;
@@ -16,7 +16,6 @@ Interface
 Uses
   ToolsAPI;
 
-Procedure Register;
 Function InitWizard(Const BorlandIDEServices: IBorlandIDEServices;
   RegisterProc: TWizardRegisterProc;
   Var Terminate: TWizardTerminateProc): Boolean; StdCall;
@@ -27,26 +26,11 @@ Exports
 Implementation
 
 Uses
-  {$IFDEF DEBUG}
+  {$IFDEF CODESITE}
   CodeSiteLogging,
   {$ENDIF}
   DGHIDENotifiersWizard,
   DGHIDENotificationTypes;
-
-(**
-
-  This method is required by the RAD Studio IDE in order to load the plugin as a package.
-
-  @precon  None.
-  @postcon Creates the plugin wizard.
-
-**)
-Procedure Register;
-
-Begin
-  {$IFDEF DEBUG}CodeSite.TraceMethod('Register', tmoTiming);{$ENDIF}
-  RegisterPackageWizard(TDGHIDENotifiersWizard.Create('IOTAWizard', '', dinWizard));
-End;
 
 (**
 
@@ -55,6 +39,9 @@ End;
   @precon  None.
   @postcon Creates the plugin.
 
+  @nocheck MissingCONSTInParam
+  @nohint  Terminate
+  
   @param   BorlandIDEServices as an IBorlandIDEServices as a constant
   @param   RegisterProc       as a TWizardRegisterProc
   @param   Terminate          as a TWizardTerminateProc as a reference
@@ -65,10 +52,13 @@ Function InitWizard(Const BorlandIDEServices: IBorlandIDEServices;
   RegisterProc: TWizardRegisterProc;
   Var Terminate: TWizardTerminateProc): Boolean; StdCall; //FI:O804
 
+Const
+  strIOTAWizard = 'IOTAWizard';
+
 Begin
-  {$IFDEF DEBUG}CodeSite.TraceMethod('InitWizard', tmoTiming);{$ENDIF}
+  {$IFDEF CODESITE}CodeSite.TraceMethod('InitWizard', tmoTiming);{$ENDIF}
   Result := BorlandIDEServices <> Nil;
-  RegisterProc(TDGHIDENotifiersWizard.Create('IOTAWizard', '', dinWizard));
+  RegisterProc(TDGHIDENotifiersWizard.Create(strIOTAWizard, '', dinWizard));
 End;
 
 End.

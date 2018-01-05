@@ -44,7 +44,7 @@
 
   @Author  David Hoyle
   @Version 1.0
-  @Date    29 Sep 2017
+  @Date    05 Jan 2018
 
 **)
 Unit DGHIDENotifiersWizard;
@@ -90,7 +90,7 @@ Type
 Implementation
 
 Uses
-  {$IFDEF DEBUG}
+  {$IFDEF CODESITE}
   CodeSiteLogging,
   {$ENDIF}
   SysUtils,
@@ -124,33 +124,43 @@ Uses
 Constructor TDGHIDENotifiersWizard.Create(Const strNotifier, strFileName : String;
   Const iNotification : TDGHIDENotification);
 
+Const
+  strIOTAIDENotifier = 'IOTAIDENotifier';
+  strIOTAVersionControlNotifier = 'IOTAVersionControlNotifier';
+  strIOTACompileNotifier = 'IOTACompileNotifier';
+  strIOTAIDEInsightNotifier = 'IOTAIDEInsightNotifier';
+  strIOTAMessageNotifier = 'IOTAMessageNotifier';
+  strIOTAProjectFileStorageNotifier = 'IOTAProjectFileStorageNotifier';
+  strINTAEditorServicesNotifier = 'INTAEditorServicesNotifier';
+  strIOTADebuggerNotifier = 'IOTADebuggerNotifier';
+
 Begin
-  {$IFDEF DEBUG}CodeSite.TraceMethod(Self, 'Create', tmoTiming);{$ENDIF}
-  Inherited Create('IOTAWizard', strFileName, dinWizard);
+  {$IFDEF CODESITE}CodeSite.TraceMethod(Self, 'Create', tmoTiming);{$ENDIF}
+  Inherited Create(strNotifier, strFileName, iNotification);
   AddSplashScreen;
   AddAboutBoxEntry;
   FIDENotifier := (BorlandIDEServices As IOTAServices).AddNotifier(
-    TDGHNotificationsIDENotifier.Create('IOTAIDENotifier', '', dinIDENotifier));
+    TDGHNotificationsIDENotifier.Create(strIOTAIDENotifier, '', dinIDENotifier));
   {$IFDEF D2010}
   FVersionControlNotifier := (BorlandIDEServices As IOTAVersionControlServices).AddNotifier(
-    TDGHIDENotificationsVersionControlNotifier.Create('IOTAVersionControlNotifier', '',
+    TDGHIDENotificationsVersionControlNotifier.Create(strIOTAVersionControlNotifier, '',
     dinVersionControlNotifier));
   FCompileNotifier := (BorlandIDEServices As IOTACompileServices).AddNotifier(
-    TDGHIDENotificationsCompileNotifier.Create('IOTACompileNotifier', '', dinCompileNotifier));
+    TDGHIDENotificationsCompileNotifier.Create(strIOTACompileNotifier, '', dinCompileNotifier));
   FIDEInsightNotifier := (BorlandIDEServices As IOTAIDEInsightService).AddNotifier(
-    TDGHIDENotificationsIDEInsightNotifier.Create('IOTAIDEInsightNotifier', '',
+    TDGHIDENotificationsIDEInsightNotifier.Create(strIOTAIDEInsightNotifier, '',
     dinIDEInsightNotifier));
   {$ENDIF}
   FMessageNotfier := (BorlandIDEServices As IOTAMessageServices).AddNotifier(
-    TDGHIDENotificationsMessageNotifier.Create('IOTAMessageNotifier', '', dinMessageNotifier));
+    TDGHIDENotificationsMessageNotifier.Create(strIOTAMessageNotifier, '', dinMessageNotifier));
   FProjectFileStorageNotifier := (BorlandIDEServices As IOTAProjectFileStorage).AddNotifier(
-    TDGHNotificationsProjectFileStorageNotifier.Create('IOTAProjectFileStorageNotifier', '',
+    TDGHNotificationsProjectFileStorageNotifier.Create(strIOTAProjectFileStorageNotifier, '',
     dinProjectFileStorageNotifier));
   FEditorNotifier := (BorlandIDEServices As IOTAEditorServices).AddNotifier(
-    TDGHNotificationsEditorNotifier.Create('INTAEditorServicesNotifier', '', dinEditorNotifier)
+    TDGHNotificationsEditorNotifier.Create(strINTAEditorServicesNotifier, '', dinEditorNotifier)
     );
   FDebuggerNotifier := (BorlandIDEServices As IOTADebuggerServices).AddNotifier(
-    TDGHNotificationsDebuggerNotifier.Create('IOTADebufferNotifier', '', dinDebuggerNotifier));
+    TDGHNotificationsDebuggerNotifier.Create(strIOTADebuggerNotifier, '', dinDebuggerNotifier));
   TfrmDockableIDENotifications.CreateDockableBrowser;
 End;
 
@@ -165,7 +175,7 @@ End;
 Destructor TDGHIDENotifiersWizard.Destroy;
 
 Begin
-  {$IFDEF DEBUG}CodeSite.TraceMethod(Self, 'Destroy', tmoTiming);{$ENDIF}
+  {$IFDEF CODESITE}CodeSite.TraceMethod(Self, 'Destroy', tmoTiming);{$ENDIF}
   If FIDENotifier > -1 Then
     (BorlandIDEServices As IOTAServices).RemoveNotifier(FIDENotifier);
   {$IFDEF D2010}
@@ -199,9 +209,12 @@ End;
 **)
 Procedure TDGHIDENotifiersWizard.Execute;
 
+Const
+  strIOTAWizardExecute = 'IOTAWizard.Execute';
+
 Begin
-  {$IFDEF DEBUG}CodeSite.TraceMethod(Self, 'Execute', tmoTiming);{$ENDIF}
-  DoNotification('IOTAWizard.Execute');
+  {$IFDEF CODESITE}CodeSite.TraceMethod(Self, 'Execute', tmoTiming);{$ENDIF}
+  DoNotification(strIOTAWizardExecute);
   TfrmDockableIDENotifications.ShowDockableBrowser;
 End;
 
@@ -217,9 +230,15 @@ End;
 **)
 Function TDGHIDENotifiersWizard.GetIDString: String;
 
+ResourceString
+  strIOTAWizardGetIDStringResult = 'IOTAWizard.GetIDString = Result: %s';
+
+Const
+  strDGHIDENotifiersDavidHoyle = 'DGHIDENotifiers.David Hoyle';
+
 Begin
-  Result := 'DGHIDENotifiers.David Hoyle';
-  DoNotification(Format('IOTAWizard.GetIDString = Result: %s', [Result]));
+  Result := strDGHIDENotifiersDavidHoyle;
+  DoNotification(Format(strIOTAWizardGetIDStringResult, [Result]));
 End;
 
 (**
@@ -234,9 +253,13 @@ End;
 **)
 Function TDGHIDENotifiersWizard.GetMenuText: String;
 
+ResourceString
+  strIDENotifiers = 'IDE Notifiers';
+  strIOTAMenuWizardGetMenuTextResult = 'IOTAMenuWizard.GetMenuText = Result: %s';
+
 Begin
-  Result := 'IDE Notifiers';
-  DoNotification(Format('IOTAMenuWizard.GetMenuText = Result: %s', [Result]));
+  Result := strIDENotifiers;
+  DoNotification(Format(strIOTAMenuWizardGetMenuTextResult, [Result]));
 End;
 
 (**
@@ -251,10 +274,16 @@ End;
 **)
 Function TDGHIDENotifiersWizard.GetName: String;
 
+ResourceString
+  strIOTAWizardGetNameResult = 'IOTAWizard.GetName = Result: %s';
+
+Const
+  strDGHIDENotifiers = 'DGHIDENotifiers';
+
 Begin
-  {$IFDEF DEBUG}CodeSite.TraceMethod(Self, 'GetName', tmoTiming);{$ENDIF}
-  Result := 'DGHIDENotifiers';
-  DoNotification(Format('IOTAWizard.GetName = Result: %s', [Result]));
+  {$IFDEF CODESITE}CodeSite.TraceMethod(Self, 'GetName', tmoTiming);{$ENDIF}
+  Result := strDGHIDENotifiers;
+  DoNotification(Format(strIOTAWizardGetNameResult, [Result]));
 End;
 
 (**
@@ -269,9 +298,12 @@ End;
 **)
 Function TDGHIDENotifiersWizard.GetState: TWizardState;
 
+ResourceString
+  strIOTAWizardGetStateResultWsEnabled = 'IOTAWizard.GetState = Result: [wsEnabled]';
+
 Begin
   Result := [wsEnabled];
-  DoNotification('IOTAWizard.GetState = Result: [wsEnabled]');
+  DoNotification(strIOTAWizardGetStateResultWsEnabled);
 End;
 
 End.

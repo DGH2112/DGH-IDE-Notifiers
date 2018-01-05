@@ -6,7 +6,7 @@
 
   @Author  David Hoyle
   @Version 1.0
-  @Date    06 Jan 2017
+  @Date    05 Jan 2018
 
 **)
 Unit DGHIDENotifiersCompileNotifications;
@@ -62,6 +62,8 @@ Const
   @precon  None.
   @postcon Outputs the projecy file name and whether the project compiled successfully.
 
+  @nocheck MissingCONSTInParam
+  
   @param   Project as an IOTAProject as a constant
   @param   Result  as a TOTACompileResult
 
@@ -69,9 +71,12 @@ Const
 Procedure TDGHIDENotificationsCompileNotifier.ProjectCompileFinished(
   Const Project: IOTAProject; Result: TOTACompileResult);
 
+ResourceString
+  strIOTACompileNotifier = 'IOTACompileNotifier.ProjectCompileFinished = Project: %s, Result: %s';
+
 Begin
   DoNotification(
-    Format('IOTACompileNotifier.ProjectCompileFinished = Project: %s, Result: %s', [
+    Format(strIOTACompileNotifier, [
       GetProjectFileName(Project), strCompileResult[Result]])
   );
 End;
@@ -83,6 +88,8 @@ End;
   @precon  None.
   @postcon Outputs the project file name and the mode of compilation.
 
+  @nocheck MissingCONSTInParam
+  
   @param   Project as an IOTAProject as a constant
   @param   Mode    as a TOTACompileMode
 
@@ -90,9 +97,13 @@ End;
 Procedure TDGHIDENotificationsCompileNotifier.ProjectCompileStarted(
   Const Project: IOTAProject; Mode: TOTACompileMode);
 
+ResourceString
+  strIOTACompileNotifierProjectCompileStarted = 'IOTACompileNotifier.ProjectCompileStarted = Project:' + 
+    ' %s, Mode: %s';
+
 Begin
   DoNotification(
-    Format('IOTACompileNotifier.ProjectCompileStarted = Project: %s, Mode: %s', [
+    Format(strIOTACompileNotifierProjectCompileStarted, [
       GetProjectFileName(Project), strCompileMode[Mode]])
   );
 End;
@@ -104,15 +115,21 @@ End;
   @precon  None.
   @postcon Outputs whether the compilation is successful.
 
+  @nocheck MissingCONSTInParam
+  
   @param   Result as a TOTACompileResult
 
 **)
 Procedure TDGHIDENotificationsCompileNotifier.ProjectGroupCompileFinished(
   Result: TOTACompileResult);
 
+ResourceString
+  strIOTACompileNotifierProjectGroupCompileFinished = 'IOTACompileNotifier.' + 
+    'ProjectGroupCompileFinished = Result: %s';
+
 Begin
   DoNotification(
-    Format('IOTACompileNotifier.ProjectGroupCompileFinished = Result: %s', [
+    Format(strIOTACompileNotifierProjectGroupCompileFinished, [
       strCompileResult[Result]])
   );
 End;
@@ -124,15 +141,21 @@ End;
   @precon  None.
   @postcon Outputs the mode of compilation.
 
+  @nocheck MissingCONSTInParam
+  
   @param   Mode as a TOTACompileMode
 
 **)
 Procedure TDGHIDENotificationsCompileNotifier.ProjectGroupCompileStarted(
   Mode: TOTACompileMode);
 
+ResourceString
+  strIOTACompileNotifierProjectGroupCompileStarted = 'IOTACompileNotifier.ProjectGroupCompileStarted ' + 
+    '= Mode: %s';
+
 Begin
   DoNotification(
-    Format('IOTACompileNotifier.ProjectGroupCompileStarted = Mode: %s', [
+    Format(strIOTACompileNotifierProjectGroupCompileStarted, [
       strCompileMode[Mode]])
   );
 End;

@@ -6,7 +6,7 @@
 
   @Author  David Hoyle
   @Version 1.0
-  @Date    06 Jan 2017
+  @Date    05 Jan 2018
 
 **)
 Unit DGHIDENotifiersMessageNotifications;
@@ -45,14 +45,19 @@ Uses
   @precon  None.
   @postcon The message group name is returned.
 
+  @nocheck MissingCONSTInParam
+  
   @param   Group as an IOTAMessageGroup
   @return  a String
 
 **)
 Function GetMessageGroupName(Group : IOTAMessageGroup) : String;
 
+ResourceString
+  strNoGroup = '(no group)';
+
 Begin
-  Result := '(no group)';
+  Result := strNoGroup;
   If Group <> Nil Then
     Result := Group.Name;
 End;
@@ -72,8 +77,11 @@ End;
 Procedure TDGHIDENotificationsMessageNotifier.MessageGroupAdded(
   Const Group: IOTAMessageGroup);
 
+ResourceString
+  strMessageGroupAdded = '.MessageGroupAdded = Group: %s';
+
 Begin
-  DoNotification(Format('.MessageGroupAdded = Group: %s', [GetMessageGroupName(Group)]));
+  DoNotification(Format(strMessageGroupAdded, [GetMessageGroupName(Group)]));
 End;
 
 (**
@@ -89,8 +97,11 @@ End;
 Procedure TDGHIDENotificationsMessageNotifier.MessageGroupDeleted(
   Const Group: IOTAMessageGroup);
 
+ResourceString
+  strMessageGroupDeleted = '.MessageGroupDeleted = Group: %s';
+
 Begin
-  DoNotification(Format('.MessageGroupDeleted = Group: %s', [GetMessageGroupName(Group)]));
+  DoNotification(Format(strMessageGroupDeleted, [GetMessageGroupName(Group)]));
 End;
 
 (**
@@ -101,6 +112,8 @@ End;
   @postcon provides access to the pop menu to be displayed so that you can add items and the
            message group.
 
+  @nocheck MissingCONSTInParam
+  
   @param   Menu         as a TPopupMenu
   @param   MessageGroup as an IOTAMessageGroup as a constant
   @param   LineRef      as a Pointer
@@ -109,8 +122,11 @@ End;
 Procedure TDGHIDENotificationsMessageNotifier.MessageViewMenuShown(Menu: TPopupMenu;
   Const MessageGroup: IOTAMessageGroup; LineRef: Pointer);
 
+ResourceString
+  strMessageViewMenuShown = '.MessageViewMenuShown = Menu: %s, MessageGroup: %s, LineRef: %p';
+
 Begin
-  DoNotification(Format('.MessageViewMenuShown = Menu: %s, MessageGroup: %s, LineRef: %p', [
+  DoNotification(Format(strMessageViewMenuShown, [
     Menu.Name,
     GetMessageGroupName(MessageGroup),
     LineRef
