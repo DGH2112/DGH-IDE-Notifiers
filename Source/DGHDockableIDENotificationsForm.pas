@@ -5,7 +5,7 @@
 
   @Author  David Hoyle
   @Version 1.0
-  @date    05 Jan 2018
+  @date    04 Jan 2020
 
 **)
 Unit DGHDockableIDENotificationsForm;
@@ -42,7 +42,11 @@ Uses
   RegularExpressions,
   {$ENDIF}
   Generics.Collections,
-  ExtCtrls, System.Actions, System.ImageList;
+  ExtCtrls,
+  Themes,
+  System.Actions,
+  System.ImageList,
+  DGHIDENotifier.Interfaces;
 
 Type
   (** This record describes the message information to be stored. **)
@@ -96,11 +100,18 @@ Type
     lblLogRetention: TLabel;
     edtLogRetention: TEdit;
     udLogRetention: TUpDown;
+    LogView: TVirtualStringTree;
     Procedure actCaptureExecute(Sender: TObject);
     Procedure actCaptureUpdate(Sender: TObject);
     Procedure actClearExecute(Sender: TObject);
+    Procedure LogViewGetText(Sender: TBaseVirtualTree; Node: PVirtualNode; Column: TColumnIndex;
+      TextType: TVSTTextType; Var CellText: String);
+    Procedure LogViewGetImageIndex(Sender: TBaseVirtualTree; Node: PVirtualNode; Kind: TVTImageKind;
+      Column: TColumnIndex; Var Ghosted: Boolean; Var ImageIndex: TImageIndex);
+    Procedure LogViewAfterCellPaint(Sender: TBaseVirtualTree; TargetCanvas: TCanvas; Node: PVirtualNode;
+      Column: TColumnIndex; CellRect: TRect);
+    Procedure LogViewKeyPress(Sender : TObject; Var Key : Char);
   Strict Private
-    FLogView              : TVirtualStringTree;
     FMessageList          : TList<TMsgNotification>;
     FMessageFilter        : TDGHIDENotifications;
     FCapture              : Boolean;
@@ -112,26 +123,23 @@ Type
     {$ENDIF}
     FLastUpdate           : UInt64;
     FUpdateTimer          : TTimer;
+    FStyleServices        : TCustomStyleServices;
+    FIDEEditorColours     : IDNIDEEditorColours;
+    FIDEEditorTokenInfo   : TDNTokenFontInfoTokenSet;
+    FBackgroundColour     : TColor;
   Strict Protected
     Procedure CreateFilterButtons;
     Procedure ActionExecute(Sender: TObject);
     Procedure ActionUpdate(Sender: TObject);
     Procedure LoadSettings;
     Procedure SaveSettings;
-    Function AddViewItem(Const iMsgNotiticationIndex: Integer): PVirtualNode;
+    Function  AddViewItem(Const iMsgNotiticationIndex: Integer): PVirtualNode;
     Function  ConstructorLogFileName: String;
     Procedure LoadLogFile;
     Procedure SaveLogFile;
-    Procedure CreateVirtualStringTreeLog;
-    Procedure LogViewGetText(Sender: TBaseVirtualTree; Node: PVirtualNode; Column: TColumnIndex;
-      TextType: TVSTTextType; Var CellText: String);
-    Procedure LogViewGetImageIndex(Sender: TBaseVirtualTree; Node: PVirtualNode; Kind: TVTImageKind;
-      Column: TColumnIndex; Var Ghosted: Boolean; Var ImageIndex: TImageIndex);
-    Procedure LogViewAfterCellPaint(Sender: TBaseVirtualTree; TargetCanvas: TCanvas; Node: PVirtualNode;
-      Column: TColumnIndex; CellRect: TRect);
-    Procedure LogViewKeyPress(Sender : TObject; Var Key : Char);
     Procedure FilterMessages;
     Procedure UpdateTimer(Sender : TObject);
+    Procedure RetreiveIDEEditorColours;
   Public
     Constructor Create(AOwner: TComponent); Override;
     Destructor Destroy; Override;
@@ -157,7 +165,7 @@ Implementation
 {$R *.dfm}
 
 Uses
-  {$IFDEF CODESITE}
+  {$IFDEF DEBUG}
   CodeSiteLogging,
   {$ENDIF}
   DeskUtil,
@@ -172,7 +180,8 @@ Uses
   {$IFDEF REGULAREXPRESSIONS}
   RegularExpressionsCore,
   {$ENDIF}
-  Types;
+  Types,
+  DGHIDENotifier.IDEEditorColours;
 
 Type
   (** A tree node record which contains the index of the message to display. **)
@@ -191,19 +200,22 @@ Const
   iSpace = 4;
   (** This is the timer update interval in milliseconds. **)
   iUpdateInterval = 250;
-Const
+  (** A Registry root for the plug-in settings. **)
   strRegKeyRoot = 'Software\Season''s Fall\DGHIDENotifications';
+  (** An Registry Section name for the general settings. **)
   strINISection = 'Setup';
+  (** A registry key for whether the plug-in is capturing events. **)
   strCaptureKey = 'Capture';
+  (** A registry key for which notifications are captured. **)
   strNotificationsKey = 'Notifications';
+  (** A registry key for notification retention. **)
   strRetensionPeriodInDaysKey = 'RetensionPeriodInDays';
+  (** A Registry section for the log column widths **)
   strLogViewINISection = 'LogView';
+  (** A registry key for for the date time width. **)
   strDateTimeWidthKey = 'DateTimeWidth';
+  (** A registry key for for the message width. **)
   strMessageWidthKey = 'MessageWidth';
-  iDateTimeDefaultWidth = 175;
-  iMessageDefaultWidth = 500;
-
-
 
 Var
   (** This is a private reference for the form to implement a singleton pattern. **)
@@ -443,7 +455,7 @@ Procedure TfrmDockableIDENotifications.actClearExecute(Sender: TObject);
 
 Begin
   FMessageList.Clear;
-  FLogView.Clear;
+  LogView.Clear;
 End;
 
 (**
@@ -476,9 +488,9 @@ Begin
   N := Nil;
   FRegExFilter := '';
   FilterMessages;
-  FLogView.BeginUpdate;
+  LogView.BeginUpdate;
   Try
-    FLogView.Clear;
+    LogView.Clear;
     For iMessage := 0 To FMessageList.Count - 1 Do
       Begin
         R := FMessageList[iMessage];
@@ -486,11 +498,11 @@ Begin
           N := AddViewItem(iMessage);
       End;
   Finally
-    FLogView.EndUpdate;
+    LogView.EndUpdate;
     If Assigned(N) Then
       Begin
-        FLogView.FocusedNode := N;
-        FLogView.Selected[N] := True;
+        LogView.FocusedNode := N;
+        LogView.Selected[N] := True;
       End;
   End;
 End;
@@ -584,8 +596,8 @@ Var
   NodeData: PTreeNodeData;
 
 Begin
-  Result := FLogView.AddChild(Nil);
-  NodeData := FLogView.GetNodeData(Result);
+  Result := LogView.AddChild(Nil);
+  NodeData := LogView.GetNodeData(Result);
   NodeData.FNotificationIndex := iMsgNotiticationIndex;
   FLastUpdate := GetTickCount;
 End;
@@ -640,6 +652,9 @@ End;
 **)
 Constructor TfrmDockableIDENotifications.Create(AOwner: TComponent);
 
+Var
+  ITS : IOTAIDEThemingServices250;
+  
 Begin
   {$IFDEF CODESITE}CodeSite.TraceMethod('TfrmDockableIDENotifications.Create', tmoTiming);{$ENDIF}
   Inherited Create(AOwner);
@@ -649,10 +664,19 @@ Begin
   FIsFiltering := False;
   FCapture := True;
   FLastUpdate := 0;
-  CreateVirtualStringTreeLog;
+  FStyleServices := Nil;
+  LogView.NodeDataSize := SizeOf(TTreeNodeData);
   FMessageList := TList<TMsgNotification>.Create;
   FMessageFilter := [Low(TDGHIDENotification) .. High(TDGHIDENotification)];
   CreateFilterButtons;
+  FIDEEditorColours := TITHIDEEditorColours.Create;
+  RetreiveIDEEditorColours;
+  If Supports(BorlandIDEServices, IOTAIDEThemingServices250, ITS) Then
+    Begin
+      ITS.RegisterFormClass(TfrmDockableIDENotifications);
+      ITS.ApplyTheme(Self);
+      FStyleServices := ITS.StyleServices;
+    End;
   LoadSettings;
   {$IFDEF CODESITE}CodeSite.Enabled := False;{$ENDIF}
   LoadLogFile;
@@ -763,247 +787,6 @@ End;
 
 (**
 
-  This method creates the virtual string tree for the log in code so the compoent doesnt need to
-  be loaded in the target IDE.
-
-  @precon  None.
-  @postcon The virtual string tree is created and setup to the log messages.
-
-  @nocheck HardCodedInteger HardCodedString
-  @nometric LongMethod
-  
-**)
-Procedure TfrmDockableIDENotifications.CreateVirtualStringTreeLog;
-
-Var
-  C: TVirtualTreeColumn;
-
-Begin //FI:C101
-  {$IFDEF CODESITE}CodeSite.TraceMethod('TfrmDockableIDENotifications.CreateVirtualStringTreeLog', tmoTiming);{$ENDIF}
-  // Creating in code so you don't ave to have the components installed into the IDE to open the form.
-  FLogView := TVirtualStringTree.Create(Self);
-  FLogView.Parent := Self;
-  FLogView.Align := alClient;
-  FLogView.NodeDataSize := SizeOf(TTreeNodeData);
-  //FLogView.DefaultNodeHeight := 20;
-  FLogView.Font.Name := 'Tahoma';
-  FLogView.Font.Size := 10;
-  FLogView.Font.Style := [];
-  //FLogView.ParentFont := True;
-  FLogView.Colors.BorderColor := clBtnFace;
-  FLogView.Colors.DisabledColor := clBtnShadow;
-  FLogView.Colors.DropMarkColor := clHighlight;
-  FLogView.Colors.DropTargetColor := clHighlight;
-  FLogView.Colors.DropTargetBorderColor := clHighlight;
-  FLogView.Colors.FocusedSelectionColor := clHighlight;
-  FLogView.Colors.GridLineColor := clBlack; // clBtnFace;
-  FLogView.Colors.HeaderHotColor := clBtnShadow;
-  FLogView.Colors.SelectionRectangleBlendColor := clHighlight;
-  FLogView.Colors.SelectionRectangleBorderColor := clHighlight;
-  FLogView.Colors.SelectionTextColor := clHighlightText;
-  FLogView.Colors.TreeLineColor := clBtnShadow;
-  //FLogView.Colors.UnfocusedColor := clHighlight; // clBtnFace;
-  FLogView.Colors.UnfocusedSelectionColor := clHighlight; // clBtnFace;
-  FLogView.Colors.UnfocusedSelectionBorderColor := clHighlight; // clBtnFace;
-  FLogView.Header.DefaultHeight := 17;
-  FLogView.Header.Font.Charset := DEFAULT_CHARSET;
-  FLogView.Header.Font.Color := clWindowText;
-  //FLogView.Header.Font.Height := 20; // -11;
-  //FLogView.Header.Font.Name := 'Tahoma';
-  //FLogView.Header.Font.Size := 10;
-  //FLogView.Header.Font.Style := [];
-  FLogView.Header.ParentFont := True;
-  FLogView.Header.Options := [
-    //hoAutoResize,            // Adjust a column so that the header never exceeds the client width of the owner control.
-    hoColumnResize,          // Resizing columns with the mouse is allowed.
-    hoDblClickResize,        // Allows a column to resize itself to its largest entry.
-    hoDrag,                  // Dragging columns is allowed.
-    //hoHotTrack,              // Header captions are highlighted when mouse is over a particular column.
-    //hoOwnerDraw,             // Header items with the owner draw style can be drawn by the application via event.
-    hoRestrictDrag,          // Header can only be dragged horizontally.
-    //hoShowHint,              // Show application defined header hint.
-    //hoShowImages,            // Show header images.
-    hoShowSortGlyphs,        // Allow visible sort glyphs.
-    hoVisible                // Header is visible.
-    //hoAutoSpring,            // Distribute size changes of the header to all columns, which are sizable and have the
-                             // coAutoSpring option enabled.
-    //hoFullRepaintOnResize,   // Fully invalidate the header (instead of subsequent columns only) when a column is resized.
-    //hoDisableAnimatedResize, // Disable animated resize for all columns.
-    //hoHeightResize,          // Allow resizing header height via mouse.
-    //hoHeightDblClickResize,  // Allow the header to resize itself to its default height.
-    //hoHeaderClickAutoSort,    // Clicks on the header will make the clicked column the SortColumn or toggle sort direction if
-                             // it already was the sort column
-    //hoAutoColumnPopupMenu    // Show a context menu for activating and deactivating columns on right click
-  ];
-  FLogView.Header.Style := hsFlatButtons;
-  //FLogView.HintMode := hmHint;
-  FLogView.Images := ilButtons;
-  FLogView.LineStyle := lsDotted;
-  FLogView.ParentShowHint := False;
-  //FLogView.PopupMenu := pabTreeContext;
-  //FLogView.ShowHint := True;
-  FLogView.TabOrder := 0;
-  FLogView.TreeOptions.AnimationOptions := [
-    //toAnimatedToggle,          // Expanding and collapsing a node is animated (quick window scroll).
-                               // **See note above.
-    //toAdvancedAnimatedToggle   // Do some advanced animation effects when toggling a node.
-  ];
-  FLogView.TreeOptions.AutoOptions := [
-    toAutoDropExpand,           // Expand node if it is the drop target for more than a certain time.
-    //toAutoExpand,               // Nodes are expanded (collapsed) when getting (losing) the focus.
-    //toAutoScroll,               // Scroll if mouse is near the border while dragging or selecting.
-    toAutoScrollOnExpand,       // Scroll as many child nodes in view as possible after expanding a node.
-    toAutoSort,                 // Sort tree when Header.SortColumn or Header.SortDirection change or sort node if
-                                // child nodes are added.
-    //toAutoSpanColumns,          // Large entries continue into next column(s) if there's no text in them (no clipping).
-    toAutoTristateTracking,     // Checkstates are automatically propagated for tri state check boxes.
-    //toAutoHideButtons,          // Node buttons are hidden when there are child nodes, but all are invisible.
-    toAutoDeleteMovedNodes,     // Delete nodes which where moved in a drag operation (if not directed otherwise).
-    //toDisableAutoscrollOnFocus, // Disable scrolling a node or column into view if it gets focused.
-    toAutoChangeScale           // Change default node height automatically if the system's font scale is set to big fonts.
-    //toAutoFreeOnCollapse,       // Frees any child node after a node has been collapsed (HasChildren flag stays there).
-    //toDisableAutoscrollOnEdit,  // Do not center a node horizontally when it is edited.
-    //toAutoBidiColumnOrdering    // When set then columns (if any exist) will be reordered from lowest index to highest index
-                                // and vice versa when the tree's bidi mode is changed.
-  ];
-  FLogView.TreeOptions.ExportMode :=
-    emAll                    // export all records (regardless checked state)
-    //emChecked,               // export checked records only
-    //emUnchecked,             // export unchecked records only
-    //emVisibleDueToExpansion, //Do not export nodes that are not visible because their parent is not expanded
-    //emSelected               // export selected nodes only
-  ;
-  FLogView.TreeOptions.MiscOptions := [
-    //toAcceptOLEDrop,            // Register tree as OLE accepting drop target
-    toCheckSupport,             // Show checkboxes/radio buttons.
-    //toEditable,                 // Node captions can be edited.
-    toFullRepaintOnResize,      // Fully invalidate the tree when its window is resized (CS_HREDRAW/CS_VREDRAW).
-    //toGridExtensions,           // Use some special enhancements to simulate and support grid behavior.
-    toInitOnSave,               // Initialize nodes when saving a tree to a stream.
-    toReportMode,               // Tree behaves like TListView in report mode.
-    toToggleOnDblClick,         // Toggle node expansion state when it is double clicked.
-    toWheelPanning             // Support for mouse panning (wheel mice only). This option and toMiddleClickSelect are
-                                // mutal exclusive, where panning has precedence.
-    //toReadOnly,                 // CAUSES AV!!!! The tree does not allow to be modified in any way. No action is executed and
-                                // node editing is not possible.
-    //toVariableNodeHeight,       // When set then GetNodeHeight will trigger OnMeasureItem to allow variable node heights.
-    //toFullRowDrag,              // Start node dragging by clicking anywhere in it instead only on the caption or image.
-                                // Must be used together with toDisableDrawSelection.
-    //toNodeHeightResize,         // Allows changing a node's height via mouse.
-    //toNodeHeightDblClickResize, // Allows to reset a node's height to FDefaultNodeHeight via a double click.
-    //toEditOnClick,              // Editing mode can be entered with a single click
-    //toEditOnDblClick,           // Editing mode can be entered with a double click
-    //toReverseFullExpandHotKey   // Used to define Ctrl+'+' instead of Ctrl+Shift+'+' for full expand (and similar for collapsing)
-  ];
-  FLogView.TreeOptions.PaintOptions := [
-    //toHideFocusRect,           // Avoid drawing the dotted rectangle around the currently focused node.
-    //toHideSelection,           // Selected nodes are drawn as unselected nodes if the tree is unfocused.
-    //toHotTrack,                // Track which node is under the mouse cursor.
-    //toPopupMode,               // Paint tree as would it always have the focus (useful for tree combo boxes etc.)
-    //toShowBackground,          // Use the background image if there's one.
-    toShowButtons,             // Display collapse/expand buttons left to a node.
-    toShowDropmark,            // Show the dropmark during drag'n drop operations.
-    toShowHorzGridLines,       // Display horizontal lines to simulate a grid.
-    //toShowRoot,                // Show lines also at top level (does not show the hidden/internal root node).
-    //toShowTreeLines,           // Display tree lines to show hierarchy of nodes.
-    toShowVertGridLines,       // Display vertical lines (depending on columns) to simulate a grid.
-    toThemeAware,              // Draw UI elements (header, tree buttons etc.) according to the current theme if
-                               // enabled (Windows XP+ only, application must be themed).
-    toUseBlendedImages         // Enable alpha blending for ghosted nodes or those which are being cut/copied.
-    //toGhostedIfUnfocused,      // Ghosted images are still shown as ghosted if unfocused (otherwise the become non-ghosted
-                               // images).
-    //toFullVertGridLines,       // Display vertical lines over the full client area, not only the space occupied by nodes.
-                               // This option only has an effect if toShowVertGridLines is enabled too.
-    //toAlwaysHideSelection,     // Do not draw node selection, regardless of focused state.
-    //toUseBlendedSelection,     // Enable alpha blending for node selections.
-    //toStaticBackground,        // Show simple static background instead of a tiled one.
-    //toChildrenAbove,           // Display child nodes above their parent.
-    //toFixedIndent,             // Draw the tree with a fixed indent.
-    //toUseExplorerTheme,        // Use the explorer theme if run under Windows Vista (or above).
-    //toHideTreeLinesIfThemed,   // Do not show tree lines if theming is used.
-    //toShowFilteredNodes        // Draw nodes even if they are filtered out.
-  ];
-  FLogView.TreeOptions.SelectionOptions := [
-    //toDisableDrawSelection,    // Prevent user from selecting with the selection rectangle in multiselect mode.
-    //toExtendedFocus,           // Entries other than in the main column can be selected, edited etc.
-    toFullRowSelect            // Hit test as well as selection highlight are not constrained to the text of a node.
-    //toLevelSelectConstraint,   // Constrain selection to the same level as the selection anchor.
-    //toMiddleClickSelect,       // Allow selection, dragging etc. with the middle mouse button. This and toWheelPanning
-                               // are mutual exclusive.
-    //toMultiSelect,             // Allow more than one node to be selected.
-    //toRightClickSelect,        // Allow selection, dragging etc. with the right mouse button.
-    //toSiblingSelectConstraint, // Constrain selection to nodes with same parent.
-    //toCenterScrollIntoView,    // Center nodes vertically in the client area when scrolling into view.
-    //toSimpleDrawSelection,     // Simplifies draw selection, so a node's caption does not need to intersect with the
-                               // selection rectangle.
-    //toAlwaysSelectNode,        // If this flag is set to true, the tree view tries to always have a node selected.
-                               // This behavior is closer to the Windows TreeView and useful in Windows Explorer style applications.
-    //toRestoreSelection         // Set to true if upon refill the previously selected nodes should be selected again.
-                               // The nodes will be identified by its caption only.
-  ];
-  FLogView.TreeOptions.StringOptions := [
-    toSaveCaptions,          // If set then the caption is automatically saved with the tree node, regardless of what is
-                             // saved in the user data.
-    //toShowStaticText,        // Show static text in a caption which can be differently formatted than the caption
-                             // but cannot be edited.
-    toAutoAcceptEditChange   // Automatically accept changes during edit if the user finishes editing other then
-                             // VK_RETURN or ESC. If not set then changes are cancelled.
-  ];
-  //FLogView.TreeOptions.EditOptions :=
-  //  toDefaultEdit             // Standard behaviour for end of editing (after VK_RETURN stay on edited cell).
-  //  //toVerticalEdit,            // After VK_RETURN switch to next column.
-  //  //toHorizontalEdit           // After VK_RETURN switch to next row.
-  //;
-  C := FLogView.Header.Columns.Add;
-  C.Position := 0;
-  C.Text := 'Date & Time';
-  C.Width := 185;
-  C.Margin := iMargin;
-  C.Spacing := iSpace;
-  C.Style := vsText;
-  C.Options := [
-    coAllowClick,            // Column can be clicked (must be enabled too).
-    coDraggable,             // Column can be dragged.
-    coEnabled,               // Column is enabled.
-    coParentBidiMode,        // Column uses the parent's bidi mode.
-    coParentColor,           // Column uses the parent's background color.
-    coResizable,             // Column can be resized.
-    coShowDropMark,          // Column shows the drop mark if it is currently the drop target.
-    coVisible,               // Column is shown.
-    //coAutoSpring,            // Column takes part in the auto spring feature of the header (must be resizable too).
-    coFixed,                 // Column is fixed and can not be selected or scrolled etc.
-    //coSmartResize,           // Column is resized to its largest entry which is in view (instead of its largest
-                             // visible entry).
-    coAllowFocus             // Column can be focused.
-    //coDisableAnimatedResize, // Column resizing is not animated.
-    //coWrapCaption,           // Caption could be wrapped across several header lines to fit columns width.
-    //coUseCaptionAlignment,   // Column's caption has its own aligment.
-    //coEditable,              // Column can be edited
-    //coStyleColor             // Prefer background color of VCL style over TVirtualTreeColumn.Color
-  ];
-  C.Options := C.Options + [coFixed];
-  C.Alignment := taRightJustify;
-  C := FLogView.Header.Columns.Add;
-  C.Position := 1;
-  C.Text := 'Message';
-  C.Width := 640;
-  C.Margin := iMargin;
-  C.Spacing := iSpace;
-  C.Style := vsText;
-  FLogView.OnAfterCellPaint := LogViewAfterCellPaint;  // Use to Owner draw cell information.
-//  FLogView.OnAfterItemErase :=                       // Use to change the node background colour.
-//  FLogView.OnChange := ;                             // Use to do something when the selection changes.
-//  FLogView.OnColumnResize :=                         // Use to manually resize column
-//  FLogView.OnGetHint := ;                            // Use to return a custom hint
-  FLogView.OnGetImageIndex := LogViewGetImageIndex;    // Use to get the image index to display
-  FLogView.OnGetText := LogViewGetText;                // Use to get the text to display in the node
-//  FLogView.OnMeasureItem :=                          // Use to measure the item height.
-//  FLogView.OnPaintText :=                            // Use to change the font colour, name, stylke, etc.
-  FLogView.OnKeyPress := LogViewKeyPress;
-End;
-
-(**
-
   A destructor for the TfrmDockableIDENotifications class.
 
   @precon  None.
@@ -1053,26 +836,26 @@ Begin
         {$ENDIF}
         FIsFiltering := True;
       End;
-    FLogView.BeginUpdate;
+    LogView.BeginUpdate;
     Try
-      N := FLogView.RootNode.FirstChild;
+      N := LogView.RootNode.FirstChild;
       While N <> Nil Do
         Begin
           {$IFDEF REGULAREXPRESSIONS}
-          FLogView.IsVisible[N] := Not FIsFiltering Or FRegExEng.IsMatch(FLogView.Text[N, 1]);
+          LogView.IsVisible[N] := Not FIsFiltering Or FRegExEng.IsMatch(LogView.Text[N, 1]);
           {$ELSE}
-          FLogView.IsVisible[N] := Not FIsFiltering Or
-            (Pos(LowerCase(FRegExFilter), LowerCase(FLogView.Text[N, 1])) > 0);
+          LogView.IsVisible[N] := Not FIsFiltering Or
+            (Pos(LowerCase(FRegExFilter), LowerCase(LogView.Text[N, 1])) > 0);
           {$ENDIF}
-          N := FLogView.GetNextSibling(N);
+          N := LogView.GetNextSibling(N);
         End;
     Finally
-      FLogView.EndUpdate;
+      LogView.EndUpdate;
     End;
     If FRegExFilter <> '' Then
       stbStatusBar.Panels[1].Text := Format(strFilteringForMessages, [
         FRegExFilter,
-        Int(FLogView.VisibleCount)
+        Int(LogView.VisibleCount)
       ])
     Else
       stbStatusBar.Panels[1].Text := strNoFilteringInEffect;
@@ -1172,6 +955,8 @@ Procedure TfrmDockableIDENotifications.LoadSettings;
 
 Const
   iDefaultRetensionInDays = 7;
+  iDateTimeDefaultWidth = 175;
+  iMessageDefaultWidth = 500;
 
 Var
   R: TRegIniFile;
@@ -1188,9 +973,9 @@ Begin
         Include(FMessageFilter, iNotification);
     udLogRetention.Position := R.ReadInteger(strINISection, strRetensionPeriodInDaysKey,
       iDefaultRetensionInDays);
-    FLogView.Header.Columns[0].Width := R.ReadInteger(strLogViewINISection, strDateTimeWidthKey,
+    LogView.Header.Columns[0].Width := R.ReadInteger(strLogViewINISection, strDateTimeWidthKey,
       iDateTimeDefaultWidth);
-    FLogView.Header.Columns[1].Width := R.ReadInteger(strLogViewINISection, strMessageWidthKey,
+    LogView.Header.Columns[1].Width := R.ReadInteger(strLogViewINISection, strMessageWidthKey,
       iMessageDefaultWidth);
   Finally
     R.Free;
@@ -1214,22 +999,100 @@ End;
 Procedure TfrmDockableIDENotifications.LogViewAfterCellPaint(Sender: TBaseVirtualTree;
   TargetCanvas: TCanvas; Node: PVirtualNode; Column: TColumnIndex; CellRect: TRect);
 
+  (**
+
+    This procedure sets the font colours for rendering the token.
+
+    @precon  T must be a valid instance.
+    @postcon The font colour is set.
+
+    @param   T as a TDNToken as a constant
+
+  **)
+  Procedure SetFontColour(Const T : TDNToken);
+
+  Begin
+    TargetCanvas.Font.Color := FIDEEditorTokenInfo[T.TokenType].FForeColour;
+    If Assigned(FStyleServices) Then
+      TargetCanvas.Font.Color := FStyleServices.GetSystemColor(TargetCanvas.Font.Color);
+  End;
+
+  (**
+
+    This procedure sets the font style for rendering the token.
+
+    @precon  T must be a valid instance.
+    @postcon The font style is set.
+
+    @param   T as a TDNToken as a constant
+
+  **)
+  Procedure SetFontStyle(Const T : TDNToken);
+
+  Begin
+    TargetCanvas.Font.Style := FIDEEditorTokenInfo[T.TokenType].FFontStyles;
+  End;
+
+  (**
+
+    This procedure sets the backgroup colour of the text to be rendered.
+
+    @precon  T must be a valid instance.
+    @postcon The backgroudn colour is set.
+
+    @param   T            as a TDNToken as a constant
+    @param   IBrushColour as a TColor as a constant
+
+  **)
+  Procedure SetBackgroundColour(Const T : TDNToken; Const IBrushColour : TColor);
+
+  Begin
+    If T.RegExMatch Then
+      TargetCanvas.Brush.Color := clAqua // Should be okay for theming.
+    Else
+      TargetCanvas.Brush.Color := iBrushColour;
+    If Assigned(FStyleServices) Then
+      TargetCanvas.Brush.Color := FStyleServices.GetSystemColor(TargetCanvas.Brush.Color);
+  End;
+
+  (**
+
+    This procedure draws the text token on the canvas.
+
+    @precon  T must be a valid instance.
+    @postcon The text is drawn.
+
+    @param   T as a TDNToken as a constant
+    @param   R as a TRect as a reference
+
+  **)
+  Procedure DrawText(Const T : TDNToken; Var R : TRect);
+
+  Var
+    strText: String;
+
+  Begin
+    strText := T.Text;
+    TargetCanvas.TextRect(R, strText, [tfLeft, tfVerticalCenter]);
+    Inc(R.Left, TargetCanvas.TextWidth(strText));
+  End;
+  
 Var
   NodeData : PTreeNodeData;
   Tokenizer : TDNMessageTokenizer;
   iToken: Integer;
   R : TRect;
   T : TDNToken;
-  strText: String;
-  iBrushColour: Integer;
+  iBrushColor : TColor;
 
 Begin
   If Column = 1 Then
     Begin
       NodeData := Sender.GetNodeData(Node);
       R := CellRect;
+      InflateRect(R, -1, -1);
       Inc(R.Left, iMargin + ilButtons.Width + iSpace);
-      iBrushColour := TargetCanvas.Brush.Color;
+      iBrushColor := TargetCanvas.Brush.Color;
       TargetCanvas.FillRect(R);
       Tokenizer := TDNMessageTokenizer.Create(
         FMessageList[NodeData.FNotificationIndex].Message,
@@ -1238,29 +1101,10 @@ Begin
         For iToken := 0 To Tokenizer.Count - 1 Do
           Begin
             T := Tokenizer[iToken];
-            Case T.TokenType Of
-              ttIdentifier: TargetCanvas.Font.Color := clNavy;
-              ttKeyword:    TargetCanvas.Font.Color := clBlack;
-              ttSymbol:     TargetCanvas.Font.Color := clMaroon;
-              ttUnknown:    TargetCanvas.Font.Color := clRed;
-            Else
-              TargetCanvas.Font.Color := clWindowText;
-            End;
-            Case T.TokenType Of
-              ttIdentifier: TargetCanvas.Font.Style := [];
-              ttKeyword:    TargetCanvas.Font.Style := [fsBold];
-              ttSymbol:     TargetCanvas.Font.Style := [];
-              ttUnknown:    TargetCanvas.Font.Style := [];
-            Else
-              TargetCanvas.Font.Style := [];
-            End;
-            If T.RegExMatch Then
-              TargetCanvas.Brush.Color := clAqua
-            Else
-              TargetCanvas.Brush.Color := iBrushColour;
-            strText := T.Text;
-            TargetCanvas.TextRect(R, strText, [tfLeft, tfVerticalCenter]);
-            Inc(R.Left, TargetCanvas.TextWidth(strText));
+            SetFontColour(T);
+            SetFontStyle(T);
+            SetBackgroundColour(T, iBrushColor);
+            DrawText(T, R);
           End;
       Finally
         Tokenizer.Free;
@@ -1389,6 +1233,20 @@ End;
 
 (**
 
+  This method gets the IDE Editor colours so they can be used for rendering the notifications.
+
+  @precon  None.
+  @postcon FIDEEditorTokenInfo is updated to reflect the IDE Editor Colours.
+
+**)
+Procedure TfrmDockableIDENotifications.RetreiveIDEEditorColours;
+
+Begin
+  FIDEEditorTokenInfo := FIDEEditorColours.GetIDEEditorColours(FBackgroundColour);
+End;
+
+(**
+
   This method saves the log information to a log file.
 
   @precon  None.
@@ -1442,8 +1300,8 @@ Begin
       R.WriteBool(strNotificationsKey, strNotificationLabel[iNotification],
         iNotification In FMessageFilter);
     R.WriteInteger(strINISection, strRetensionPeriodInDaysKey, udLogRetention.Position);
-    R.WriteInteger(strLogViewINISection, strDateTimeWidthKey, FLogView.Header.Columns[0].Width);
-    R.WriteInteger(strLogViewINISection, strMessageWidthKey, FLogView.Header.Columns[1].Width);
+    R.WriteInteger(strLogViewINISection, strDateTimeWidthKey, LogView.Header.Columns[0].Width);
+    R.WriteInteger(strLogViewINISection, strMessageWidthKey, LogView.Header.Columns[1].Width);
   Finally
     R.Free;
   End;
@@ -1487,11 +1345,11 @@ Var
 Begin
   If (FLastUpdate > 0) And (GetTickCount > FLastUpdate + iUpdateInterval) Then
     Begin
-      Node := FLogView.GetLastChild(FLogView.RootNode);
-      FLogView.Selected[Node] := True;
-      FLogView.FocusedNode := Node;
+      Node := LogView.GetLastChild(LogView.RootNode);
+      LogView.Selected[Node] := True;
+      LogView.FocusedNode := Node;
       stbStatusBar.Panels[0].Text := Format(strShowingMessages, [
-        Int(FLogView.RootNodeCount),
+        Int(LogView.RootNodeCount),
         Int(FMessageList.Count)
       ]);
       FLastUpdate := 0;
@@ -1499,4 +1357,3 @@ Begin
 End;
 
 End.
-

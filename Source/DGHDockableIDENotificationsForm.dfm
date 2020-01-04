@@ -34,6 +34,7 @@ object frmDockableIDENotifications: TfrmDockableIDENotifications
     Height = 26
     Align = alTop
     BevelOuter = bvNone
+    ParentColor = True
     TabOrder = 1
     object tbrMessageFilter: TToolBar
       Left = 0
@@ -110,11 +111,50 @@ object frmDockableIDENotifications: TfrmDockableIDENotifications
       end
     end
   end
+  object LogView: TVirtualStringTree
+    Left = 0
+    Top = 26
+    Width = 635
+    Height = 292
+    Align = alClient
+    Header.AutoSizeIndex = 0
+    Header.Options = [hoColumnResize, hoDblClickResize, hoDrag, hoRestrictDrag, hoShowSortGlyphs, hoVisible]
+    Header.Style = hsFlatButtons
+    Images = ilButtons
+    LineStyle = lsSolid
+    ParentShowHint = False
+    ShowHint = False
+    TabOrder = 2
+    TreeOptions.MiscOptions = [toFullRepaintOnResize, toInitOnSave, toReportMode, toToggleOnDblClick, toWheelPanning]
+    TreeOptions.PaintOptions = [toShowButtons, toShowDropmark, toShowHorzGridLines, toShowVertGridLines, toThemeAware, toUseBlendedImages]
+    TreeOptions.SelectionOptions = [toFullRowSelect]
+    OnAfterCellPaint = LogViewAfterCellPaint
+    OnGetText = LogViewGetText
+    OnGetImageIndex = LogViewGetImageIndex
+    OnKeyPress = LogViewKeyPress
+    Columns = <
+      item
+        Margin = 5
+        Options = [coAllowClick, coDraggable, coEnabled, coParentBidiMode, coParentColor, coResizable, coShowDropMark, coVisible, coFixed, coAllowFocus, coStyleColor]
+        Position = 0
+        Spacing = 5
+        Width = 185
+        WideText = 'Date & Time'
+      end
+      item
+        Margin = 5
+        Options = [coAllowClick, coDraggable, coEnabled, coParentBidiMode, coParentColor, coResizable, coShowDropMark, coVisible, coAllowFocus, coStyleColor]
+        Position = 1
+        Spacing = 5
+        Width = 640
+        WideText = 'Message'
+      end>
+  end
   object ilButtons: TImageList
     Left = 32
     Top = 72
     Bitmap = {
-      494C010102000800B00010001000FFFFFFFFFF10FFFFFFFFFFFFFFFF424D3600
+      494C010102000800040010001000FFFFFFFFFF10FFFFFFFFFFFFFFFF424D3600
       0000000000003600000028000000400000001000000001002000000000000010
       0000000000000000000000000000000000000000000000000000000000000000
       0000000000000000000000000000000000000000000000000000000000000000

@@ -1,8 +1,8 @@
 LANGUAGE LANG_ENGLISH,SUBLANG_ENGLISH_US
 
 1 VERSIONINFO LOADONCALL MOVEABLE DISCARDABLE IMPURE
-FILEVERSION 1, 1, 3, 470
-PRODUCTVERSION 1, 1, 3, 470
+FILEVERSION 1, 1, 3, 481
+PRODUCTVERSION 1, 1, 3, 481
 FILEFLAGSMASK VS_FFI_FILEFLAGSMASK
 FILEOS VOS__WINDOWS32
 FILETYPE VFT_APP
@@ -11,16 +11,16 @@ FILETYPE VFT_APP
   {
     BLOCK "040904E4"
     {
-     VALUE "CompanyName", "Season's Fall Music\000"
-     VALUE "FileDescription", "DGHIDENotifier: An IDE Plugin to provide notifications for all sorts of things.\000"
-     VALUE "FileVersion", "1.1.3.470\000"
-     VALUE "InternalName", "DGHIDENotifier\000"
-     VALUE "LegalCopyright", "Season's Fall Music\000"
-     VALUE "LegalTrademarks", "Season's Fall Music\000"
-     VALUE "OriginalFilename", "DGHIDENotifier\000"
-     VALUE "ProductName", "DGHIDENotifier\000"
-     VALUE "ProductVersion", "1.1c\000"
-     VALUE "Comments", "DGHIDENotifier: An IDE Plugin to provide notifications for all sorts of things.\000"
+      VALUE "CompanyName", "Season's Fall Music\000"
+      VALUE "FileDescription", "DGHIDENotifier: An IDE Plugin to provide notifications for all sorts of things.\000"
+      VALUE "FileVersion", "1.1.3.481\000"
+      VALUE "InternalName", "DGHIDENotifier\000"
+      VALUE "LegalCopyright", "Season's Fall Music\000"
+      VALUE "LegalTrademarks", "Season's Fall Music\000"
+      VALUE "OriginalFilename", "DGHIDENotifier\000"
+      VALUE "ProductName", "DGHIDENotifier\000"
+      VALUE "ProductVersion", "1.1c\000"
+      VALUE "Comments", "DGHIDENotifier: An IDE Plugin to provide notifications for all sorts of things.\000"
     }
   }
   BLOCK "VarFileInfo"

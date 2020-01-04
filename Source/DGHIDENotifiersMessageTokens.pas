@@ -5,7 +5,7 @@
 
   @Author  David Hoyle
   @Version 1.0
-  @Date    05 Jan 2018
+  @Date    04 Jan 2020
 
 **)
 Unit DGHIDENotifiersMessageTokens;
@@ -22,12 +22,10 @@ Uses
   {$IFDEF REGULAREXPRESSIONS}
   RegularExpressions,
   {$ENDIF}
-  Generics.Collections;
+  Generics.Collections,
+  DGHIDENotifier.Interfaces;
 
 Type
-  (** An enumerate to define the type of token. **)
-  TDNTokenType = (ttIdentifier, ttKeyword, ttSymbol, ttSpace, ttUnknown);
-
   (** A record to describe the information required to be stored for a message token. **)
   TDNToken = Record
   Strict Private
@@ -375,7 +373,7 @@ Begin
           End;
         End;
       SetLength(strToken, iTokenLen);
-      AddToken(strToken, ttKeyword, iPosition);
+      AddToken(strToken, ttReservedWord, iPosition);
     End;
 End;
 
@@ -464,6 +462,8 @@ Var
   strToken : String;
   iTokenLen : Integer;
   iPosition: Integer;
+  dblValue : Double;
+  iErrorCode : Integer;
 
 Begin
   ParseIdentifier;
@@ -487,7 +487,11 @@ Begin
           Inc(FMsgPos);
         End;
       SetLength(strToken, iTokenLen);
-      AddToken(strToken, ttIdentifier, iPosition);
+      Val(strToken, dblValue, iErrorCode);
+      If iErrorCode = 0 Then
+        AddToken(strToken, ttNumber, iPosition)
+      Else
+        AddToken(strToken, ttIdentifier, iPosition);
     End;
 End;
 
@@ -563,7 +567,7 @@ Procedure TDNMessageTokenizer.ParseSpace;
 Begin
   If GetCurChar = #32 Then
     Begin
-      AddToken(GetCurChar, ttSpace, FMsgPos);
+      AddToken(GetCurChar, ttWhiteSpace, FMsgPos);
       Inc(FMsgPos);
     End;
 End;

@@ -4,7 +4,7 @@
 
   @Author  David Hoyle
   @Version 1.0
-  @Date    05 Jan 2018
+  @Date    04 Jan 2020
 
 **)
 Unit DGHIDENotifiersModuleNotiferCollection;
@@ -13,7 +13,7 @@ Interface
 
 Uses
   Generics.Collections,
-  DGHIDENotificationTypes;
+  DGHIDENotifier.Interfaces;
 
 {$INCLUDE 'CompilerDefinitions.inc'}
 
@@ -22,7 +22,7 @@ Type
   TDINModuleNotifierList = Class(TInterfacedObject, IDINModuleNotifierList)
   Strict Private
     Type
-      (** A record to describe the properties of a Module, project or Form notifier. **)
+      (** A record to describe the properties of a Module, project or Form notifier. @nohints **)
       TModuleNotifierRec = Record
       Strict Private
         FFileName      : String;

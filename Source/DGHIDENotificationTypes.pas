@@ -5,7 +5,7 @@
 
   @Author  David Hoyle
   @Version 1.0
-  @Date    05 Jan 2018
+  @Date    04 Jan 2020
 
 **)
 Unit DGHIDENotificationTypes;
@@ -66,15 +66,6 @@ Type
       @return  a String
     **)
     Property FileName : String Read FFileName Write FFileName;
-  End;
-
-  (** This interface allows a module notifier to have the indexed file renamed for removing the
-      notifier from the IDE. **)
-  IDINModuleNotifierList = Interface
-  ['{60E0D688-F529-4798-A06C-C283F800B7FE}']
-    Procedure Add(Const strFileName : String; Const iIndex : Integer);
-    Function  Remove(Const strFileName: String): Integer;
-    Procedure Rename(Const strOldFileName, strNewFileName : String);
   End;
 
 Const
