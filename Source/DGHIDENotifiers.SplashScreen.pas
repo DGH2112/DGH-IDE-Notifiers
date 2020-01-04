@@ -19,7 +19,7 @@ Interface
 Implementation
 
 Uses
-  {$IFDEF CODESITE}
+  {$IFDEF DEBUG}
   CodeSiteLogging,
   {$ENDIF}
   ToolsAPI,

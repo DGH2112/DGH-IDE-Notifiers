@@ -26,7 +26,7 @@ Exports
 Implementation
 
 Uses
-  {$IFDEF CODESITE}
+  {$IFDEF DEBUG}
   CodeSiteLogging,
   {$ENDIF}
   DGHIDENotifiers.Wizard,

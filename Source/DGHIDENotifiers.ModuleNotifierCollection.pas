@@ -59,7 +59,7 @@ Type
 Implementation
 
 Uses
-  {$IFDEF CODESITE}
+  {$IFDEF DEBUG}
   CodeSiteLogging,
   {$ENDIF}
   SysUtils;
@@ -84,8 +84,6 @@ Begin
   FFileName := strFileName;
   FNotifierIndex := iIndex;
 End;
-
-{ TDINModuleNotifierList }
 
 (**
 
@@ -130,6 +128,9 @@ End;
 **)
 Destructor TDINModuleNotifierList.Destroy;
 
+ResourceString
+  strDestroyOrphanedModuleNotifier = 'Destroy(Orphaned Module Notifier)';
+
 Var
   iModule : Integer;
 
@@ -137,12 +138,12 @@ Begin
   {$IFDEF CODESITE}CodeSite.TraceMethod(Self, 'Destroy', tmoTiming);{$ENDIF}
   For iModule := FModuleNotifierList.Count - 1 DownTo 0 Do
     Begin
-      {$IFDEF CODESITE}
-      CodeSite.Send('Destroy(Orphaned Module Notifier)', FModuleNotifierList[iModule].FileName);
+      {$IFDEF DEBUG}
+      CodeSite.Send(csmWarning, strDestroyOrphanedModuleNotifier, FModuleNotifierList[iModule].FileName);
       {$ENDIF}
       FModuleNotifierList.Delete(iModule);
       //: @note Cannot remove any left over notifiers here as the module
-      //:       is most likely closed at ths point however there should be any anyway.
+      //:       is most likely closed at ths point however there should not be any anyway.
     End;
   FModuleNotifierList.Free;
   Inherited Destroy;
