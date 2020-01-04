@@ -6,18 +6,19 @@
 
   @Author  David Hoyle
   @Version 1.0
-  @Date    05 Jan 2018
+  @Date    04 Jan 2020
 
 **)
-Unit DGHIDENotifiersIDENotifications;
+Unit DGHIDENotifiers.IDENotifier;
 
 Interface
 
 Uses
   ToolsAPI,
-  DGHIDENotificationTypes,
+  DGHIDENotifiers.Interfaces,
+  DGHIDENotifiers.Types,
   Classes,
-  DGHIDENotifiersModuleNotiferCollection;
+  DGHIDENotifiers.ModuleNotifierCollection;
 
 {$INCLUDE 'CompilerDefinitions.inc'}
 
@@ -55,10 +56,10 @@ Uses
   CodeSiteLogging,
   {$ENDIF}
   SysUtils,
-  DGHIDENotificationsCommon,
-  DGHIDENotifiersModuleNotifications,
-  DGHIDENotifiersProjectNotifications,
-  DGHIDENotifiersFormNotifications;
+  DGHIDENotifiers.Common,
+  DGHIDENotifiers.ModuleNotifier,
+  DGHIDENotifiers.ProjectNotifier,
+  DGHIDENotifiers.FormNotifier;
 
 { TDGHNotifiersIDENotifications }
 
@@ -305,6 +306,8 @@ Begin
         strBoolean[Cancel]
       ])
   );
+  //: @bug Does not implement a Form Notifier!
+  //: @todo Needs to implement a ProjectCompileNotifier
   If Not Cancel And Supports(BorlandIDEServices, IOTAModuleServices, MS) Then
     Case NotifyCode Of
       ofnFileOpened:
@@ -312,11 +315,13 @@ Begin
           M := MS.OpenModule(FileName);
           If Supports(M, IOTAProject, P) Then
             Begin
+              //: @bug Needs rename call back notifier.
               MN := TDNProjectNotifier.Create(strIOTAProjectNotifier, FileName, dinProjectNotifier,
                 FProjectNotifiers);
               FProjectNotifiers.Add(FileName, M.AddNotifier(MN));
             End Else
             Begin
+              //: @bug Needs rename call back notifier.
               MN := TDNModuleNotifier.Create(strIOTAModuleNotifier, FileName, dinModuleNotifier,
                 FModuleNotifiers);
               FModuleNotifiers.Add(FileName, M.AddNotifier(MN));

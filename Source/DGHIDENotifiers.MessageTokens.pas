@@ -8,7 +8,7 @@
   @Date    04 Jan 2020
 
 **)
-Unit DGHIDENotifiersMessageTokens;
+Unit DGHIDENotifiers.MessageTokens;
 
 Interface
 
@@ -23,7 +23,7 @@ Uses
   RegularExpressions,
   {$ENDIF}
   Generics.Collections,
-  DGHIDENotifier.Interfaces;
+  DGHIDENotifiers.Interfaces;
 
 Type
   (** A record to describe the information required to be stored for a message token. **)

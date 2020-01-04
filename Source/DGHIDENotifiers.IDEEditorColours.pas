@@ -12,14 +12,14 @@
     ????????
   
 **)
-Unit DGHIDENotifier.IDEEditorColours;
+Unit DGHIDENotifiers.IDEEditorColours;
 
 Interface
 
 Uses
   System.Win.Registry,
   VCL.Graphics,
-  DGHIDENotifier.Interfaces;
+  DGHIDENotifiers.Interfaces;
 
 Type
   (** A class which implements the IBADIIDEEditorColours interface for getting the current IDEs

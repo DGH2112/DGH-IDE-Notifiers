@@ -8,7 +8,7 @@
   @Date    05 Jan 2018
 
 **)
-Unit DGHIDENotificationsCommon;
+Unit DGHIDENotifiers.Common;
 
 Interface
 

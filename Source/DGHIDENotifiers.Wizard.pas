@@ -25,8 +25,8 @@
    * IOTAProjectNotifier            via IOTAModule40.AddNotifier();
 
   The following notifiers are STILL to be implemented:
-   * IOTANotifier = interface(IUnknown)
    * IOTAFormNotifier, IOTAModule40.AddNotifier();
+   * IOTAProjectBuilder, IOTAProjectCompileNotifier = interface
    * IOTAEditor.AddNotifier(IOTANotifier)
    * IOTAToolsFilter.AddNotifier(IOTANotifier)... IOTAToolsFilterNotifier = interface(IOTANotifier)
    * IOTAEditBlock.AddNotifier(IOTASyncEditNotifier)
@@ -38,23 +38,22 @@
    * IOTAProcessModule80.AddNotifier(IOTAProcessModNotifier)
    * IOTAProcess60.AddNotifier(IOTAProcessNotifier, IOTAProcessNotifier90)
    * IOTAToDoServices.AddNotifier(IOTAToDoManager)
-   * IOTAProjectBuilder, IOTAProjectCompileNotifier = interface
    * IOTADesignerCommandNotifier = interface(IOTANotifier)
    * IOTAProjectMenuItemCreatorNotifier = interface(IOTANotifier)
 
   @Author  David Hoyle
   @Version 1.0
-  @Date    05 Jan 2018
+  @Date    04 Jan 2020
 
 **)
-Unit DGHIDENotifiersWizard;
+Unit DGHIDENotifiers.Wizard;
 
 Interface
 
 Uses
   ToolsAPI,
   Graphics,
-  DGHIDENotificationTypes;
+  DGHIDENotifiers.Types;
 
 {$INCLUDE CompilerDefinitions.inc}
 {$R DGHIDENotITHVerInfo.RES ..\DGHIDENotITHVerInfo.RC}
@@ -95,19 +94,19 @@ Uses
   {$ENDIF}
   SysUtils,
   TypInfo,
-  DGHDockableIDENotificationsForm,
-  DGHIDENotifiersIDENotifications,
+  DGHIDENotifiers.DockableIDENotificationsForm,
+  DGHIDENotifiers.IDENotifier,
   {$IFDEF D2010}
-  DGHIDENotifiersVersionControlNotififications,
-  DGHIDENotifiersCompileNotifications,
-  DGHIDENotifiersIDEInsightNotifications,
+  DGHIDENotifiers.VersionControlNotifier,
+  DGHIDENotifiers.CompileNotifier,
+  DGHIDENotifiers.IDEInsightNotifier,
   {$ENDIF}
-  DGHIDENotifiersMessageNotifications,
-  DGHIDENotifiersProjectStorageNotifications,
-  DGHIDENotifiersEditorNotifications,
-  DGHIDENotifiersDebuggerNotifications,
-  DGHIDENotificationsSplashScreen,
-  DGHIDENotificationsAboutBox;
+  DGHIDENotifiers.MessageNotifier,
+  DGHIDENotifiers.ProjectStorageNotifier,
+  DGHIDENotifiers.EditorNotifier,
+  DGHIDENotifiers.DebuggerNotifier,
+  DGHIDENotifiers.SplashScreen,
+  DGHIDENotifiers.AboutBox;
 
 (**
 

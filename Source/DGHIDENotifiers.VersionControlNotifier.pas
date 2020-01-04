@@ -6,17 +6,17 @@
 
   @Author  David Hoyle
   @Version 1.0
-  @Date    05 Jan 2018
+  @Date    04 Jan 2020
 
 **)
-Unit DGHIDENotifiersVersionControlNotififications;
+Unit DGHIDENotifiers.VersionControlNotifier;
 
 Interface
 
 Uses
   ToolsAPI,
   Classes,
-  DGHIDENotificationTypes;
+  DGHIDENotifiers.Types;
 
 {$INCLUDE CompilerDefinitions.inc}
 
@@ -50,7 +50,7 @@ Implementation
 
 Uses
   SysUtils,
-  DGHIDENotificationsCommon;
+  DGHIDENotifiers.Common;
 
 {$IFDEF D2010}
 { TDGHIDENotifiersVersionControlNotifications }

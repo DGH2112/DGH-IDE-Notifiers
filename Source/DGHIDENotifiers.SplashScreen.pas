@@ -5,10 +5,10 @@
 
   @Author  David Hoyle
   @Version 1.0
-  @Date    05 Jan 2018
+  @Date    04 Jan 2020
 
 **)
-Unit DGHIDENotificationsSplashScreen;
+Unit DGHIDENotifiers.SplashScreen;
 
 Interface
 
@@ -26,7 +26,7 @@ Uses
   SysUtils,
   Windows,
   Forms,
-  DGHIDENotificationsCommon;
+  DGHIDENotifiers.Common;
 
 (**
 

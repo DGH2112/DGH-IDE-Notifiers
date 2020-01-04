@@ -6,16 +6,16 @@
 
   @Author  David Hoyle
   @Version 1.0
-  @Date    05 Jan 2018
+  @Date    04 Jan 2020
 
 **)
-Unit DGHIDENotifiersIDEInsightNotifications;
+Unit DGHIDENotifiers.IDEInsightNotifier;
 
 Interface
 
 Uses
   ToolsAPI,
-  DGHIDENotificationTypes;
+  DGHIDENotifiers.Types;
 
 {$INCLUDE CompilerDefinitions.inc}
 

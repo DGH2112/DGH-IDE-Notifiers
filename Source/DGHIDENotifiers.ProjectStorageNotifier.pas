@@ -5,16 +5,16 @@
 
   @Author  David Hoyle
   @Version 1.0
-  @Date    05 Jan 2018
+  @Date    04 Jan 2020
 
 **)
-Unit DGHIDENotifiersProjectStorageNotifications;
+Unit DGHIDENotifiers.ProjectStorageNotifier;
 
 Interface
 
 Uses
   ToolsAPI,
-  DGHIDENotificationTypes,
+  DGHIDENotifiers.Types,
   XMLIntf;
 
 {$INCLUDE 'CompilerDefinitions.inc'}

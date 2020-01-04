@@ -5,7 +5,7 @@ Interface
 
 Uses
   TestFramework,
-  DGHIDENotifiersMessageTokens;
+  DGHIDENotifiers.MessageTokens;
 
 Type
   //

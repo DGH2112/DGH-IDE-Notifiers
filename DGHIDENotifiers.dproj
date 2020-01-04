@@ -95,30 +95,30 @@
         <RcCompile Include="DGHIDENotificationsSplashScreenIcons.RC">
             <Form>DGHIDENotificationsSplashScreenIcons.res</Form>
         </RcCompile>
-        <DCCReference Include="Source\DGHDockableIDENotificationsForm.pas">
+        <DCCReference Include="Source\DGHIDENotifiers.DockableIDENotificationsForm.pas">
             <Form>frmDockableIDENotifications</Form>
         </DCCReference>
-        <DCCReference Include="Source\DGHIDENotificationTypes.pas"/>
-        <DCCReference Include="Source\DGHIDENotifiersIDENotifications.pas"/>
-        <DCCReference Include="Source\DGHIDENotifiersVersionControlNotififications.pas"/>
-        <DCCReference Include="Source\DGHIDENotifiersWizard.pas"/>
-        <DCCReference Include="Source\DGHIDENotifiersMainUnit.pas"/>
-        <DCCReference Include="Source\DGHIDENotifiersCompileNotifications.pas"/>
-        <DCCReference Include="Source\DGHIDENotifiersMessageNotifications.pas"/>
-        <DCCReference Include="Source\DGHIDENotifiersIDEInsightNotifications.pas"/>
-        <DCCReference Include="Source\DGHIDENotificationsAboutBox.pas"/>
-        <DCCReference Include="Source\DGHIDENotificationsCommon.pas"/>
-        <DCCReference Include="Source\DGHIDENotificationsSplashScreen.pas"/>
-        <DCCReference Include="Source\DGHIDENotifiersProjectStorageNotifications.pas"/>
-        <DCCReference Include="Source\DGHIDENotifiersEditorNotifications.pas"/>
-        <DCCReference Include="Source\DGHIDENotifiersDebuggerNotifications.pas"/>
-        <DCCReference Include="Source\DGHIDENotifiersModuleNotifications.pas"/>
-        <DCCReference Include="Source\DGHIDENotifiersProjectNotifications.pas"/>
-        <DCCReference Include="Source\DGHIDENotifiersFormNotifications.pas"/>
-        <DCCReference Include="Source\DGHIDENotifiersMessageTokens.pas"/>
-        <DCCReference Include="Source\DGHIDENotifiersModuleNotiferCollection.pas"/>
-        <DCCReference Include="Source\DGHIDENotifier.IDEEditorColours.pas"/>
-        <DCCReference Include="Source\DGHIDENotifier.Interfaces.pas"/>
+        <DCCReference Include="Source\DGHIDENotifiers.Types.pas"/>
+        <DCCReference Include="Source\DGHIDENotifiers.IDENotifier.pas"/>
+        <DCCReference Include="Source\DGHIDENotifiers.VersionControlNotifier.pas"/>
+        <DCCReference Include="Source\DGHIDENotifiers.Wizard.pas"/>
+        <DCCReference Include="Source\DGHIDENotifiers.MainUnit.pas"/>
+        <DCCReference Include="Source\DGHIDENotifiers.CompileNotifier.pas"/>
+        <DCCReference Include="Source\DGHIDENotifiers.MessageNotifier.pas"/>
+        <DCCReference Include="Source\DGHIDENotifiers.IDEInsightNotifier.pas"/>
+        <DCCReference Include="Source\DGHIDENotifiers.AboutBox.pas"/>
+        <DCCReference Include="Source\DGHIDENotifiers.Common.pas"/>
+        <DCCReference Include="Source\DGHIDENotifiers.SplashScreen.pas"/>
+        <DCCReference Include="Source\DGHIDENotifiers.ProjectStorageNotifier.pas"/>
+        <DCCReference Include="Source\DGHIDENotifiers.EditorNotifier.pas"/>
+        <DCCReference Include="Source\DGHIDENotifiers.DebuggerNotifier.pas"/>
+        <DCCReference Include="Source\DGHIDENotifiers.ModuleNotifier.pas"/>
+        <DCCReference Include="Source\DGHIDENotifiers.ProjectNotifier.pas"/>
+        <DCCReference Include="Source\DGHIDENotifiers.FormNotifier.pas"/>
+        <DCCReference Include="Source\DGHIDENotifiers.MessageTokens.pas"/>
+        <DCCReference Include="Source\DGHIDENotifiers.ModuleNotifierCollection.pas"/>
+        <DCCReference Include="Source\DGHIDENotifiers.IDEEditorColours.pas"/>
+        <DCCReference Include="Source\DGHIDENotifiers.Interfaces.pas"/>
         <RcCompile Include="DGHIDENotITHVerInfo.RC">
             <Form>DGHIDENotITHVerInfo.res</Form>
         </RcCompile>

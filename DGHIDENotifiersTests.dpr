@@ -4,9 +4,9 @@ program DGHIDENotifiersTests;
 uses
   SysUtils,
   TestInsight.DUnit,
-  DGHIDENotifiersMessageTokens in 'Source\DGHIDENotifiersMessageTokens.pas',
+  DGHIDENotifiers.MessageTokens in 'Source\DGHIDENotifiers.MessageTokens.pas',
   TestDGHIDENotifiersMessageTokens in 'Source\TestDGHIDENotifiersMessageTokens.pas',
-  DGHIDENotifier.Interfaces in 'Source\DGHIDENotifier.Interfaces.pas';
+  DGHIDENotifiers.Interfaces in 'Source\DGHIDENotifiers.Interfaces.pas';
 
 {$R *.RES}
 

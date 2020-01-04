@@ -8,7 +8,7 @@
   @Date    04 Jan 2020
 
 **)
-Unit DGHIDENotificationTypes;
+Unit DGHIDENotifiers.Types;
 
 Interface
 
@@ -114,7 +114,7 @@ Uses
   CodeSiteLogging,
   {$ENDIF}
   SysUtils,
-  DGHDockableIDENotificationsForm;
+  DGHIDENotifiers.DockableIDENotificationsForm;
 
 (**
 

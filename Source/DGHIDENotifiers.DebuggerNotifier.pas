@@ -6,16 +6,16 @@
 
   @Author  David Hoyle
   @Version 1.0
-  @Date    05 Jan 2018
+  @Date    04 Jan 2020
 
 **)
-Unit DGHIDENotifiersDebuggerNotifications;
+Unit DGHIDENotifiers.DebuggerNotifier;
 
 Interface
 
 Uses
   ToolsAPI,
-  DGHIDENotificationTypes;
+  DGHIDENotifiers.Types;
 
 Type
   (** This class implements a notifier for capturing events associated with the debugger. **)
@@ -46,7 +46,7 @@ Implementation
 
 Uses
   SysUtils,
-  DGHIDENotificationsCommon;
+  DGHIDENotifiers.Common;
 
 (**
 

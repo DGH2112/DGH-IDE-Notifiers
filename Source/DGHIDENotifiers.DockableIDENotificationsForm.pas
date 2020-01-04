@@ -8,7 +8,7 @@
   @date    04 Jan 2020
 
 **)
-Unit DGHDockableIDENotificationsForm;
+Unit DGHIDENotifiers.DockableIDENotificationsForm;
 
 Interface
 
@@ -36,7 +36,7 @@ Uses
   ComCtrls,
   ActnList,
   ImgList,
-  DGHIDENotificationTypes,
+  DGHIDENotifiers.Types,
   VirtualTrees,
   {$IFDEF REGULAREXPRESSIONS}
   RegularExpressions,
@@ -46,7 +46,7 @@ Uses
   Themes,
   System.Actions,
   System.ImageList,
-  DGHIDENotifier.Interfaces;
+  DGHIDENotifiers.Interfaces;
 
 Type
   (** This record describes the message information to be stored. **)
@@ -174,14 +174,14 @@ Uses
   {$IFNDEF D2010}
   SHFolder,
   {$ENDIF}
-  DGHIDENotifiersMessageTokens,
+  DGHIDENotifiers.MessageTokens,
   ToolsAPI,
   StrUtils,
   {$IFDEF REGULAREXPRESSIONS}
   RegularExpressionsCore,
   {$ENDIF}
   Types,
-  DGHIDENotifier.IDEEditorColours;
+  DGHIDENotifiers.IDEEditorColours;
 
 Type
   (** A tree node record which contains the index of the message to display. **)

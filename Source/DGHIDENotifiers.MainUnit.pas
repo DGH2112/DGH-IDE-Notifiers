@@ -6,10 +6,10 @@
 
   @Author  David Hoyle
   @Version 1.0
-  @Date    05 Jan 2018
+  @Date    04 Jan 2020
 
 **)
-Unit DGHIDENotifiersMainUnit;
+Unit DGHIDENotifiers.MainUnit;
 
 Interface
 
@@ -29,8 +29,8 @@ Uses
   {$IFDEF CODESITE}
   CodeSiteLogging,
   {$ENDIF}
-  DGHIDENotifiersWizard,
-  DGHIDENotificationTypes;
+  DGHIDENotifiers.Wizard,
+  DGHIDENotifiers.Types;
 
 (**
 

@@ -8,14 +8,14 @@
   @Date    04 Jan 2020
 
 **)
-Unit DGHIDENotifiersModuleNotifications;
+Unit DGHIDENotifiers.ModuleNotifier;
 
 Interface
 
 Uses
   ToolsAPI,
-  DGHIDENotifier.Interfaces,
-  DGHIDENotificationTypes;
+  DGHIDENotifiers.Interfaces,
+  DGHIDENotifiers.Types;
 
 {$INCLUDE 'CompilerDefinitions.inc'}
 

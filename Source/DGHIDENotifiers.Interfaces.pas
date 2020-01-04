@@ -8,7 +8,7 @@
   @Date    04 Jan 2020
   
 **)
-Unit DGHIDENotifier.Interfaces;
+Unit DGHIDENotifiers.Interfaces;
 
 Interface
 

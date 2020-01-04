@@ -7,13 +7,13 @@
   @Date    04 Jan 2020
 
 **)
-Unit DGHIDENotifiersModuleNotiferCollection;
+Unit DGHIDENotifiers.ModuleNotifierCollection;
 
 Interface
 
 Uses
   Generics.Collections,
-  DGHIDENotifier.Interfaces;
+  DGHIDENotifiers.Interfaces;
 
 {$INCLUDE 'CompilerDefinitions.inc'}
 

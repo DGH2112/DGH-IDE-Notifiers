@@ -5,10 +5,10 @@
 
   @Author  David Hoyle
   @Version 1.0
-  @Date    05 Jan 2018
+  @Date    04 Jan 2020
 
 **)
-Unit DGHIDENotifiersProjectNotifications;
+Unit DGHIDENotifiers.ProjectNotifier;
 
 Interface
 
@@ -16,7 +16,7 @@ Interface
 
 Uses
   ToolsAPI,
-  DGHIDENotifiersModuleNotifications;
+  DGHIDENotifiers.ModuleNotifier;
 
 Type
   (** A class to implement the IOTAProjectNotifier interface. **)

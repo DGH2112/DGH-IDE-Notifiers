@@ -1,10 +1,10 @@
-Unit DGHIDENotifiersFormNotifications;
+Unit DGHIDENotifiers.FormNotifier;
 
 Interface
 
 Uses
   ToolsAPI,
-  DGHIDENotifiersModuleNotifications;
+  DGHIDENotifiers.ModuleNotifier;
 
 Type
   TDNFormNotifier = Class(TDNModuleNotifier, IOTAFormNotifier)
