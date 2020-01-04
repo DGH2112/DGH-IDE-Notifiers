@@ -315,13 +315,11 @@ Begin
           M := MS.OpenModule(FileName);
           If Supports(M, IOTAProject, P) Then
             Begin
-              //: @bug Needs rename call back notifier.
               MN := TDNProjectNotifier.Create(strIOTAProjectNotifier, FileName, dinProjectNotifier,
                 FProjectNotifiers);
               FProjectNotifiers.Add(FileName, M.AddNotifier(MN));
             End Else
             Begin
-              //: @bug Needs rename call back notifier.
               MN := TDNModuleNotifier.Create(strIOTAModuleNotifier, FileName, dinModuleNotifier,
                 FModuleNotifiers);
               FModuleNotifiers.Add(FileName, M.AddNotifier(MN));
