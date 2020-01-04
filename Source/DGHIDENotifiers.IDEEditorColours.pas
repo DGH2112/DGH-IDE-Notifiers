@@ -57,6 +57,7 @@ Const
     (FForeColour : clBlack; FBackColour: clNone; FFontStyles : [fsItalic] ),  
     (FForeColour : clBlack; FBackColour: clNone; FFontStyles : [fsBold]   ),  
     (FForeColour : clBlack; FBackColour: clNone; FFontStyles : [fsBold]   ),  
+    (FForeColour : clBlack; FBackColour: clAqua; FFontStyles : []         ),
     (FForeColour : clBlack; FBackColour: clNone; FFontStyles : []         )
   );
 
@@ -78,18 +79,19 @@ Const
   strBDSEnviroVar = 'BDS';
   strHelpRegKey = 'Software\Embarcadero\%s\%s\Editor\Highlight';
   strTokenHighlightMap : Array[TDNTokenType] Of String = (
-    'Illegal Char',      // ttUnknown
-    'Whitespace',        // ttWhiteSpace
-    'Reserved word',     // ttReservedWord
-    'Identifier',        // ttIdentifier
-    'Number',            // ttNumber
-    'Symbol',            // ttSymbol
-    'String',            // ttSingleLiteral
-    'Character',         // ttDoubleLiteral
-    'Comment',           // ttLineComment
-    'Reserved word',     // ttDirective
-    'Preprocessor',      // ttCompilerDirective
-    'Plain text'         // ttPlainText
+    'Illegal Char',                          // ttUnknown
+    'Whitespace',                            // ttWhiteSpace
+    'Reserved word',                         // ttReservedWord
+    'Identifier',                            // ttIdentifier
+    'Number',                                // ttNumber
+    'Symbol',                                // ttSymbol
+    'String',                                // ttSingleLiteral
+    'Character',                             // ttDoubleLiteral
+    'Comment',                               // ttLineComment
+    'Reserved word',                         // ttDirective
+    'Preprocessor',                          // ttCompilerDirective
+    'Plain text',                            // ttPlainText
+    'Additional search match highlight'      // ttSelection
   );
 
 Var

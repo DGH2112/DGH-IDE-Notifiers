@@ -1,4 +1,4 @@
-(**
+ (**
 
   This module contains a dockable IDE window for logging all the notifications from this wizard /
   expert / plug-in which are generated RAD Studio IDE.
@@ -652,6 +652,10 @@ End;
 **)
 Constructor TfrmDockableIDENotifications.Create(AOwner: TComponent);
 
+Const 
+  iPadding = 2;
+  strTextHeightTest = 'Wg';
+
 Var
   ITS : IOTAIDEThemingServices250;
   
@@ -671,6 +675,7 @@ Begin
   CreateFilterButtons;
   FIDEEditorColours := TITHIDEEditorColours.Create;
   RetreiveIDEEditorColours;
+  LogView.DefaultNodeHeight := iPadding + LogView.Canvas.TextHeight(strTextHeightTest) + iPadding;
   If Supports(BorlandIDEServices, IOTAIDEThemingServices250, ITS) Then
     Begin
       ITS.RegisterFormClass(TfrmDockableIDENotifications);
@@ -1048,7 +1053,7 @@ Procedure TfrmDockableIDENotifications.LogViewAfterCellPaint(Sender: TBaseVirtua
 
   Begin
     If T.RegExMatch Then
-      TargetCanvas.Brush.Color := clAqua // Should be okay for theming.
+      TargetCanvas.Brush.Color := FIDEEditorTokenInfo[ttSelection].FBackColour
     Else
       TargetCanvas.Brush.Color := iBrushColour;
     If Assigned(FStyleServices) Then

@@ -299,12 +299,14 @@ object frmDockableIDENotifications: TfrmDockableIDENotifications
     Top = 128
     object actCapture: TAction
       Caption = 'Catpure Notifications'
+      Hint = 'Capture Notifications'
       ImageIndex = 0
       OnExecute = actCaptureExecute
       OnUpdate = actCaptureUpdate
     end
     object actClear: TAction
       Caption = 'actClear'
+      Hint = 'Clear Notifications'
       ImageIndex = 1
       OnExecute = actClearExecute
     end

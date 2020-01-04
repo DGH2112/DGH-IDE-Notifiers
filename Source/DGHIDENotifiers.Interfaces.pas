@@ -29,7 +29,8 @@ Type
     ttComment,
     ttDirective,
     ttCompilerDirective,
-    ttPlainText
+    ttPlainText,
+    ttSelection
   );
 
   (** A recofrd to descrieb the font information required for rendering then text. **)
