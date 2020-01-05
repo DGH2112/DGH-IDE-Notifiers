@@ -5,7 +5,7 @@
 
   @Author  David Hoyle
   @Version 1.0
-  @date    04 Jan 2020
+  @date    05 Jan 2020
 
 **)
 Unit DGHIDENotifiers.DockableIDENotificationsForm;
@@ -745,7 +745,7 @@ Procedure TfrmDockableIDENotifications.CreateFilterButtons;
 Const
   iMaskColour = clLime;
   iBMSize = 16;
-  iPadding = 2;
+  iPadding = 1;
 
 Var
   iFilter: TDGHIDENotification;
