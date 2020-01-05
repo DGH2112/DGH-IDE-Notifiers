@@ -6,7 +6,7 @@
 
   @Author  David Hoyle
   @Version 1.0
-  @Date    04 Jan 2020
+  @Date    05 Jan 2020
 
 **)
 Unit DGHIDENotifiers.IDENotifier;
@@ -27,8 +27,9 @@ Type
   TDGHNotificationsIDENotifier = Class(TDGHNotifierObject, IOTAIDENotifier,
     IOTAIDENotifier50, IOTAIDENotifier80)
   Strict Private
-    FModuleNotifiers  : IDINModuleNotifierList;
-    FProjectNotifiers : IDINModuleNotifierList;
+    FModuleNotifiers         : IDINModuleNotifierList;
+    FProjectNotifiers        : IDINModuleNotifierList;
+    FProjectCompileNotifiers : IDINModuleNotifierList;
   {$IFDEF D2010} Strict {$ENDIF} Protected
     // IOTAIDENotifier
     Procedure FileNotification(NotifyCode: TOTAFileNotification;
@@ -43,6 +44,16 @@ Type
     // IOTAIDENotifier80
     Procedure AfterCompile(Const Project: IOTAProject; Succeeded:
       Boolean; IsCodeInsight: Boolean); Overload;
+    // General Methods
+    Procedure InstallModuleNotifier(Const M: IOTAModule; Const FileName: String);
+    Procedure UninstallModuleNotifier(Const M: IOTAModule;
+  Const FileName: String);
+    Procedure InstallProjectNotifier(Const M: IOTAModule; Const FileName: String);
+    Procedure UninstallProjectNotifier(Const M: IOTAModule; Const FileName: String);
+    {$IFDEF DXE00}
+    Procedure InstallProjectCompileNotifier(Const P: IOTAProject; Const FileName: String);
+    Procedure UninstallProjectCompileNotifier(Const P: IOTAProject; Const FileName: String);
+    {$ENDIF DXE00}
   Public
     Constructor Create(Const strNotifier, strFileName : String;
       Const iNotification : TDGHIDENotification); Override;
@@ -59,7 +70,7 @@ Uses
   DGHIDENotifiers.Common,
   DGHIDENotifiers.ModuleNotifier,
   DGHIDENotifiers.ProjectNotifier,
-  DGHIDENotifiers.FormNotifier;
+  DGHIDENotifiers.FormNotifier, DGHIDENotifiers.ProjectCompileNotifier;
 
 { TDGHNotifiersIDENotifications }
 
@@ -234,6 +245,7 @@ Begin
   Inherited Create(strNotifier, strFileName, iNotification);
   FModuleNotifiers := TDINModuleNotifierList.Create;
   FProjectNotifiers := TDINModuleNotifierList.Create;
+  FProjectCompileNotifiers := TDINModuleNotifierList.Create;
 End;
 
 (**
@@ -282,8 +294,6 @@ Const
     'ofnActiveProjectChanged' {$IFDEF DXE80},
     'ofnProjectOpenedFromTemplate' {$ENDIF}
   );
-  strIOTAProjectNotifier = 'IOTAProjectNotifier';
-  strIOTAModuleNotifier = 'IOTAModuleNotifier';
 
 ResourceString
   strFileNotificationNotify = '.FileNotification = NotifyCode: %s, FileName: %s, Cancel: %s';
@@ -292,9 +302,6 @@ Var
   MS : IOTAModuleServices;
   M : IOTAModule;
   P : IOTAProject;
-  MN : TDNModuleNotifier;
-  C : IDINModuleNotifierList;
-  iIndex : Integer;
 
 Begin
   DoNotification(
@@ -307,7 +314,6 @@ Begin
       ])
   );
   //: @bug Does not implement a Form Notifier!
-  //: @todo Needs to implement a ProjectCompileNotifier
   If Not Cancel And Supports(BorlandIDEServices, IOTAModuleServices, MS) Then
     Case NotifyCode Of
       ofnFileOpened:
@@ -315,30 +321,204 @@ Begin
           M := MS.OpenModule(FileName);
           If Supports(M, IOTAProject, P) Then
             Begin
-              MN := TDNProjectNotifier.Create(strIOTAProjectNotifier, FileName, dinProjectNotifier,
-                FProjectNotifiers);
-              FProjectNotifiers.Add(FileName, M.AddNotifier(MN));
+              InstallProjectNotifier(M, FileName);
+              InstallProjectCompileNotifier(P, FileName);
             End Else
             Begin
-              MN := TDNModuleNotifier.Create(strIOTAModuleNotifier, FileName, dinModuleNotifier,
-                FModuleNotifiers);
-              FModuleNotifiers.Add(FileName, M.AddNotifier(MN));
+              InstallModuleNotifier(M, FileName);
             End;
         End;
       ofnFileClosing:
         Begin
           M := MS.OpenModule(FileName);
           If Supports(M, IOTAProject, P) Then
-            C := FProjectNotifiers
-          Else
-            C := FModuleNotifiers;
-          iIndex := C.Remove(FileName);
-          If iIndex > -1 Then
-            M.RemoveNotifier(iIndex);
+            Begin
+              UninstallProjectNotifier(M, Filename);
+              UninstallProjectCompileNotifier(P, Filename);
+            End Else
+            Begin
+              UninstallModuleNotifier(M, Filename);
+            End;
         End;
     End;
 End;
 
+(**
+
+  This method installs the module notifiers.
+
+  @precon  M must be a valid instance.
+  @postcon A module notifier is created and associated with the given filename and added to the IDE and
+           then added to the Module Notifiers List.
+
+  @param   M        as an IOTAModule as a constant
+  @param   FileName as a String as a constant
+
+**)
+Procedure TDGHNotificationsIDENotifier.InstallModuleNotifier(Const M: IOTAModule; Const FileName:
+  String);
+
+Const
+  strIOTAModuleNotifier = 'IOTAModuleNotifier';
+
+Var
+  MN: IOTAModuleNotifier;
+  
+Begin
+  MN := TDNModuleNotifier.Create(
+    strIOTAModuleNotifier,
+    FileName,
+    dinModuleNotifier,
+    FModuleNotifiers
+    );
+  FModuleNotifiers.Add(FileName, M.AddNotifier(MN));
+End;
+
+{$IFDEF DXE00}
+(**
+
+  This method installs the project compile notifiers.
+
+  @precon  P must be a valid instance.
+  @postcon A project compile notifier is created and associated with the given filename and added to the
+           IDE and then added to the Project Compile Notifiers List.
+
+  @param   P        as an IOTAProject as a constant
+  @param   FileName as a String as a constant
+
+**)
+Procedure TDGHNotificationsIDENotifier.InstallProjectCompileNotifier(Const P: IOTAProject;
+  Const FileName: String);
+  
+Const
+  strIOTAProjectCompileNotifier = 'IOTAProjectCompileNotifier';
+  
+Var
+  PCN: IOTAProjectCompileNotifier;
+
+Begin
+  If Assigned(P.ProjectBuilder) Then
+    Begin
+      PCN := TDNProjectCompileNotifier.Create(
+        strIOTAProjectCompileNotifier,
+        FileName,
+        dinProjectCompileNotifier,
+        FProjectCompileNotifiers //: @bug This notifier cannot handle RENAME!!!
+      );
+      FProjectCompileNotifiers.Add(FileName, P.ProjectBuilder.AddCompileNotifier(PCN));
+    End;
+End;
+{$ENDIF DXE00}
+
+(**
+
+  This method installs the project notifiers.
+
+  @precon  M must be a valid instance.
+  @postcon A project notifier is created and associated with the given filename and added to the IDE and
+           then added to the Project Notifiers List.
+
+  @param   M        as an IOTAModule as a constant
+  @param   FileName as a String as a constant
+
+**)
+Procedure TDGHNotificationsIDENotifier.InstallProjectNotifier(Const M: IOTAModule; Const FileName:
+  String);
+
+Const
+  strIOTAProjectNotifier = 'IOTAProjectNotifier';
+  
+Var
+  MN: IOTAModuleNotifier;
+  
+Begin
+  MN := TDNProjectNotifier.Create(
+    strIOTAProjectNotifier,
+    FileName,
+    dinProjectNotifier,
+    FProjectNotifiers
+    );
+  FProjectNotifiers.Add(FileName, M.AddNotifier(MN));
+End;
+
+(**
+
+  This method uninstalls the Module Notifier associated with the filename and removes it from the Module
+  Notifier List.
+
+  @precon  M must be a valid instance.
+  @postcon The module notifier is removed from the IDE and then removed from the notifier list.
+
+  @param   M        as an IOTAModule as a constant
+  @param   FileName as a String as a constant
+
+**)
+Procedure TDGHNotificationsIDENotifier.UninstallModuleNotifier(Const M: IOTAModule;
+  Const FileName: String);
+
+Var
+  MNL: IDINModuleNotifierList;
+  iIndex: Integer;
+
+Begin
+  MNL := FModuleNotifiers;
+  iIndex := MNL.Remove(FileName);
+  If iIndex > -1 Then
+    M.RemoveNotifier(iIndex);
+End;
+
+{$IFDEF DXE00}
+(**
+
+  This method uninstalls the Project Compile Notifier associated with the filename and removes it from 
+  the Project Compile Notifier List.
+
+  @precon  P must be a valid instance.
+  @postcon The project compile notifier is removed from the IDE and then removed from the notifier list.
+
+  @param   P        as an IOTAProject as a constant
+  @param   FileName as a String as a constant
+
+**)
+Procedure TDGHNotificationsIDENotifier.UninstallProjectCompileNotifier(Const P: IOTAProject;
+  Const FileName: String);
+
+Var
+  MNL: IDINModuleNotifierList;
+  iIndex: Integer;
+
+Begin
+  MNL := FProjectCompileNotifiers;
+  iIndex := MNL.Remove(FileName);
+  If iIndex > -1 Then
+    P.ProjectBuilder.RemoveCompileNotifier(iIndex);
+End;
+{$ENDIF DXE00}
+
+(**
+
+  This method uninstalls the Project Notifier associated with the filename and removes it from the
+  Project Notifier List.
+
+  @precon  M must be a valid instance.
+  @postcon The project notifier is removed from the IDE and then removed from the project list.
+
+  @param   M        as an IOTAModule as a constant
+  @param   FileName as a String as a constant
+
+**)
+Procedure TDGHNotificationsIDENotifier.UninstallProjectNotifier(Const M: IOTAModule;
+  Const FileName: String);
+
+Var
+  MNL: IDINModuleNotifierList;
+  iIndex: Integer;
+
+Begin
+  MNL := FProjectNotifiers;
+  iIndex := MNL.Remove(FileName);
+  If iIndex > -1 Then
+    M.RemoveNotifier(iIndex);
+End;
+
 End.
-
-

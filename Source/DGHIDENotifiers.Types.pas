@@ -30,7 +30,8 @@ Type
     dinEditorNotifier,
     dinDebuggerNotifier,
     dinModuleNotifier,
-    dinProjectNotifier
+    dinProjectNotifier,
+    dinProjectCompileNotifier
   );
 
   (** A set of the above notification type so that they can be filtered. **)
@@ -84,14 +85,15 @@ Const
     //clLime // not used as its the BitMap mask colour
     clPurple,
     clFuchsia,
-    clDkGray
+    clDkGray,
+    clSilver
   );
 
   (** A constant array of boolean to provide a string representation of a boolean value. **)
   strBoolean: Array [Low(False) .. High(True)] Of String = ('False', 'True');
 
   (** A constant array of strings to provide string representation of each notification. **)
-  strNotificationLabel: Array [Low(TDGHIDENotification) .. High(TDGHIDENotification)] Of
+  strNotificationLabel: Array [TDGHIDENotification] Of
     String = (
     'Wizard Notifications',
     'Menu Wizard Notifications',
@@ -104,7 +106,8 @@ Const
     'Editor Notifications',
     'Debugger Notifications',
     'Module Notifications',
-    'Project Notifications'
+    'Project Notifications',
+    'Project Compile Notifications'
   );
 
 Implementation

@@ -50,7 +50,8 @@ uses
   DGHIDENotifiers.MessageTokens in 'Source\DGHIDENotifiers.MessageTokens.pas',
   DGHIDENotifiers.ModuleNotifierCollection in 'Source\DGHIDENotifiers.ModuleNotifierCollection.pas',
   DGHIDENotifiers.IDEEditorColours in 'Source\DGHIDENotifiers.IDEEditorColours.pas',
-  DGHIDENotifiers.Interfaces in 'Source\DGHIDENotifiers.Interfaces.pas';
+  DGHIDENotifiers.Interfaces in 'Source\DGHIDENotifiers.Interfaces.pas',
+  DGHIDENotifiers.ProjectCompileNotifier in 'Source\DGHIDENotifiers.ProjectCompileNotifier.pas';
 
 {$R *.res}
 

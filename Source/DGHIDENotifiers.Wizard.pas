@@ -23,10 +23,10 @@
    * IOTAModuleNotifier80           via IOTAModule40.AddNotifier();
    * IOTAModuleNotifier90           via IOTAModule40.AddNotifier();
    * IOTAProjectNotifier            via IOTAModule40.AddNotifier();
+   * IOTAProjectBuilder             via IOTAProjectBuilder.AddCompileNotifier();
 
   The following notifiers are STILL to be implemented:
    * IOTAFormNotifier, IOTAModule40.AddNotifier();
-   * IOTAProjectBuilder, IOTAProjectCompileNotifier = interface
    * IOTAEditor.AddNotifier(IOTANotifier)
    * IOTAToolsFilter.AddNotifier(IOTANotifier)... IOTAToolsFilterNotifier = interface(IOTANotifier)
    * IOTAEditBlock.AddNotifier(IOTASyncEditNotifier)
