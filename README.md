@@ -1,20 +1,16 @@
 # DGH IDE Notifications
 
-Author: David Hoyle
+Author:   David Hoyle
 
-Version: 1.1c
+Version:  1.1d
 
-Date: 05 Jan 2018
+Date:     05 Jan 2020
 
 Web Page: http://www.davidghoyle.co.uk/WordPress/?page_id=1449
 
+## Description
 
-
-Description
-
-This is a RAD Studio wizard / expert / plug-in which captures IDE notifications
-and logs them to a custom log window. It is intended to help you understand the
-notifications that occur in the IDE as you work.
+This is a RAD Studio wizard / expert / plug-in which captures IDE notifications and logs them to a custom log window. It is intended to help you understand the notifications that occur in the IDE as you work.
 
 The plug-in current implements the following notifiers:
  * IOTAIDENotifier;
@@ -32,6 +28,7 @@ The plug-in current implements the following notifiers:
  * IOTAModuleNotifier;
  * IOTAModuleNotifier80;
  * IOTAModuleNotifier90;
- * IOTAProjectNotifier.
+ * IOTAProjectNotifier;
+ * IOTAProjectCompileNotifier.
 
 More notifiers will be added in later releases.
