@@ -5,7 +5,7 @@
 
   @Author  David Hoyle
   @Version 1.0
-  @Date    04 Jan 2020
+  @Date    05 Jan 2020
   
 **)
 Unit DGHIDENotifiers.Interfaces;
@@ -57,6 +57,10 @@ Type
   ['{F22B94E8-CAEC-4BD8-B877-C793CA1308AA}']
     Function GetIDEEditorColours(Var iBGColour : TColor) : TDNTokenFontInfoTokenSet;
   End;
+
+  (** This is an event signature that need to the implemented by module and project notifiers so that
+      the module notifier lists can be updated. **)
+  TDNModuleRenameEvent = Procedure(Const strOldFilename, strNewFilename : String) Of Object;
 
 Implementation
 

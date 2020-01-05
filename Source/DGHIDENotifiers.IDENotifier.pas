@@ -54,6 +54,7 @@ Type
     Procedure InstallProjectCompileNotifier(Const P: IOTAProject; Const FileName: String);
     Procedure UninstallProjectCompileNotifier(Const P: IOTAProject; Const FileName: String);
     {$ENDIF DXE00}
+    Procedure RenameModule(Const strOldFilename, strNewFilename : String);
   Public
     Constructor Create(Const strNotifier, strFileName : String;
       Const iNotification : TDGHIDENotification); Override;
@@ -369,8 +370,8 @@ Begin
     strIOTAModuleNotifier,
     FileName,
     dinModuleNotifier,
-    FModuleNotifiers
-    );
+    RenameModule
+  );
   FModuleNotifiers.Add(FileName, M.AddNotifier(MN));
 End;
 
@@ -402,8 +403,7 @@ Begin
       PCN := TDNProjectCompileNotifier.Create(
         strIOTAProjectCompileNotifier,
         FileName,
-        dinProjectCompileNotifier,
-        FProjectCompileNotifiers //: @bug This notifier cannot handle RENAME!!!
+        dinProjectCompileNotifier
       );
       FProjectCompileNotifiers.Add(FileName, P.ProjectBuilder.AddCompileNotifier(PCN));
     End;
@@ -436,9 +436,28 @@ Begin
     strIOTAProjectNotifier,
     FileName,
     dinProjectNotifier,
-    FProjectNotifiers
-    );
+    RenameModule
+  );
   FProjectNotifiers.Add(FileName, M.AddNotifier(MN));
+End;
+
+(**
+
+  This method is a callback event for when a module is renamed by the IDE.
+
+  @precon  None.
+  @postcon Ebsures that the modules in the notifier lists are updated with the new filename.
+
+  @param   strOldFilename as a String as a constant
+  @param   strNewFilename as a String as a constant
+
+**)
+Procedure TDGHNotificationsIDENotifier.RenameModule(Const strOldFilename, strNewFilename: String);
+
+Begin
+  FModuleNotifiers.Rename(strOldFilename, strNewFilename);
+  FProjectNotifiers.Rename(strOldFilename, strNewFilename);
+  FProjectCompileNotifiers.Rename(strOldFilename, strNewFilename);
 End;
 
 (**

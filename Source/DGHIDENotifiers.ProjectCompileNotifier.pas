@@ -36,12 +36,6 @@ Type
     **)
     Property RenameModule : IDINModuleNotifierList Read FModuleNotiferList;
   Public
-    Constructor Create(
-      Const strNotifier, strFileName: String;
-      Const iNotification : TDGHIDENotification;
-      Const RenameModule: IDINModuleNotifierList
-    ); Reintroduce; Overload;
-    Destructor Destroy; Override;
   End;
 
 Implementation
@@ -117,45 +111,6 @@ Begin
         astrBoolean[CompileInfo.Result]
       ])
   );
-End;
-
-(**
-
-  A constructor for the TDNProjectCompileNotifier class.
-
-  @precon  RenameModule must be a valid instance.
-  @postcon Cals the inherited create and saves the RenameModule list for later renaming.
-
-  @bug     RENAMING WILL NOT WORK FROM HERE AS THERE IS NO RENAME EVENT / METHOD!
-
-  @param   strNotifier   as a String as a constant
-  @param   strFileName   as a String as a constant
-  @param   iNotification as a TDGHIDENotification as a constant
-  @param   RenameModule  as an IDINModuleNotifierList as a constant
-
-**)
-Constructor TDNProjectCompileNotifier.Create(Const strNotifier, strFileName: String;
-  Const iNotification: TDGHIDENotification; Const RenameModule: IDINModuleNotifierList);
-
-Begin
-  {$IFDEF CODESITE}CodeSite.TraceMethod(Self, 'Create', tmoTiming);{$ENDIF}
-  Inherited Create(strNotifier, strFileName, iNotification);
-  FModuleNotiferList := RenameModule;
-End;
-
-(**
-
-  A destructor for the TDNProjectCompileNotifier class.
-
-  @precon  None.
-  @postcon Does nothing.
-
-**)
-Destructor TDNProjectCompileNotifier.Destroy;
-
-Begin
-  {$IFDEF CODESITE}CodeSite.TraceMethod(Self, 'Destroy', tmoTiming);{$ENDIF}
-  Inherited Destroy;
 End;
 
 End.
