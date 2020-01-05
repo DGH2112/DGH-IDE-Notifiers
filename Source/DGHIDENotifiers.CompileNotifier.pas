@@ -6,7 +6,7 @@
 
   @Author  David Hoyle
   @Version 1.0
-  @Date    04 Jan 2020
+  @Date    05 Jan 2020
 
 **)
 Unit DGHIDENotifiers.CompileNotifier;
@@ -72,7 +72,7 @@ Procedure TDGHIDENotificationsCompileNotifier.ProjectCompileFinished(
   Const Project: IOTAProject; Result: TOTACompileResult);
 
 ResourceString
-  strIOTACompileNotifier = 'IOTACompileNotifier.ProjectCompileFinished = Project: %s, Result: %s';
+  strIOTACompileNotifier = '.ProjectCompileFinished = Project: %s, Result: %s';
 
 Begin
   DoNotification(
@@ -98,8 +98,7 @@ Procedure TDGHIDENotificationsCompileNotifier.ProjectCompileStarted(
   Const Project: IOTAProject; Mode: TOTACompileMode);
 
 ResourceString
-  strIOTACompileNotifierProjectCompileStarted = 'IOTACompileNotifier.ProjectCompileStarted = Project:' + 
-    ' %s, Mode: %s';
+  strIOTACompileNotifierProjectCompileStarted = '.ProjectCompileStarted = Project: %s, Mode: %s';
 
 Begin
   DoNotification(
@@ -124,8 +123,7 @@ Procedure TDGHIDENotificationsCompileNotifier.ProjectGroupCompileFinished(
   Result: TOTACompileResult);
 
 ResourceString
-  strIOTACompileNotifierProjectGroupCompileFinished = 'IOTACompileNotifier.' + 
-    'ProjectGroupCompileFinished = Result: %s';
+  strIOTACompileNotifierProjectGroupCompileFinished = '.ProjectGroupCompileFinished = Result: %s';
 
 Begin
   DoNotification(
@@ -150,8 +148,7 @@ Procedure TDGHIDENotificationsCompileNotifier.ProjectGroupCompileStarted(
   Mode: TOTACompileMode);
 
 ResourceString
-  strIOTACompileNotifierProjectGroupCompileStarted = 'IOTACompileNotifier.ProjectGroupCompileStarted ' + 
-    '= Mode: %s';
+  strIOTACompileNotifierProjectGroupCompileStarted = '.ProjectGroupCompileStarted = Mode: %s';
 
 Begin
   DoNotification(
