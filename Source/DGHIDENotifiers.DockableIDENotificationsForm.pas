@@ -64,8 +64,6 @@ Uses
   Generics.Collections,
   ExtCtrls,
   Themes,
-  System.Actions,
-  System.ImageList,
   DGHIDENotifiers.Interfaces;
 
 Type
@@ -143,7 +141,9 @@ Type
     {$ENDIF}
     FLastUpdate           : UInt64;
     FUpdateTimer          : TTimer;
+    {$IFDEF DXE102}
     FStyleServices        : TCustomStyleServices;
+    {$ENDIF DXE102}
     FIDEEditorColours     : IDNIDEEditorColours;
     FIDEEditorTokenInfo   : TDNTokenFontInfoTokenSet;
     FBackgroundColour     : TColor;
@@ -676,8 +676,10 @@ Const
   iPadding = 2;
   strTextHeightTest = 'Wg';
 
+{$IFDEF DXE102}
 Var
   ITS : IOTAIDEThemingServices250;
+{$ENDIF DXE102}
   
 Begin
   {$IFDEF CODESITE}CodeSite.TraceMethod('TfrmDockableIDENotifications.Create', tmoTiming);{$ENDIF}
@@ -688,7 +690,9 @@ Begin
   FIsFiltering := False;
   FCapture := True;
   FLastUpdate := 0;
+  {$IFDEF DXE102}
   FStyleServices := Nil;
+  {$ENDIF DXE102}
   LogView.NodeDataSize := SizeOf(TTreeNodeData);
   FMessageList := TList<TMsgNotification>.Create;
   FMessageFilter := [Low(TDGHIDENotification) .. High(TDGHIDENotification)];
@@ -696,12 +700,14 @@ Begin
   FIDEEditorColours := TITHIDEEditorColours.Create;
   RetreiveIDEEditorColours;
   LogView.DefaultNodeHeight := iPadding + LogView.Canvas.TextHeight(strTextHeightTest) + iPadding;
+  {$IFDEF DXE102}
   If Supports(BorlandIDEServices, IOTAIDEThemingServices250, ITS) Then
     Begin
       ITS.RegisterFormClass(TfrmDockableIDENotifications);
       ITS.ApplyTheme(Self);
       FStyleServices := ITS.StyleServices;
     End;
+  {$ENDIF DXE102}
   LoadSettings;
   {$IFDEF CODESITE}CodeSite.Enabled := False;{$ENDIF}
   LoadLogFile;
@@ -1038,8 +1044,10 @@ Procedure TfrmDockableIDENotifications.LogViewAfterCellPaint(Sender: TBaseVirtua
 
   Begin
     TargetCanvas.Font.Color := FIDEEditorTokenInfo[T.TokenType].FForeColour;
+    {$IFDEF DXE102}
     If Assigned(FStyleServices) Then
       TargetCanvas.Font.Color := FStyleServices.GetSystemColor(TargetCanvas.Font.Color);
+    {$ENDIF DXE102}
   End;
 
   (**
@@ -1076,8 +1084,10 @@ Procedure TfrmDockableIDENotifications.LogViewAfterCellPaint(Sender: TBaseVirtua
       TargetCanvas.Brush.Color := FIDEEditorTokenInfo[ttSelection].FBackColour
     Else
       TargetCanvas.Brush.Color := iBrushColour;
+    {$IFDEF DXE102}
     If Assigned(FStyleServices) Then
       TargetCanvas.Brush.Color := FStyleServices.GetSystemColor(TargetCanvas.Brush.Color);
+    {$ENDIF DXE102}
   End;
 
   (**
