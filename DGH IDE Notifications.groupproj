@@ -3,10 +3,10 @@
         <ProjectGuid>{1F3BB7DC-F91A-43A6-B9C7-280226808B64}</ProjectGuid>
     </PropertyGroup>
     <ItemGroup>
-        <Projects Include="DGHIDENotifiersXE102Tests.dproj">
+        <Projects Include="DGHIDENotifiersTests.dproj">
             <Dependencies/>
         </Projects>
-        <Projects Include="DLLs\DGHIDENotifiersXE102.dproj">
+        <Projects Include="DGHIDENotifiers.dproj">
             <Dependencies/>
         </Projects>
     </ItemGroup>
@@ -17,32 +17,32 @@
             <Default.Personality/>
         </BorlandProject>
     </ProjectExtensions>
-    <Target Name="DGHIDENotifiersXE102Tests">
-        <MSBuild Projects="DGHIDENotifiersXE102Tests.dproj"/>
+    <Target Name="DGHIDENotifiersTests">
+        <MSBuild Projects="DGHIDENotifiersTests.dproj"/>
     </Target>
-    <Target Name="DGHIDENotifiersXE102Tests:Clean">
-        <MSBuild Projects="DGHIDENotifiersXE102Tests.dproj" Targets="Clean"/>
+    <Target Name="DGHIDENotifiersTests:Clean">
+        <MSBuild Projects="DGHIDENotifiersTests.dproj" Targets="Clean"/>
     </Target>
-    <Target Name="DGHIDENotifiersXE102Tests:Make">
-        <MSBuild Projects="DGHIDENotifiersXE102Tests.dproj" Targets="Make"/>
+    <Target Name="DGHIDENotifiersTests:Make">
+        <MSBuild Projects="DGHIDENotifiersTests.dproj" Targets="Make"/>
     </Target>
-    <Target Name="DGHIDENotifiersXE102">
-        <MSBuild Projects="DLLs\DGHIDENotifiersXE102.dproj"/>
+    <Target Name="DGHIDENotifiers">
+        <MSBuild Projects="DGHIDENotifiers.dproj"/>
     </Target>
-    <Target Name="DGHIDENotifiersXE102:Clean">
-        <MSBuild Projects="DLLs\DGHIDENotifiersXE102.dproj" Targets="Clean"/>
+    <Target Name="DGHIDENotifiers:Clean">
+        <MSBuild Projects="DGHIDENotifiers.dproj" Targets="Clean"/>
     </Target>
-    <Target Name="DGHIDENotifiersXE102:Make">
-        <MSBuild Projects="DLLs\DGHIDENotifiersXE102.dproj" Targets="Make"/>
+    <Target Name="DGHIDENotifiers:Make">
+        <MSBuild Projects="DGHIDENotifiers.dproj" Targets="Make"/>
     </Target>
     <Target Name="Build">
-        <CallTarget Targets="DGHIDENotifiersXE102Tests;DGHIDENotifiersXE102"/>
+        <CallTarget Targets="DGHIDENotifiersTests;DGHIDENotifiers"/>
     </Target>
     <Target Name="Clean">
-        <CallTarget Targets="DGHIDENotifiersXE102Tests:Clean;DGHIDENotifiersXE102:Clean"/>
+        <CallTarget Targets="DGHIDENotifiersTests:Clean;DGHIDENotifiers:Clean"/>
     </Target>
     <Target Name="Make">
-        <CallTarget Targets="DGHIDENotifiersXE102Tests:Make;DGHIDENotifiersXE102:Make"/>
+        <CallTarget Targets="DGHIDENotifiersTests:Make;DGHIDENotifiers:Make"/>
     </Target>
     <Import Project="$(BDS)\Bin\CodeGear.Group.Targets" Condition="Exists('$(BDS)\Bin\CodeGear.Group.Targets')"/>
 </Project>

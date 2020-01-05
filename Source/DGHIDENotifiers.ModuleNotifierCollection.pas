@@ -4,16 +4,36 @@
 
   @Author  David Hoyle
   @Version 1.0
-  @Date    05 Jan 2018
+  @Date    05 Jan 2020
+
+  @license
+
+    DGH IDE Notifiers is a RAD Studio plug-in to logging RAD Studio IDE notifications
+    and to demostrate how to use various IDE notifiers.
+    
+    Copyright (C) 2019  David Hoyle (https://github.com/DGH2112/DGH-IDE-Notifiers/)
+
+    This program is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
+
+    This program is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
 **)
-Unit DGHIDENotifiersModuleNotiferCollection;
+Unit DGHIDENotifiers.ModuleNotifierCollection;
 
 Interface
 
 Uses
   Generics.Collections,
-  DGHIDENotificationTypes;
+  DGHIDENotifiers.Interfaces;
 
 {$INCLUDE 'CompilerDefinitions.inc'}
 
@@ -22,7 +42,7 @@ Type
   TDINModuleNotifierList = Class(TInterfacedObject, IDINModuleNotifierList)
   Strict Private
     Type
-      (** A record to describe the properties of a Module, project or Form notifier. **)
+      (** A record to describe the properties of a Module, project or Form notifier. @nohints **)
       TModuleNotifierRec = Record
       Strict Private
         FFileName      : String;
@@ -59,7 +79,7 @@ Type
 Implementation
 
 Uses
-  {$IFDEF CODESITE}
+  {$IFDEF DEBUG}
   CodeSiteLogging,
   {$ENDIF}
   SysUtils;
@@ -84,8 +104,6 @@ Begin
   FFileName := strFileName;
   FNotifierIndex := iIndex;
 End;
-
-{ TDINModuleNotifierList }
 
 (**
 
@@ -130,6 +148,9 @@ End;
 **)
 Destructor TDINModuleNotifierList.Destroy;
 
+ResourceString
+  strDestroyOrphanedModuleNotifier = 'Destroy(Orphaned Module Notifier)';
+
 Var
   iModule : Integer;
 
@@ -137,12 +158,12 @@ Begin
   {$IFDEF CODESITE}CodeSite.TraceMethod(Self, 'Destroy', tmoTiming);{$ENDIF}
   For iModule := FModuleNotifierList.Count - 1 DownTo 0 Do
     Begin
-      {$IFDEF CODESITE}
-      CodeSite.Send('Destroy(Orphaned Module Notifier)', FModuleNotifierList[iModule].FileName);
+      {$IFDEF DEBUG}
+      CodeSite.Send(csmWarning, strDestroyOrphanedModuleNotifier, FModuleNotifierList[iModule].FileName);
       {$ENDIF}
       FModuleNotifierList.Delete(iModule);
       //: @note Cannot remove any left over notifiers here as the module
-      //:       is most likely closed at ths point however there should be any anyway.
+      //:       is most likely closed at ths point however there should not be any anyway.
     End;
   FModuleNotifierList.Free;
   Inherited Destroy;

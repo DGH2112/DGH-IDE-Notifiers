@@ -5,16 +5,37 @@
 
   @Author  David Hoyle
   @Version 1.0
-  @Date    05 Jan 2018
+  @Date    05 Jan 2020
+
+  @license
+
+    DGH IDE Notifiers is a RAD Studio plug-in to logging RAD Studio IDE notifications
+    and to demostrate how to use various IDE notifiers.
+    
+    Copyright (C) 2019  David Hoyle (https://github.com/DGH2112/DGH-IDE-Notifiers/)
+
+    This program is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
+
+    This program is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
 **)
-Unit DGHIDENotifiersModuleNotifications;
+Unit DGHIDENotifiers.ModuleNotifier;
 
 Interface
 
 Uses
   ToolsAPI,
-  DGHIDENotificationTypes;
+  DGHIDENotifiers.Interfaces,
+  DGHIDENotifiers.Types;
 
 {$INCLUDE 'CompilerDefinitions.inc'}
 
@@ -23,7 +44,7 @@ Type
   TDNModuleNotifier = Class(TDGHNotifierObject, IOTAModuleNotifier, IOTAModuleNotifier80,
     IOTAModuleNotifier90)
   Strict Private
-    FModuleNotiferList: IDINModuleNotifierList;
+    FModuleRenameEvent: TDNModuleRenameEvent;
   {$IFDEF D2010} Strict {$ENDIF} Protected
     // IOTAModuleNotifier
     Function CheckOverwrite: Boolean;
@@ -42,19 +63,21 @@ Type
       collections of a change of module name.
       @precon  None.
       @postcon Returns the IDINRenameModule reference.
-      @return  an IDINModuleNotifierList
+      @return  a TDNModuleRenameEvent
     **)
-    Property RenameModule : IDINModuleNotifierList Read FModuleNotiferList;
+    Property ModuleRenameEvent : TDNModuleRenameEvent Read FModuleRenameEvent;
   Public
-    Constructor Create(Const strNotifier, strFileName: String;
-      Const iNotification : TDGHIDENotification; Const RenameModule: IDINModuleNotifierList);
-        Reintroduce; Overload;
+    Constructor Create(
+      Const strNotifier, strFileName: String;
+      Const iNotification : TDGHIDENotification;
+      Const ModuleRenameEvent: TDNModuleRenameEvent
+    ); Reintroduce; Overload;
   End;
 
 Implementation
 
 Uses
-  {$IFDEF CODESITE}
+  {$IFDEF DEBUG}
   CodeSiteLogging,
   {$ENDIF}
   SysUtils;
@@ -87,8 +110,8 @@ Begin
       ])
   );
   FileName := NewFileName;
-  If Assigned(RenameModule) Then
-    RenameModule.Rename(OldFileName, NewFileName);
+  If Assigned(ModuleRenameEvent) Then
+    ModuleRenameEvent(OldFileName, NewFileName);
 End;
 
 (**
@@ -170,19 +193,21 @@ End;
   @precon  None.
   @postcon Initialises the module.
 
-  @param   strNotifier   as a String as a constant
-  @param   strFileName   as a String as a constant
-  @param   iNotification as a TDGHIDENotification as a constant
-  @param   RenameModule  as an IDINModuleNotifierList as a constant
+  @param   strNotifier       as a String as a constant
+  @param   strFileName       as a String as a constant
+  @param   iNotification     as a TDGHIDENotification as a constant
+  @param   ModuleRenameEvent as a TDNModuleRenameEvent as a constant
 
 **)
-Constructor TDNModuleNotifier.Create(Const strNotifier, strFileName: String;
-  Const iNotification: TDGHIDENotification; Const RenameModule: IDINModuleNotifierList);
+Constructor TDNModuleNotifier.Create(
+  Const strNotifier, strFileName: String;
+  Const iNotification: TDGHIDENotification;
+  Const ModuleRenameEvent: TDNModuleRenameEvent);
 
 Begin
   {$IFDEF CODESITE}CodeSite.TraceMethod(Self, 'Create', tmoTiming);{$ENDIF}
   Inherited Create(strNotifier, strFileName, iNotification);
-  FModuleNotiferList := RenameModule;
+  FModuleRenameEvent := ModuleRenameEvent;
 End;
 
 (**

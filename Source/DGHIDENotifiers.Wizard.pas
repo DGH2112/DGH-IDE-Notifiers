@@ -23,9 +23,9 @@
    * IOTAModuleNotifier80           via IOTAModule40.AddNotifier();
    * IOTAModuleNotifier90           via IOTAModule40.AddNotifier();
    * IOTAProjectNotifier            via IOTAModule40.AddNotifier();
+   * IOTAProjectBuilder             via IOTAProjectBuilder.AddCompileNotifier();
 
   The following notifiers are STILL to be implemented:
-   * IOTANotifier = interface(IUnknown)
    * IOTAFormNotifier, IOTAModule40.AddNotifier();
    * IOTAEditor.AddNotifier(IOTANotifier)
    * IOTAToolsFilter.AddNotifier(IOTANotifier)... IOTAToolsFilterNotifier = interface(IOTANotifier)
@@ -38,23 +38,42 @@
    * IOTAProcessModule80.AddNotifier(IOTAProcessModNotifier)
    * IOTAProcess60.AddNotifier(IOTAProcessNotifier, IOTAProcessNotifier90)
    * IOTAToDoServices.AddNotifier(IOTAToDoManager)
-   * IOTAProjectBuilder, IOTAProjectCompileNotifier = interface
    * IOTADesignerCommandNotifier = interface(IOTANotifier)
    * IOTAProjectMenuItemCreatorNotifier = interface(IOTANotifier)
 
   @Author  David Hoyle
   @Version 1.0
-  @Date    05 Jan 2018
+  @Date    05 Jan 2020
+
+  @license
+
+    DGH IDE Notifiers is a RAD Studio plug-in to logging RAD Studio IDE notifications
+    and to demostrate how to use various IDE notifiers.
+    
+    Copyright (C) 2019  David Hoyle (https://github.com/DGH2112/DGH-IDE-Notifiers/)
+
+    This program is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
+
+    This program is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
 **)
-Unit DGHIDENotifiersWizard;
+Unit DGHIDENotifiers.Wizard;
 
 Interface
 
 Uses
   ToolsAPI,
   Graphics,
-  DGHIDENotificationTypes;
+  DGHIDENotifiers.Types;
 
 {$INCLUDE CompilerDefinitions.inc}
 {$R DGHIDENotITHVerInfo.RES ..\DGHIDENotITHVerInfo.RC}
@@ -90,24 +109,24 @@ Type
 Implementation
 
 Uses
-  {$IFDEF CODESITE}
+  {$IFDEF DEBUG}
   CodeSiteLogging,
   {$ENDIF}
   SysUtils,
   TypInfo,
-  DGHDockableIDENotificationsForm,
-  DGHIDENotifiersIDENotifications,
+  DGHIDENotifiers.DockableIDENotificationsForm,
+  DGHIDENotifiers.IDENotifier,
   {$IFDEF D2010}
-  DGHIDENotifiersVersionControlNotififications,
-  DGHIDENotifiersCompileNotifications,
-  DGHIDENotifiersIDEInsightNotifications,
+  DGHIDENotifiers.VersionControlNotifier,
+  DGHIDENotifiers.CompileNotifier,
+  DGHIDENotifiers.IDEInsightNotifier,
   {$ENDIF}
-  DGHIDENotifiersMessageNotifications,
-  DGHIDENotifiersProjectStorageNotifications,
-  DGHIDENotifiersEditorNotifications,
-  DGHIDENotifiersDebuggerNotifications,
-  DGHIDENotificationsSplashScreen,
-  DGHIDENotificationsAboutBox;
+  DGHIDENotifiers.MessageNotifier,
+  DGHIDENotifiers.ProjectStorageNotifier,
+  DGHIDENotifiers.EditorNotifier,
+  DGHIDENotifiers.DebuggerNotifier,
+  DGHIDENotifiers.SplashScreen,
+  DGHIDENotifiers.AboutBox;
 
 (**
 

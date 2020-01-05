@@ -5,10 +5,30 @@
 
   @Author  David Hoyle
   @Version 1.0
-  @Date    05 Jan 2018
+  @Date    05 Jan 2020
+
+  @license
+
+    DGH IDE Notifiers is a RAD Studio plug-in to logging RAD Studio IDE notifications
+    and to demostrate how to use various IDE notifiers.
+    
+    Copyright (C) 2019  David Hoyle (https://github.com/DGH2112/DGH-IDE-Notifiers/)
+
+    This program is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
+
+    This program is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
 **)
-Unit DGHIDENotifiersMessageTokens;
+Unit DGHIDENotifiers.MessageTokens;
 
 Interface
 
@@ -22,12 +42,10 @@ Uses
   {$IFDEF REGULAREXPRESSIONS}
   RegularExpressions,
   {$ENDIF}
-  Generics.Collections;
+  Generics.Collections,
+  DGHIDENotifiers.Interfaces;
 
 Type
-  (** An enumerate to define the type of token. **)
-  TDNTokenType = (ttIdentifier, ttKeyword, ttSymbol, ttSpace, ttUnknown);
-
   (** A record to describe the information required to be stored for a message token. **)
   TDNToken = Record
   Strict Private
@@ -375,7 +393,7 @@ Begin
           End;
         End;
       SetLength(strToken, iTokenLen);
-      AddToken(strToken, ttKeyword, iPosition);
+      AddToken(strToken, ttReservedWord, iPosition);
     End;
 End;
 
@@ -464,6 +482,8 @@ Var
   strToken : String;
   iTokenLen : Integer;
   iPosition: Integer;
+  dblValue : Double;
+  iErrorCode : Integer;
 
 Begin
   ParseIdentifier;
@@ -487,7 +507,11 @@ Begin
           Inc(FMsgPos);
         End;
       SetLength(strToken, iTokenLen);
-      AddToken(strToken, ttIdentifier, iPosition);
+      Val(strToken, dblValue, iErrorCode);
+      If iErrorCode = 0 Then
+        AddToken(strToken, ttNumber, iPosition)
+      Else
+        AddToken(strToken, ttIdentifier, iPosition);
     End;
 End;
 
@@ -563,7 +587,7 @@ Procedure TDNMessageTokenizer.ParseSpace;
 Begin
   If GetCurChar = #32 Then
     Begin
-      AddToken(GetCurChar, ttSpace, FMsgPos);
+      AddToken(GetCurChar, ttWhiteSpace, FMsgPos);
       Inc(FMsgPos);
     End;
 End;

@@ -6,16 +6,36 @@
 
   @Author  David Hoyle
   @Version 1.0
-  @Date    05 Jan 2018
+  @Date    05 Jan 2020
+
+  @license
+
+    DGH IDE Notifiers is a RAD Studio plug-in to logging RAD Studio IDE notifications
+    and to demostrate how to use various IDE notifiers.
+    
+    Copyright (C) 2019  David Hoyle (https://github.com/DGH2112/DGH-IDE-Notifiers/)
+
+    This program is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
+
+    This program is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
 **)
-Unit DGHIDENotifiersCompileNotifications;
+Unit DGHIDENotifiers.CompileNotifier;
 
 Interface
 
 Uses
   ToolsAPI,
-  DGHIDENotificationTypes;
+  DGHIDENotifiers.Types;
 
 {$INCLUDE 'CompilerDefinitions.inc'}
 
@@ -40,7 +60,7 @@ Implementation
 
 Uses
   SysUtils,
-  DGHIDENotificationsCommon;
+  DGHIDENotifiers.Common;
 
 {$IFDEF D2010}
 Const
@@ -72,7 +92,7 @@ Procedure TDGHIDENotificationsCompileNotifier.ProjectCompileFinished(
   Const Project: IOTAProject; Result: TOTACompileResult);
 
 ResourceString
-  strIOTACompileNotifier = 'IOTACompileNotifier.ProjectCompileFinished = Project: %s, Result: %s';
+  strIOTACompileNotifier = '.ProjectCompileFinished = Project: %s, Result: %s';
 
 Begin
   DoNotification(
@@ -98,8 +118,7 @@ Procedure TDGHIDENotificationsCompileNotifier.ProjectCompileStarted(
   Const Project: IOTAProject; Mode: TOTACompileMode);
 
 ResourceString
-  strIOTACompileNotifierProjectCompileStarted = 'IOTACompileNotifier.ProjectCompileStarted = Project:' + 
-    ' %s, Mode: %s';
+  strIOTACompileNotifierProjectCompileStarted = '.ProjectCompileStarted = Project: %s, Mode: %s';
 
 Begin
   DoNotification(
@@ -124,8 +143,7 @@ Procedure TDGHIDENotificationsCompileNotifier.ProjectGroupCompileFinished(
   Result: TOTACompileResult);
 
 ResourceString
-  strIOTACompileNotifierProjectGroupCompileFinished = 'IOTACompileNotifier.' + 
-    'ProjectGroupCompileFinished = Result: %s';
+  strIOTACompileNotifierProjectGroupCompileFinished = '.ProjectGroupCompileFinished = Result: %s';
 
 Begin
   DoNotification(
@@ -150,8 +168,7 @@ Procedure TDGHIDENotificationsCompileNotifier.ProjectGroupCompileStarted(
   Mode: TOTACompileMode);
 
 ResourceString
-  strIOTACompileNotifierProjectGroupCompileStarted = 'IOTACompileNotifier.ProjectGroupCompileStarted ' + 
-    '= Mode: %s';
+  strIOTACompileNotifierProjectGroupCompileStarted = '.ProjectGroupCompileStarted = Mode: %s';
 
 Begin
   DoNotification(
