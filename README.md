@@ -8,9 +8,17 @@ Date:     05 Jan 2020
 
 Web Page: http://www.davidghoyle.co.uk/WordPress/?page_id=1449
 
-## Description
+## Overview
 
-This is a RAD Studio wizard / expert / plug-in which captures IDE notifications and logs them to a custom log window. It is intended to help you understand the notifications that occur in the IDE as you work.
+The purpose of the RAD Studio IDE plug-in is to capture RAD Studio IDE notifications so that you can see what happens as the IDE is used. It also provide the code to allow  you to understand how these notifiers are implemented so that you can implement them in your own plug-ins.
+
+## Use
+
+For a full list of instructions on how to use this tool please refer to the web page above.
+
+## Current Limitations
+
+The plug-in currently only implements the following notifiers:
 
 The plug-in current implements the following notifiers:
  * IOTAIDENotifier;
@@ -32,3 +40,7 @@ The plug-in current implements the following notifiers:
  * IOTAProjectCompileNotifier.
 
 More notifiers will be added in later releases.
+
+## Source Code and Binaries
+
+You can download a binary of this project if you don't want to compile it yourself from the web page above.
