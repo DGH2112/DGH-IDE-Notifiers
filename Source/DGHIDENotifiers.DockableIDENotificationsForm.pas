@@ -7,6 +7,26 @@
   @Version 1.0
   @date    05 Jan 2020
 
+  @license
+
+    DGH IDE Notifiers is a RAD Studio plug-in to logging RAD Studio IDE notifications
+    and to demostrate how to use various IDE notifiers.
+    
+    Copyright (C) 2019  David Hoyle (https://github.com/DGH2112/DGH-IDE-Notifiers/)
+
+    This program is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
+
+    This program is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with this program.  If not, see <https://www.gnu.org/licenses/>.
+
 **)
 Unit DGHIDENotifiers.DockableIDENotificationsForm;
 
@@ -44,8 +64,6 @@ Uses
   Generics.Collections,
   ExtCtrls,
   Themes,
-  System.Actions,
-  System.ImageList,
   DGHIDENotifiers.Interfaces;
 
 Type
@@ -123,7 +141,9 @@ Type
     {$ENDIF}
     FLastUpdate           : UInt64;
     FUpdateTimer          : TTimer;
+    {$IFDEF DXE102}
     FStyleServices        : TCustomStyleServices;
+    {$ENDIF DXE102}
     FIDEEditorColours     : IDNIDEEditorColours;
     FIDEEditorTokenInfo   : TDNTokenFontInfoTokenSet;
     FBackgroundColour     : TColor;
@@ -656,8 +676,10 @@ Const
   iPadding = 2;
   strTextHeightTest = 'Wg';
 
+{$IFDEF DXE102}
 Var
   ITS : IOTAIDEThemingServices250;
+{$ENDIF DXE102}
   
 Begin
   {$IFDEF CODESITE}CodeSite.TraceMethod('TfrmDockableIDENotifications.Create', tmoTiming);{$ENDIF}
@@ -668,7 +690,9 @@ Begin
   FIsFiltering := False;
   FCapture := True;
   FLastUpdate := 0;
+  {$IFDEF DXE102}
   FStyleServices := Nil;
+  {$ENDIF DXE102}
   LogView.NodeDataSize := SizeOf(TTreeNodeData);
   FMessageList := TList<TMsgNotification>.Create;
   FMessageFilter := [Low(TDGHIDENotification) .. High(TDGHIDENotification)];
@@ -676,12 +700,14 @@ Begin
   FIDEEditorColours := TITHIDEEditorColours.Create;
   RetreiveIDEEditorColours;
   LogView.DefaultNodeHeight := iPadding + LogView.Canvas.TextHeight(strTextHeightTest) + iPadding;
+  {$IFDEF DXE102}
   If Supports(BorlandIDEServices, IOTAIDEThemingServices250, ITS) Then
     Begin
       ITS.RegisterFormClass(TfrmDockableIDENotifications);
       ITS.ApplyTheme(Self);
       FStyleServices := ITS.StyleServices;
     End;
+  {$ENDIF DXE102}
   LoadSettings;
   {$IFDEF CODESITE}CodeSite.Enabled := False;{$ENDIF}
   LoadLogFile;
@@ -1018,8 +1044,10 @@ Procedure TfrmDockableIDENotifications.LogViewAfterCellPaint(Sender: TBaseVirtua
 
   Begin
     TargetCanvas.Font.Color := FIDEEditorTokenInfo[T.TokenType].FForeColour;
+    {$IFDEF DXE102}
     If Assigned(FStyleServices) Then
       TargetCanvas.Font.Color := FStyleServices.GetSystemColor(TargetCanvas.Font.Color);
+    {$ENDIF DXE102}
   End;
 
   (**
@@ -1056,8 +1084,10 @@ Procedure TfrmDockableIDENotifications.LogViewAfterCellPaint(Sender: TBaseVirtua
       TargetCanvas.Brush.Color := FIDEEditorTokenInfo[ttSelection].FBackColour
     Else
       TargetCanvas.Brush.Color := iBrushColour;
+    {$IFDEF DXE102}
     If Assigned(FStyleServices) Then
       TargetCanvas.Brush.Color := FStyleServices.GetSystemColor(TargetCanvas.Brush.Color);
+    {$ENDIF DXE102}
   End;
 
   (**
