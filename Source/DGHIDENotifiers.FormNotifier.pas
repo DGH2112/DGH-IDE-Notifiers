@@ -4,8 +4,8 @@
   changes.
 
   @Author  David Hoyle
-  @Version 1.0
-  @Date    05 Jan 2020
+  @Version 1.008
+  @Date    08 Feb 2020
   
   @license
 
@@ -38,7 +38,7 @@ Uses
 
 Type
   (** A class to implement an IOTAFormNotifier interface. **)
-  TDNFormNotifier = Class(TDNModuleNotifier, IOTAFormNotifier)
+  TDINFormNotifier = Class(TDNModuleNotifier, IInterface, IOTANotifier, IOTAFormNotifier)
   Strict Private
   {$IFDEF D2010} Strict {$ENDIF} Protected
     Procedure ComponentRenamed(ComponentHandle: Pointer; Const OldName: String; Const NewName: String);
@@ -68,7 +68,7 @@ Uses
   @param   NewName         as a String as a constant
 
 **)
-Procedure TDNFormNotifier.ComponentRenamed(ComponentHandle: Pointer; Const OldName,
+Procedure TDINFormNotifier.ComponentRenamed(ComponentHandle: Pointer; Const OldName,
   NewName: String);
 
 ResourceString
@@ -95,7 +95,7 @@ End;
   @postcon A notifications is output.
 
 **)
-Procedure TDNFormNotifier.FormActivated;
+Procedure TDINFormNotifier.FormActivated;
 
 ResourceString
   strFormActivated = '.FormActivated';
@@ -112,7 +112,7 @@ End;
   @postcon A notifications is output.
 
 **)
-Procedure TDNFormNotifier.FormSaving;
+Procedure TDINFormNotifier.FormSaving;
 
 ResourceString
   strFormSaving = '.FormSaving';

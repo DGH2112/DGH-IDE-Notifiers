@@ -5,8 +5,8 @@
   RAD Studio IDE.
 
   @Author  David Hoyle
-  @Version 1.0
-  @Date    05 Jan 2020
+  @Version 1.291
+  @Date    08 Feb 2020
 
   @license
 
@@ -50,6 +50,8 @@ Type
     FModuleNotifiers         : IDINModuleNotifierList;
     FProjectNotifiers        : IDINModuleNotifierList;
     FProjectCompileNotifiers : IDINModuleNotifierList;
+    FSourceEditorNotifiers   : IDINModuleNotifierList;
+    FFormEditorNotifiers     : IDINModuleNotifierList;
   {$IFDEF D2010} Strict {$ENDIF} Protected
     // IOTAIDENotifier
     Procedure FileNotification(NotifyCode: TOTAFileNotification;
@@ -74,8 +76,11 @@ Type
     Procedure UninstallProjectCompileNotifier(Const P: IOTAProject; Const FileName: String);
     {$ENDIF DXE00}
     Procedure RenameModule(Const strOldFilename, strNewFilename : String);
+    Procedure InstallEditorNotifiers(Const M : IOTAModule);
+    Procedure UninstallEditorNotifiers(Const M : IOTAModule);
   Public
-    Constructor Create(Const strNotifier, strFileName : String;
+    Constructor Create(
+      Const strNotifier, strFileName : String;
       Const iNotification : TDGHIDENotification); Override;
     Destructor Destroy; Override;
   End;
@@ -90,9 +95,9 @@ Uses
   DGHIDENotifiers.Common,
   DGHIDENotifiers.ModuleNotifier,
   DGHIDENotifiers.ProjectNotifier,
-  DGHIDENotifiers.FormNotifier, DGHIDENotifiers.ProjectCompileNotifier;
-
-{ TDGHNotifiersIDENotifications }
+  DGHIDENotifiers.FormNotifier,
+  DGHIDENotifiers.ProjectCompileNotifier,
+  DGHIDENotifiers.SourceEditorNotifier;
 
 (**
 
@@ -266,6 +271,8 @@ Begin
   FModuleNotifiers := TDINModuleNotifierList.Create;
   FProjectNotifiers := TDINModuleNotifierList.Create;
   FProjectCompileNotifiers := TDINModuleNotifierList.Create;
+  FSourceEditorNotifiers := TDINModuleNotifierList.Create;
+  FFormEditorNotifiers := TDINModuleNotifierList.Create;
 End;
 
 (**
@@ -333,7 +340,6 @@ Begin
         strBoolean[Cancel]
       ])
   );
-  //: @bug Does not implement a Form Notifier!
   If Not Cancel And Supports(BorlandIDEServices, IOTAModuleServices, MS) Then
     Case NotifyCode Of
       ofnFileOpened:
@@ -360,6 +366,45 @@ Begin
               UninstallModuleNotifier(M, Filename);
             End;
         End;
+    End;
+End;
+
+(**
+
+  This method installed the Editor notifiers. The module files are queried to see if they support either
+  the IOTASourceEditor or IOTAFormEditor interfaces and the notifiers are installed via those.
+
+  @precon  M must be a valid instance.
+  @postcon Editor or Form notifier are installed for the modules files.
+
+  @param   M as an IOTAModule as a constant
+
+**)
+Procedure TDGHNotificationsIDENotifier.InstallEditorNotifiers(Const M: IOTAModule);
+
+Const
+  strIOTAEditViewNotifier = 'IOTAEditViewNotifier';
+  strIOTAFormNotifier = 'IOTAFormNotifier';
+
+Var
+  i : Integer;
+  E: IOTAEditor;
+  SE : IOTASourceEditor;
+  FE : IOTAFormEditor;
+  
+Begin
+  {$IFDEF CODESITE}CodeSite.TraceMethod(Self, 'InstallEditorNotifier', tmoTiming);{$ENDIF}
+  For i := 0 To M.GetModuleFileCount - 1 Do
+    Begin
+      E := M.GetModuleFileEditor(i);
+      If Supports(E, IOTASourceEditor, SE) Then
+        FSourceEditorNotifiers.Add(M.FileName, SE.AddNotifier(
+          TDINSourceEditorNotifier.Create(strIOTAEditViewNotifier, M.FileName, dinSourceEditorNotifier)
+        ));
+      If Supports(E, IOTAFormEditor, FE) Then
+        FFormEditorNotifiers.Add(M.FileName, FE.AddNotifier(
+          TDINFormNotifier.Create(strIOTAFormNotifier, M.FileName, dinFormNotifier)
+        ));
     End;
 End;
 
@@ -392,6 +437,7 @@ Begin
     RenameModule
   );
   FModuleNotifiers.Add(FileName, M.AddNotifier(MN));
+  InstallEditorNotifiers(M);
 End;
 
 {$IFDEF DXE00}
@@ -477,6 +523,47 @@ Begin
   FModuleNotifiers.Rename(strOldFilename, strNewFilename);
   FProjectNotifiers.Rename(strOldFilename, strNewFilename);
   FProjectCompileNotifiers.Rename(strOldFilename, strNewFilename);
+  FSourceEditorNotifiers.Rename(strOldFilename, strNewFilename);
+  FFormEditorNotifiers.Rename(strOldFilename, strNewFilename);
+End;
+
+(**
+
+  This method uninstalls the editor notifiers.
+
+  @precon  M must be a valid instance.
+  @postcon The editor notifiers are removed from the IDE.
+
+  @param   M as an IOTAModule as a constant
+
+**)
+Procedure TDGHNotificationsIDENotifier.UninstallEditorNotifiers(Const M: IOTAModule);
+
+Var
+  i: Integer;
+  E: IOTAEditor;
+  SE : IOTASourceEditor;
+  FE : IOTAFormEditor;
+  iIndex: Integer;
+
+Begin
+  {$IFDEF CODESITE}CodeSite.TraceMethod(Self, 'UninstallEditorNotifier', tmoTiming);{$ENDIF}
+  For i := 0 To M.GetModuleFileCount - 1 Do
+    Begin
+      E := M.GetModuleFileEditor(i);
+      If Supports(E, IOTASourceEditor, SE) Then
+        Begin
+          iIndex := FSourceEditorNotifiers.Remove(M.FileName);
+          If iIndex > -1 Then
+            SE.RemoveNotifier(iIndex);
+        End;
+      If Supports(E, IOTAFormEditor, FE) Then
+        Begin
+          iIndex := FFormEditorNotifiers.Remove(M.FileName);
+          If iIndex > -1 Then
+            FE.RemoveNotifier(iIndex);
+        End;
+    End;
 End;
 
 (**
@@ -503,6 +590,7 @@ Begin
   iIndex := MNL.Remove(FileName);
   If iIndex > -1 Then
     M.RemoveNotifier(iIndex);
+  UninstallEditorNotifiers(M);
 End;
 
 {$IFDEF DXE00}
