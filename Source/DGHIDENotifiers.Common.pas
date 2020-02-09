@@ -4,8 +4,8 @@
   plug-ins build information for the splash screen and about box.
 
   @Author  David Hoyle
-  @Version 1.0
-  @Date    05 Jan 2020
+  @Version 1.025
+  @Date    09 Feb 2020
 
   @license
 
@@ -45,8 +45,13 @@ Resourcestring
   strRevision = ' abcdefghijklmnopqrstuvwxyz';
   (** This resource string is used in the splash screen and about box entries. **)
   strSplashScreenName = 'DGH IDE Notifications %d.%d%s for %s';
+  {$IFDEF DEBUG}
   (** This resource string is used in the splash screen and about box entries. **)
-  strSplashScreenBuild = 'Freeware by David Hoyle (Build %d.%d.%d.%d)';
+  strSplashScreenBuild = 'David Hoyle (c) 2020 License GNU GPL3 (DEBUG Build %d.%d.%d.%d)';
+  {$ELSE}
+  (** This resource string is used in the splash screen and about box entries. **)
+  strSplashScreenBuild = 'David Hoyle (c) 2020 License GNU GPL3 (Build %d.%d.%d.%d)';
+  {$ENDIF}
 
 Const
   (** A constant to define the failed state for a notifier not installed. **)

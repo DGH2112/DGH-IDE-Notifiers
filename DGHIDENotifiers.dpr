@@ -73,7 +73,8 @@ uses
   DGHIDENotifiers.Interfaces in 'Source\DGHIDENotifiers.Interfaces.pas',
   DGHIDENotifiers.ProjectCompileNotifier in 'Source\DGHIDENotifiers.ProjectCompileNotifier.pas',
   DGHIDENotifiers.SourceEditorNotifier in 'Source\DGHIDENotifiers.SourceEditorNotifier.pas',
-  DGHIDENotifiers.EditViewNotifier in 'Source\DGHIDENotifiers.EditViewNotifier.pas';
+  DGHIDENotifiers.EditViewNotifier in 'Source\DGHIDENotifiers.EditViewNotifier.pas',
+  DGHIDENotifiers.AboutDlg in 'Source\DGHIDENotifiers.AboutDlg.pas' {frmDINAboutDlg};
 
 {$R *.res}
 
