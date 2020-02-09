@@ -3,7 +3,7 @@
   This module contains a class which represents a form for displaying information about the application.
 
   @Author  David Hoyle
-  @Version 1.073
+  @Version 1.074
   @Date    09 Feb 2020
   
 **)
@@ -25,7 +25,7 @@ Uses
   Vcl.Dialogs,
   Vcl.StdCtrls,
   Vcl.Buttons,
-  Vcl.ExtCtrls, System.ImageList, Vcl.ImgList;
+  Vcl.ExtCtrls;
 
 Type
   (** A class to represent the about form. **)
