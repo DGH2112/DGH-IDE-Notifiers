@@ -4,8 +4,8 @@
   all the notifiers can log messages with the notification logging window.
 
   @Author  David Hoyle
-  @Version 1.0
-  @Date    05 Jan 2020
+  @Version 1.049
+  @Date    09 Feb 2020
 
   @license
 
@@ -51,7 +51,10 @@ Type
     dinDebuggerNotifier,
     dinModuleNotifier,
     dinProjectNotifier,
-    dinProjectCompileNotifier
+    dinProjectCompileNotifier,
+    dinSourceEditorNotifier,
+    dinFormNotifier,
+    dinEditViewNotifier
   );
 
   (** A set of the above notification type so that they can be filtered. **)
@@ -106,7 +109,10 @@ Const
     clPurple,
     clFuchsia,
     clDkGray,
-    clSilver
+    clSilver,
+    $FFFF80,
+    $FF80FF,
+    $80FFFF
   );
 
   (** A constant array of boolean to provide a string representation of a boolean value. **)
@@ -127,7 +133,10 @@ Const
     'Debugger Notifications',
     'Module Notifications',
     'Project Notifications',
-    'Project Compile Notifications'
+    'Project Compile Notifications',
+    'Source Editor Notifications',
+    'Form Notifications',
+    'Edit View Notifier'
   );
 
 Implementation
