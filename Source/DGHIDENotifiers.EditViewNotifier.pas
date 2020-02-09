@@ -3,9 +3,29 @@
   This module contains a class which implements the IOTAEditViewNotifier for draweing on the code editor.
 
   @Author  David Hoyle
-  @Version 1.489
+  @Version 1.676
   @Date    09 Feb 2020
   
+  @license
+
+    DGH IDE Notifiers is a RAD Studio plug-in to logging RAD Studio IDE notifications
+    and to demostrate how to use various IDE notifiers.
+    
+    Copyright (C) 2019  David Hoyle (https://github.com/DGH2112/DGH-IDE-Notifiers/)
+
+    This program is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
+
+    This program is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with this program.  If not, see <https://www.gnu.org/licenses/>.
+
 **)
 Unit DGHIDENotifiers.EditViewNotifier;
 
@@ -124,6 +144,29 @@ Begin
   );
 End;
 
+(**
+
+  This method is called for each line in the editor to be painted. The information you want to paint here
+  should be already cached else you will impact the performance of the rendering of the code editor.
+
+  @precon  None.
+  @postcon Use this method to paint on the editor using the given information.
+
+  @nocheck MissingCONSTInParam
+  @nohint  LineText LineAttributes Canvas TextRect LineRect CellSize
+  @nometrics
+
+  @param   View           as an IOTAEditView as a constant
+  @param   LineNumber     as an Integer
+  @param   LineText       as a PAnsiChar as a constant
+  @param   TextWidth      as a Word as a constant
+  @param   LineAttributes as a TOTAAttributeArray as a constant
+  @param   Canvas         as a TCanvas as a constant
+  @param   TextRect       as a TRect as a constant
+  @param   LineRect       as a TRect as a constant
+  @param   CellSize       as a TSize as a constant
+
+**)
 Procedure TDINEditViewNotifier.PaintLine(Const View: IOTAEditView; LineNumber: Integer;
   Const LineText: PAnsiChar; Const TextWidth: Word; Const LineAttributes: TOTAAttributeArray;
   Const Canvas: TCanvas; Const TextRect, LineRect: TRect; Const CellSize: TSize);
