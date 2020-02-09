@@ -2,7 +2,7 @@
 
 Author:   David Hoyle (davidghoyle@gmail.com / [DGH2112](https://github.com/DGH2112))
 
-Version:  1.1e
+Version:  1.1f
 
 Date:     09 Feb 2020
 
