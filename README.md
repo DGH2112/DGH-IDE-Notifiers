@@ -2,11 +2,11 @@
 
 Author:   David Hoyle
 
-Version:  1.1d
+Version:  1.1e
 
-Date:     05 Jan 2020
+Date:     09 Feb 2020
 
-Web Page: http://www.davidghoyle.co.uk/WordPress/?page_id=1449
+Web Page: [DGH IDE Notifiers](http://www.davidghoyle.co.uk/WordPress/?page_id=1449)
 
 ## Overview
 
@@ -21,23 +21,27 @@ For a full list of instructions on how to use this tool please refer to the web 
 The plug-in currently only implements the following notifiers:
 
 The plug-in current implements the following notifiers:
- * IOTAIDENotifier;
- * IOTAVersionControlNotifier;
- * IOTACompileNotifier;
- * IOTAIDEInsightNotifier;
- * IOTAMessageNotifier;
- * IOTAProjectFileStorageNotifier;
- * IOTAEditorNotifier;
- * INTAEditServicesNotifier;
- * IOTADebuggerNotifier;
- * IOTADebuggerNotifier90;
- * IOTADebuggerNotifier100;
- * IOTADebuggerNotifier110;
- * IOTAModuleNotifier;
- * IOTAModuleNotifier80;
- * IOTAModuleNotifier90;
- * IOTAProjectNotifier;
- * IOTAProjectCompileNotifier.
+
+* IOTAIDENotifier;
+* IOTAVersionControlNotifier;
+* IOTACompileNotifier;
+* IOTAIDEInsightNotifier;
+* IOTAMessageNotifier;
+* IOTAProjectFileStorageNotifier;
+* IOTAEditorNotifier;
+* INTAEditServicesNotifier;
+* IOTADebuggerNotifier;
+* IOTADebuggerNotifier90;
+* IOTADebuggerNotifier100;
+* IOTADebuggerNotifier110;
+* IOTAModuleNotifier;
+* IOTAModuleNotifier80;
+* IOTAModuleNotifier90;
+* IOTAProjectNotifier;
+* IOTAProjectCompileNotifier;
+* IOTAEditorNotifier;
+* IOTAFormEditorNotifier;
+* INTAEditViewNotifier.
 
 More notifiers will be added in later releases.
 
