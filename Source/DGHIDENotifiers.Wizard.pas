@@ -24,7 +24,7 @@
    * IOTAModuleNotifier90           via IOTAModule40.AddNotifier();
    * IOTAProjectNotifier            via IOTAModule40.AddNotifier();
    * IOTAProjectBuilderNotifier     via IOTAProjectBuilder.AddCompileNotifier();
-   * IOTAEditViewNotifier           via IOTASourceEditor.AddNotifier()
+   * IOTAEditorNotifier             via IOTASourceEditor.AddNotifier()
    * IOTAFormNotifier               via IOTAFormEditor.AddNotifier()
    * INTAEditViewNotifier           via IOTAEditView.AddNotifier()
 

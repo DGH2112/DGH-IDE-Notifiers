@@ -1,12 +1,12 @@
 # DGH IDE Notifications
 
-Author:   David Hoyle (davidghoyle@gmail.com / https://github.com/DGH2112)
+Author:   David Hoyle (davidghoyle@gmail.com / [DGH2112](https://github.com/DGH2112))
 
-Version:  1.1d
+Version:  1.1e
 
-Date:     05 Jan 2020
+Date:     09 Feb 2020
 
-Web Page: http://www.davidghoyle.co.uk/WordPress/?page_id=1449
+Web Page: [DGH IDE Notifiers](http://www.davidghoyle.co.uk/WordPress/?page_id=1449)
 
 # GNU GENERAL PUBLIC LICENSE
 
