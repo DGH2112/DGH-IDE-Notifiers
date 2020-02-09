@@ -140,6 +140,7 @@
         <DCCReference Include="Source\DGHIDENotifiers.Interfaces.pas"/>
         <DCCReference Include="Source\DGHIDENotifiers.ProjectCompileNotifier.pas"/>
         <DCCReference Include="Source\DGHIDENotifiers.SourceEditorNotifier.pas"/>
+        <DCCReference Include="Source\DGHIDENotifiers.EditViewNotifier.pas"/>
         <RcCompile Include="DGHIDENotITHVerInfo.RC">
             <Form>DGHIDENotITHVerInfo.res</Form>
         </RcCompile>

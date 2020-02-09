@@ -5,8 +5,8 @@
   RAD Studio IDE.
 
   @Author  David Hoyle
-  @Version 1.291
-  @Date    08 Feb 2020
+  @Version 1.298
+  @Date    09 Feb 2020
 
   @license
 
@@ -399,7 +399,12 @@ Begin
       E := M.GetModuleFileEditor(i);
       If Supports(E, IOTASourceEditor, SE) Then
         FSourceEditorNotifiers.Add(M.FileName, SE.AddNotifier(
-          TDINSourceEditorNotifier.Create(strIOTAEditViewNotifier, M.FileName, dinSourceEditorNotifier)
+          TDINSourceEditorNotifier.Create(
+            strIOTAEditViewNotifier,
+            M.FileName,
+            dinSourceEditorNotifier,
+            SE
+          )
         ));
       If Supports(E, IOTAFormEditor, FE) Then
         FFormEditorNotifiers.Add(M.FileName, FE.AddNotifier(
