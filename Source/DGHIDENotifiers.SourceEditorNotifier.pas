@@ -4,7 +4,7 @@
   changes in the source editor.
 
   @Author  David Hoyle
-  @Version 1.636
+  @Version 1.656
   @Date    09 Feb 2020
   
   @license
@@ -32,6 +32,8 @@ Unit DGHIDENotifiers.SourceEditorNotifier;
 
 Interface
 
+{$INCLUDE CompilerDefinitions.inc}
+
 Uses
   ToolsAPI,
   Classes,
@@ -41,8 +43,10 @@ Type
   (** A class which implements the IOTAEditViewNotifier. **)
   TDINSourceEditorNotifier = Class(TDGHNotifierObject, IInterface, IOTANotifier, IOTAEditorNotifier)
   Strict Private
+    {$IFDEF DXE100}
     FEditViewNotifierIndex: Integer;
     FView: IOTAEditView;
+    {$ENDIF DXE100}
   Strict Protected
     Procedure ViewActivated(Const View: IOTAEditView);
     Procedure ViewNotification(Const View: IOTAEditView; Operation: TOperation);
@@ -60,7 +64,8 @@ Uses
   CodeSiteLogging,
   {$ENDIF DEBUG}
   SysUtils,
-  TypInfo, DGHIDENotifiers.EditViewNotifier;
+  TypInfo,
+  DGHIDENotifiers.EditViewNotifier;
 
 (**
 
@@ -81,11 +86,13 @@ Constructor TDINSourceEditorNotifier.Create(Const strNotifier, strFileName: Stri
 
 Begin
   Inherited Create(strNotifier, strFileName, iNotification);
+  {$IFDEF DXE100}
   FEditViewNotifierIndex := -1;
   FView := Nil;
   // Workaround for new modules create after the IDE has started
   If SourceEditor.EditViewCount > 0 Then
     ViewNotification(SourceEditor.EditViews[0], opInsert);
+  {$ENDIF DXE100}
 End;
 
 (**
@@ -99,7 +106,9 @@ End;
 Destructor TDINSourceEditorNotifier.Destroy;
 
 Begin
+  {$IFDEF DXE100}
   ViewNotification(FView, opRemove);
+  {$ENDIF DXE100}
   Inherited Destroy;
 End;
 
@@ -161,6 +170,7 @@ Begin
       ]
     )
   );
+  {$IFDEF DXE100}
   Case Operation Of
     // Only create a notifier if one has not already been created!
     opInsert:
@@ -179,6 +189,7 @@ Begin
           FEditViewNotifierIndex := -1;
         End;
   End;
+  {$ENDIF DXE100}
 End;
 
 End.

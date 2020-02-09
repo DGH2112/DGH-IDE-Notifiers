@@ -3,7 +3,7 @@
   This module contains a class which implements the IOTAEditViewNotifier for draweing on the code editor.
 
   @Author  David Hoyle
-  @Version 1.676
+  @Version 1.687
   @Date    09 Feb 2020
   
   @license
@@ -31,6 +31,9 @@ Unit DGHIDENotifiers.EditViewNotifier;
 
 Interface
 
+{$INCLUDE CompilerDefinitions.inc}
+
+{$IFDEF DXE100}
 Uses
   ToolsAPI,
   Classes,
@@ -51,6 +54,7 @@ Type
       Const TextRect: TRect; Const LineRect: TRect; Const CellSize: TSize);
   Public
   End;
+{$ENDIF DXE100}
 
 Implementation
 
@@ -60,6 +64,7 @@ Uses
   {$ENDIF}
   SysUtils;
 
+{$IFDEF DXE100}
 (**
 
   This method is called before the code editor is repainted. By default Fullrepaint is false however
@@ -187,6 +192,7 @@ Begin
     )
   );
 End;
+{$ENDIF DXE100}
 
 End.
 
