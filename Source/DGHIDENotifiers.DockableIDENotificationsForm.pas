@@ -4,8 +4,8 @@
   expert / plug-in which are generated RAD Studio IDE.
 
   @Author  David Hoyle
-  @Version 1.0
-  @date    05 Jan 2020
+  @Version 1.048
+  @date    09 Feb 2020
 
   @license
 
@@ -64,7 +64,7 @@ Uses
   Generics.Collections,
   ExtCtrls,
   Themes,
-  DGHIDENotifiers.Interfaces;
+  DGHIDENotifiers.Interfaces, System.Actions, System.ImageList;
 
 Type
   (** This record describes the message information to be stored. **)
@@ -119,6 +119,9 @@ Type
     edtLogRetention: TEdit;
     udLogRetention: TUpDown;
     LogView: TVirtualStringTree;
+    btnAbout: TToolButton;
+    actAbout: TAction;
+    procedure actAboutExecute(Sender: TObject);
     Procedure actCaptureExecute(Sender: TObject);
     Procedure actCaptureUpdate(Sender: TObject);
     Procedure actClearExecute(Sender: TObject);
@@ -201,7 +204,7 @@ Uses
   RegularExpressionsCore,
   {$ENDIF}
   Types,
-  DGHIDENotifiers.IDEEditorColours;
+  DGHIDENotifiers.IDEEditorColours, DGHIDENotifiers.AboutDlg;
 
 Type
   (** A tree node record which contains the index of the message to display. **)
@@ -426,6 +429,22 @@ Begin
   {$IFDEF CODESITE}CodeSite.TraceMethod('UnRegisterDockableForm', tmoTiming);{$ENDIF}
   If @UnRegisterFieldAddress <> Nil Then
     UnRegisterFieldAddress(@FormVar);
+End;
+
+(**
+
+  This is an on execute event handler for the About action.
+
+  @precon  None.
+  @postcon Displays the about dialogue.
+
+  @param   Sender as a TObject
+
+**)
+Procedure TfrmDockableIDENotifications.actAboutExecute(Sender: TObject);
+
+Begin
+  TfrmDINAboutDlg.Execute;
 End;
 
 (**
