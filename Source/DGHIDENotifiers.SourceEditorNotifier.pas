@@ -4,8 +4,8 @@
   changes in the source editor.
 
   @Author  David Hoyle
-  @Version 1.697
-  @Date    17 Feb 2020
+  @Version 1.705
+  @Date    22 Feb 2020
   
   @license
 
@@ -87,11 +87,13 @@ Constructor TDINSourceEditorNotifier.Create(Const strNotifier, strFileName: Stri
 
 Begin
   Inherited Create(strNotifier, strFileName, iNotification);
+  {$IFDEF DXE100}
   FEditViewNotifierIndex := -1;
   FView := Nil;
   // Workaround for new modules create after the IDE has started
   If SourceEditor.EditViewCount > 0 Then
     ViewNotification(SourceEditor.EditViews[0], opInsert);
+  {$ENDIF DXE100}
 End;
 
 (**
@@ -105,7 +107,9 @@ End;
 Destructor TDINSourceEditorNotifier.Destroy;
 
 Begin
+  {$IFDEF DXE100}
   ViewNotification(FView, opRemove);
+  {$ENDIF DXE100}
   Inherited Destroy;
 End;
 
