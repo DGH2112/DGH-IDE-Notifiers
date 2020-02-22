@@ -2,9 +2,9 @@
 
 Author:   David Hoyle
 
-Version:  1.1f
+Version:  1.1g
 
-Date:     09 Feb 2020
+Date:     22 Feb 2020
 
 Web Page: [DGH IDE Notifiers](http://www.davidghoyle.co.uk/WordPress/?page_id=1449)
 
