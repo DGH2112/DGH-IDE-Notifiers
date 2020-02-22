@@ -4,8 +4,8 @@
   expert / plug-in which are generated RAD Studio IDE.
 
   @Author  David Hoyle
-  @Version 1.049
-  @date    09 Feb 2020
+  @Version 1.073
+  @date    22 Feb 2020
 
   @license
 
@@ -227,8 +227,6 @@ Const
   strRegKeyRoot = 'Software\Season''s Fall\DGHIDENotifications';
   (** An Registry Section name for the general settings. **)
   strINISection = 'Setup';
-  (** A registry key for whether the plug-in is capturing events. **)
-  strCaptureKey = 'Capture';
   (** A registry key for which notifications are captured. **)
   strNotificationsKey = 'Notifications';
   (** A registry key for notification retention. **)
@@ -1016,7 +1014,7 @@ Begin
   {$IFDEF CODESITE}CodeSite.TraceMethod('TfrmDockableIDENotifications.LoadSettings', tmoTiming);{$ENDIF}
   R := TRegIniFile.Create(strRegKeyRoot);
   Try
-    FCapture := R.ReadBool(strINISection, strCaptureKey, False);
+    FCapture := False;
     FMessageFilter := [];
     For iNotification := Low(TDGHIDENotification) To High(TDGHIDENotification) Do
       If R.ReadBool(strNotificationsKey, strNotificationLabel[iNotification], True) Then
@@ -1349,7 +1347,6 @@ Begin
   {$IFDEF CODESITE}CodeSite.TraceMethod('TfrmDockableIDENotifications.SaveSettings', tmoTiming);{$ENDIF}
   R := TRegIniFile.Create(strRegKeyRoot);
   Try
-    R.WriteBool(strINISection, strCaptureKey, FCapture);
     For iNotification := Low(TDGHIDENotification) To High(TDGHIDENotification) Do
       R.WriteBool(strNotificationsKey, strNotificationLabel[iNotification],
         iNotification In FMessageFilter);

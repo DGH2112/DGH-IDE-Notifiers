@@ -4,8 +4,8 @@
   changes in the source editor.
 
   @Author  David Hoyle
-  @Version 1.656
-  @Date    09 Feb 2020
+  @Version 1.705
+  @Date    22 Feb 2020
   
   @license
 
@@ -65,6 +65,7 @@ Uses
   {$ENDIF DEBUG}
   SysUtils,
   TypInfo,
+  Math,
   DGHIDENotifiers.EditViewNotifier;
 
 (**
@@ -125,13 +126,13 @@ End;
 Procedure TDINSourceEditorNotifier.ViewActivated(Const View: IOTAEditView);
 
 ResourceString
-  strViewActivate = '.ViewActivate = View.TopRow: %d';
+  strViewActivate = '.ViewActivate = View: $%p';
 
 Begin
   DoNotification(
     Format(
       strViewActivate,
-      [View.TopRow]
+      [Pointer(View)]
     )
   );
 End;
@@ -155,7 +156,7 @@ End;
 Procedure TDINSourceEditorNotifier.ViewNotification(Const View: IOTAEditView; Operation: TOperation);
 
 ResourceString
-  strViewActivate = '.ViewActivate = View.TopRow: %d, Operation: %s';
+  strViewActivate = '.ViewActivate = View: $%p, Operation: %s';
 
 Const
   strINTAEditViewNotifier = 'INTAEditViewNotifier';
@@ -165,30 +166,31 @@ Begin
     Format(
       strViewActivate,
       [
-        View.TopRow,
+        Pointer(View),
         GetEnumName(TypeInfo(TOperation), Ord(Operation))
       ]
     )
   );
   {$IFDEF DXE100}
-  Case Operation Of
-    // Only create a notifier if one has not already been created!
-    opInsert:
-      If FEditViewNotifierIndex = -1 Then 
-        Begin
-          FView := View;
-          FEditViewNotifierIndex := View.AddNotifier(TDINEditViewNotifier.Create(
-            strINTAEditViewNotifier, FileName, dinEditViewNotifier
-          ));
-        End;
-    // opRemove Never gets called!
-    opRemove:
-      If FEditViewNotifierIndex > -1 Then
-        Begin
-          View.RemoveNotifier(FEditViewNotifierIndex);
-          FEditViewNotifierIndex := -1;
-        End;
-  End;
+  If Assigned(View) Then
+    Case Operation Of
+      // Only create a notifier if one has not already been created!
+      opInsert:
+        If FEditViewNotifierIndex = -1 Then 
+          Begin
+            FView := View;
+            FEditViewNotifierIndex := View.AddNotifier(TDINEditViewNotifier.Create(
+              strINTAEditViewNotifier, FileName, dinEditViewNotifier
+            ));
+          End;
+      // opRemove Never gets called!
+      opRemove:
+        If FEditViewNotifierIndex > -1 Then
+          Begin
+            View.RemoveNotifier(FEditViewNotifierIndex);
+            FEditViewNotifierIndex := -1;
+          End;
+    End;
   {$ENDIF DXE100}
 End;
 
