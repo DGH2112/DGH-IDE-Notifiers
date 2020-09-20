@@ -94,25 +94,25 @@ Type
 
 Const
   (** A constant array of colours to provide a different colour for each notification. **)
-  iNotificationColours: Array [Low(TDGHIDENotification) .. High(TDGHIDENotification)] Of
+  aiNotificationColours: Array [TDGHIDENotification] Of
     TColor = (
-    clTeal,
-    clAqua,
-    clMaroon,
-    clRed,
-    clNavy,
-    clBlue,
-    clOlive,
-    clYellow,
-    clGreen,
-    //clLime // not used as its the BitMap mask colour
-    clPurple,
-    clFuchsia,
-    clDkGray,
-    clSilver,
-    $FFFF80,
-    $FF80FF,
-    $80FFFF
+      clTeal,                                              // dinWizard
+      clAqua,                                              // dinMenuWizard
+      clMaroon,                                            // dinIDENotification
+      clRed,                                               // dinVersionControlNotifier
+      clNavy,                                              // dinCompileNotifier
+      clBlue,                                              // dinMessageNotifier
+      clOlive,                                             // dinIDEInsightNotifier
+      clYellow,                                            // dinProjectFileStorageNotifier
+      clGreen,                                             // dinEditorNotifier
+      //clLime // not used as its the BitMap mask colour   
+      clPurple,                                            // dinDebuggerNotifier
+      clFuchsia,                                           // dinModuleNotifier
+      clDkGray,                                            // dinProjectNotifier
+      clSilver,                                            // dinProjectCompileNotifier
+      $FFFF80,                                             // dinSourceEditorNotifier
+      $FF80FF,                                             // dinFormNotifier
+      $80FFFF                                              // dinEditViewNotifier
   );
 
   (** A constant array of boolean to provide a string representation of a boolean value. **)

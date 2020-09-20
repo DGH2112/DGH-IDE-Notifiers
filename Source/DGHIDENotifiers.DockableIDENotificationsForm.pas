@@ -809,7 +809,7 @@ Begin
         BM.Canvas.Pen.Color := clBlack;
         BM.Canvas.Brush.Color := iMaskColour;
         BM.Canvas.FillRect(Rect(0, 0, iBMSize, iBMSize));
-        BM.Canvas.Brush.Color := iNotificationColours[iFilter];
+        BM.Canvas.Brush.Color := aiNotificationColours[iFilter];
         BM.Canvas.Ellipse(Rect(0 + iPadding, 0 + iPadding, iBMSize - iPadding, iBMSize - iPadding));
         iIndex := ilButtons.AddMasked(BM, iMaskColour);
       Finally
@@ -1148,7 +1148,9 @@ Begin
       TargetCanvas.FillRect(R);
       Tokenizer := TDNMessageTokenizer.Create(
         FMessageList[NodeData.FNotificationIndex].Message,
-        FRegExFilter);
+        FRegExFilter
+      );
+      Canvas.Font.Assign(Sender.Font);
       Try
         For iToken := 0 To Tokenizer.Count - 1 Do
           Begin
@@ -1184,7 +1186,7 @@ Procedure TfrmDockableIDENotifications.LogViewGetImageIndex(Sender: TBaseVirtual
   Var ImageIndex: TImageIndex);
 
 Const
-  iPadding = 2;
+  iPadding = 3; // Number of existing images
 
 Var
   NodeData : PTreeNodeData;
