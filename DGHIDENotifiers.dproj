@@ -93,6 +93,7 @@
         <VerInfo_Locale>1033</VerInfo_Locale>
         <DCC_RemoteDebug>false</DCC_RemoteDebug>
         <Manifest_File>DLLs\DLLs\(None)</Manifest_File>
+        <DCC_MapFile>3</DCC_MapFile>
     </PropertyGroup>
     <PropertyGroup Condition="'$(Cfg_3_Win32)'!=''">
         <DCC_Define>CODESITE;$(DCC_Define)</DCC_Define>

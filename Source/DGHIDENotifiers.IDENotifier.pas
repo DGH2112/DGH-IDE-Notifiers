@@ -319,7 +319,11 @@ Const
     'ofnPackageInstalled',
     'ofnPackageUninstalled',
     'ofnActiveProjectChanged' {$IFDEF DXE80},
-    'ofnProjectOpenedFromTemplate' {$ENDIF}
+    'ofnProjectOpenedFromTemplate' {$ENDIF} {$IFDEF DXE104},
+    'ofnBeginProjectGroupOpen',
+    'ofnEndProjectGroupOpen',
+    'ofnBeginProjectGroupClose',
+    'ofnEndProjectGroupClose' {$ENDIF}
   );
 
 ResourceString
