@@ -1,17 +1,17 @@
 (**
   
-  This module contains a class which implements the IOTAEditViewNotifier for draweing on the code editor.
+  This module contains a class which implements the Edit View Notifier for drawing on the code editor.
 
   @Author  David Hoyle
-  @Version 1.687
-  @Date    09 Feb 2020
+  @Version 1.688
+  @Date    20 Sep 2020
   
   @license
 
     DGH IDE Notifiers is a RAD Studio plug-in to logging RAD Studio IDE notifications
     and to demostrate how to use various IDE notifiers.
     
-    Copyright (C) 2019  David Hoyle (https://github.com/DGH2112/DGH-IDE-Notifiers/)
+    Copyright (C) 2020  David Hoyle (https://github.com/DGH2112/DGH-IDE-Notifiers/)
 
     This program is free software: you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
@@ -68,7 +68,7 @@ Uses
 (**
 
   This method is called before the code editor is repainted. By default Fullrepaint is false however
-  you can set it to true but beaware that doing this all the time can affect the editors scrolling /
+  you can set it to true but be aware that doing this all the time can affect the editors scrolling /
   drawing performance.
 
   @precon  None.

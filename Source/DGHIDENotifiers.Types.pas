@@ -4,15 +4,15 @@
   all the notifiers can log messages with the notification logging window.
 
   @Author  David Hoyle
-  @Version 1.049
-  @Date    09 Feb 2020
+  @Version 1.231
+  @Date    20 Sep 2020
 
   @license
 
     DGH IDE Notifiers is a RAD Studio plug-in to logging RAD Studio IDE notifications
     and to demostrate how to use various IDE notifiers.
     
-    Copyright (C) 2019  David Hoyle (https://github.com/DGH2112/DGH-IDE-Notifiers/)
+    Copyright (C) 2020  David Hoyle (https://github.com/DGH2112/DGH-IDE-Notifiers/)
 
     This program is free software: you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
@@ -260,7 +260,7 @@ End;
   This method is called when the notifier is destroyed.
 
   @precon  None.
-  @postcon Outputs a notificiation.
+  @postcon Outputs a notification.
 
 **)
 Procedure TDGHNotifierObject.Destroyed;
@@ -277,7 +277,7 @@ End;
   This method adds a notification to the dockable notifier form.
 
   @precon  None.
-  @postcon A notification is aded to the dockable form.
+  @postcon A notification is added to the dockable form.
 
   @param   strMessage as a String as a constant
 

@@ -5,15 +5,15 @@
   for the RAD Studio IDE. The methods of the notifier are logged to the notification log window.
 
   @Author  David Hoyle
-  @Version 1.0
-  @Date    05 Jan 2020
+  @Version 1.001
+  @Date    20 Sep 2020
 
   @license
 
     DGH IDE Notifiers is a RAD Studio plug-in to logging RAD Studio IDE notifications
     and to demostrate how to use various IDE notifiers.
     
-    Copyright (C) 2019  David Hoyle (https://github.com/DGH2112/DGH-IDE-Notifiers/)
+    Copyright (C) 2020  David Hoyle (https://github.com/DGH2112/DGH-IDE-Notifiers/)
 
     This program is free software: you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
@@ -80,7 +80,7 @@ Uses
   This method is called when a new project is added to the version control system.
 
   @precon  None.
-  @postcon Provides access to the roject being added.
+  @postcon Provides access to the project being added.
 
   @param   Project as an IOTAProject as a constant
   @return  a Boolean
@@ -102,7 +102,7 @@ End;
 {$IFDEF DXE00}
 (**
 
-  This methos is called when a project is to be checked out of the version control system.
+  This method is called when a project is to be checked out of the version control system.
 
   @precon  None.
   @postcon Provides the project name.
@@ -154,10 +154,10 @@ End;
 
 (**
 
-  This is a getter method for the DisplayName property.
+  This is a getter method for the Display Name property.
 
   @precon  None.
-  @postcon Sould return the display name of the version control system.
+  @postcon Should return the display name of the version control system.
 
   @return  a String
 
@@ -204,7 +204,7 @@ End;
 
 (**
 
-  This method is called to find out if the file is managed by the versiom control system.
+  This method is called to find out if the file is managed by the version control system.
 
   @precon  None.
   @postcon Provides access to the project and a list of file identifiers.

@@ -1,18 +1,18 @@
 (**
   
-  This module contains a class which implements the IOTASourceEditorNotifier interface for monitoring
+  This module contains a class which implements the Source Editor Notifier interface for monitoring
   changes in the source editor.
 
   @Author  David Hoyle
-  @Version 1.705
-  @Date    22 Feb 2020
+  @Version 1.711
+  @Date    20 Sep 2020
   
   @license
 
     DGH IDE Notifiers is a RAD Studio plug-in to logging RAD Studio IDE notifications
     and to demostrate how to use various IDE notifiers.
     
-    Copyright (C) 2019  David Hoyle (https://github.com/DGH2112/DGH-IDE-Notifiers/)
+    Copyright (C) 2020  David Hoyle (https://github.com/DGH2112/DGH-IDE-Notifiers/)
 
     This program is free software: you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
@@ -40,7 +40,7 @@ Uses
   DGHIDENotifiers.Types;
 
 Type
-  (** A class which implements the IOTAEditViewNotifier. **)
+  (** A class which implements the Editor Notifier. **)
   TDINSourceEditorNotifier = Class(TDGHNotifierObject, IInterface, IOTANotifier, IOTAEditorNotifier)
   Strict Private
     {$IFDEF DXE100}
@@ -70,11 +70,11 @@ Uses
 
 (**
 
-  A constructor for the TDINEditViewNotifer class.
+  A constructor for the TDINSourceEditorNotifier class.
 
   @precon  None.
   @postcon Initialises the class and creates a view if a edit view is available. This is a workaround
-           for new modules created afrer the IDE has started.
+           for new modules created after the IDE has started.
 
   @param   strNotifier   as a String as a constant
   @param   strFileName   as a String as a constant
@@ -98,7 +98,7 @@ End;
 
 (**
 
-  A destructor for the TDINEditViewNotifier class.
+  A destructor for the TDINSourceEditorNotifier class.
 
   @precon  None.
   @postcon Tries to remove the view notifier.
@@ -126,7 +126,7 @@ End;
 Procedure TDINSourceEditorNotifier.ViewActivated(Const View: IOTAEditView);
 
 ResourceString
-  strViewActivate = '.ViewActivate = View: $%p';
+  strViewActivate = '.ViewActivated = View: $%p';
 
 Begin
   DoNotification(
@@ -139,13 +139,13 @@ End;
 
 (**
 
-  This method is called when a view is created (opInsert) however it is not called when a view is
-  destroyed (opRemove). I believe this is a BUG in the IDE. Also this is not called for a new module
+  This method is called when a view is created (Insert) however it is not called when a view is
+  destroyed (Remove). I believe this is a BUG in the IDE. Also this is not called for a new module
   created after the IDE is created.
 
   @precon  None.
-  @postcon View provide acccess to the view sending the notification and Operation tells you whether the
-           view is being created (opInsert) or destroyed (opRemove).
+  @postcon View provide access to the view sending the notification and Operation tells you whether the
+           view is being created (Insert) or destroyed (Remove).
 
   @nocheck MissingCONSTInParam
 
@@ -156,7 +156,7 @@ End;
 Procedure TDINSourceEditorNotifier.ViewNotification(Const View: IOTAEditView; Operation: TOperation);
 
 ResourceString
-  strViewActivate = '.ViewActivate = View: $%p, Operation: %s';
+  strViewActivate = '.ViewNotification = View: $%p, Operation: %s';
 
 Const
   strINTAEditViewNotifier = 'INTAEditViewNotifier';

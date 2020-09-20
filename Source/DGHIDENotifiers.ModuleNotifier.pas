@@ -4,15 +4,15 @@
   changes to modules in the IDE.
 
   @Author  David Hoyle
-  @Version 1.0
-  @Date    05 Jan 2020
+  @Version 1.008
+  @Date    20 Sep 2020
 
   @license
 
     DGH IDE Notifiers is a RAD Studio plug-in to logging RAD Studio IDE notifications
     and to demostrate how to use various IDE notifiers.
     
-    Copyright (C) 2019  David Hoyle (https://github.com/DGH2112/DGH-IDE-Notifiers/)
+    Copyright (C) 2020  David Hoyle (https://github.com/DGH2112/DGH-IDE-Notifiers/)
 
     This program is free software: you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
@@ -40,7 +40,7 @@ Uses
 {$INCLUDE 'CompilerDefinitions.inc'}
 
 Type
-  (** A class to implements the IOTAModuleNotitifer interfaces. **)
+  (** A class to implements the Module Notifier interfaces. **)
   TDNModuleNotifier = Class(TDGHNotifierObject, IOTAModuleNotifier, IOTAModuleNotifier80,
     IOTAModuleNotifier90)
   Strict Private
@@ -62,7 +62,7 @@ Type
       A property the exposes to this class and descendants an interface for notifying the module notifier
       collections of a change of module name.
       @precon  None.
-      @postcon Returns the IDINRenameModule reference.
+      @postcon Returns the TDNModuleRenameEvent reference.
       @return  a TDNModuleRenameEvent
     **)
     Property ModuleRenameEvent : TDNModuleRenameEvent Read FModuleRenameEvent;
@@ -138,7 +138,7 @@ End;
 
 (**
 
-  This method of the notifier is callde before a module is renamed providing the old and new file
+  This method of the notifier is called before a module is renamed providing the old and new file
   names.
 
   @precon  None.
@@ -168,7 +168,7 @@ End;
 (**
 
   This method of the notifier is called before a Save As operation to check if any files read only
-  file wil be overwritten.
+  file will be overwritten.
 
   @precon  None.
   @postcon A log entry is written.
@@ -188,7 +188,7 @@ End;
 
 (**
 
-  A constructor for the TDNModuleNotfier class.
+  A constructor for the TDNModuleNotifier class.
 
   @precon  None.
   @postcon Initialises the module.
@@ -216,7 +216,7 @@ End;
   managed by the IDE) that you want to manage along with the module.
 
   @precon  None.
-  @postcon Returns an empty string but isn
+  @postcon Returns an empty string but should be used to return the indexed file for overwriting
 
   @nocheck MissingCONSTInParam
   

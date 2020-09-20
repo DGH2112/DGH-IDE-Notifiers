@@ -3,15 +3,15 @@
   This module contains an interfaced class which manages module notifier indexes using their filenames.
 
   @Author  David Hoyle
-  @Version 1.0
-  @Date    05 Jan 2020
+  @Version 1.002
+  @Date    20 Sep 2020
 
   @license
 
     DGH IDE Notifiers is a RAD Studio plug-in to logging RAD Studio IDE notifications
     and to demostrate how to use various IDE notifiers.
     
-    Copyright (C) 2019  David Hoyle (https://github.com/DGH2112/DGH-IDE-Notifiers/)
+    Copyright (C) 2020  David Hoyle (https://github.com/DGH2112/DGH-IDE-Notifiers/)
 
     This program is free software: you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
@@ -86,7 +86,7 @@ Uses
 
 (**
 
-  This is a constructor for the TModNotRec record which describes the attributes
+  This is a constructor for the TModuleNotifierRec record which describes the attributes
   to be stored for each module / project / form notifier registered.
 
   @precon  None.
@@ -97,7 +97,7 @@ Uses
 
 **)
 Constructor TDINModuleNotifierList.TModuleNotifierRec.Create(Const strFileName: String;
-  Const iIndex: Integer {: @ debug Const eNotifierType: TDGHIDENotification } );
+  Const iIndex: Integer {: @debug Const eNotifierType: TDGHIDENotification } );
 
 Begin
   {$IFDEF CODESITE}CodeSite.TraceMethod('TDINModuleNotifierList.TModuleNotifierRec.Create', tmoTiming);{$ENDIF}
@@ -175,7 +175,7 @@ End;
   true with the index in iIndex else returns false.
 
   @precon  None.
-  @postcon Either trues the true with the index of the found item or returns false.
+  @postcon Either returns true with the index of the found item or returns false.
 
   @param   strFileName as a String as a constant
   @param   iIndex      as an Integer as a reference

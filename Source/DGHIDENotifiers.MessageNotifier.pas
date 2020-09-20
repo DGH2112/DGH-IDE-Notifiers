@@ -1,19 +1,19 @@
 (**
 
-  This module contains a class which implements the IOTAMessageNotififer and INTAMessageNotifier
-  interfaces to demonstrate how to capture events associated with the creationa dn destruction of
+  This module contains a class which implements the Message Notifier and INTAMessageNotifier
+  interfaces to demonstrate how to capture events associated with the creation and destruction of
   message groups and add context menus to custom messages in the RAD Studio IDE.
 
   @Author  David Hoyle
-  @Version 1.0
-  @Date    05 Jan 2020
+  @Version 1.001
+  @Date    20 Sep 2020
 
   @license
 
     DGH IDE Notifiers is a RAD Studio plug-in to logging RAD Studio IDE notifications
     and to demostrate how to use various IDE notifiers.
     
-    Copyright (C) 2019  David Hoyle (https://github.com/DGH2112/DGH-IDE-Notifiers/)
+    Copyright (C) 2020  David Hoyle (https://github.com/DGH2112/DGH-IDE-Notifiers/)
 
     This program is free software: you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
@@ -86,7 +86,7 @@ End;
 
 (**
 
-  This method is called when a messahge group is added to the message view window.
+  This method is called when a message group is added to the message view window.
 
   @precon  None.
   @postcon Provides access to the message group.

@@ -4,15 +4,15 @@
   compile information on each compile operation.
 
   @Author  David Hoyle
-  @Version 1.0
-  @Date    05 Jan 2020
+  @Version 1.003
+  @Date    20 Sep 2020
   
   @license
 
     DGH IDE Notifiers is a RAD Studio plug-in to logging RAD Studio IDE notifications
     and to demostrate how to use various IDE notifiers.
     
-    Copyright (C) 2019  David Hoyle (https://github.com/DGH2112/DGH-IDE-Notifiers/)
+    Copyright (C) 2020  David Hoyle (https://github.com/DGH2112/DGH-IDE-Notifiers/)
 
     This program is free software: you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
@@ -51,7 +51,7 @@ Type
       A property the exposes to this class and descendants an interface for notifying the module notifier
       collections of a change of module name.
       @precon  None.
-      @postcon Returns the IDINRenameModule reference.
+      @postcon Returns the Module Notifier List reference.
       @return  an IDINModuleNotifierList
     **)
     Property RenameModule : IDINModuleNotifierList Read FModuleNotiferList;
@@ -64,7 +64,7 @@ Uses
   SysUtils;
 
 Const
-  (** An array constant of strings for each compiel mode. **)
+  (** An array constant of strings for each compile mode. **)
   astrCompileMode :Array[TOTACompileMode] Of String = (
     'cmOTAMake',
     'cmOTABuild',

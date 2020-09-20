@@ -1,19 +1,19 @@
 (**
 
   This module contains a class which implements the IOTAIDENotifier, IOTAIDENotifier50 and
-  IOTAIDENotifier80 interfaces to capture file notifiction and compiler notifications in the
+  IOTAIDENotifier80 interfaces to capture file notification and compiler notifications in the
   RAD Studio IDE.
 
   @Author  David Hoyle
-  @Version 1.298
-  @Date    09 Feb 2020
+  @Version 1.315
+  @Date    20 Sep 2020
 
   @license
 
     DGH IDE Notifiers is a RAD Studio plug-in to logging RAD Studio IDE notifications
     and to demostrate how to use various IDE notifiers.
     
-    Copyright (C) 2019  David Hoyle (https://github.com/DGH2112/DGH-IDE-Notifiers/)
+    Copyright (C) 2020  David Hoyle (https://github.com/DGH2112/DGH-IDE-Notifiers/)
 
     This program is free software: you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
@@ -43,7 +43,7 @@ Uses
 {$INCLUDE 'CompilerDefinitions.inc'}
 
 Type
-  (** This class implements the IDENotifier interfaces. **)
+  (** This class implements the IDE Notifier interfaces. **)
   TDGHNotificationsIDENotifier = Class(TDGHNotifierObject, IOTAIDENotifier,
     IOTAIDENotifier50, IOTAIDENotifier80)
   Strict Private
@@ -132,7 +132,7 @@ End;
 
   @precon  None.
   @postcon Provides access whether the compilation was successful and whether it was invoked by
-           CodeInsight.
+           Code Insight.
 
   @nocheck MissingCONSTInParam
   
@@ -162,7 +162,7 @@ End;
 
   @precon  None.
   @postcon Provides access to the Project, whether the compilation was successful and whether it was
-           invoked by CodeInsight.
+           invoked by Code Insight.
 
   @nocheck MissingCONSTInParam
   
@@ -195,7 +195,7 @@ End;
 
   @precon  None.
   @postcon Provides access to the Project being compiled and whether the compile was invoked by
-           CodeInsight.
+           Code Insight.
 
   @nocheck MissingCONSTInParam
   
@@ -292,7 +292,7 @@ End;
 
 (**
 
-  This method iscalled when ever a file or package is loaded or unloaded from the IDE.
+  This method is called when ever a file or package is loaded or unloaded from the IDE.
 
   @precon  None.
   @postcon Provides access to the Filename and the operation that occurred.
@@ -513,10 +513,10 @@ End;
 
 (**
 
-  This method is a callback event for when a module is renamed by the IDE.
+  This method is a call back event for when a module is renamed by the IDE.
 
   @precon  None.
-  @postcon Ebsures that the modules in the notifier lists are updated with the new filename.
+  @postcon Ensures that the modules in the notifier lists are updated with the new filename.
 
   @param   strOldFilename as a String as a constant
   @param   strNewFilename as a String as a constant

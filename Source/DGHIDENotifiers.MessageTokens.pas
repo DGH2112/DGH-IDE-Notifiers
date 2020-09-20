@@ -4,15 +4,15 @@
   returns a collection of those tokens for the log view to render as required.
 
   @Author  David Hoyle
-  @Version 1.0
-  @Date    05 Jan 2020
+  @Version 1.001
+  @Date    20 Sep 2020
 
   @license
 
     DGH IDE Notifiers is a RAD Studio plug-in to logging RAD Studio IDE notifications
     and to demostrate how to use various IDE notifiers.
     
-    Copyright (C) 2019  David Hoyle (https://github.com/DGH2112/DGH-IDE-Notifiers/)
+    Copyright (C) 2020  David Hoyle (https://github.com/DGH2112/DGH-IDE-Notifiers/)
 
     This program is free software: you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
@@ -187,7 +187,7 @@ End;
   This method breaks down the token into sub tokens if it matches the search criteria.
 
   @precon  None.
-  @postcon the token is brokwn down by the search criteria.
+  @postcon the token is broken down by the search criteria.
 
   @param   strToken   as a String as a constant
   @param   eTokenType as a TDNTokenType as a constant
@@ -248,7 +248,7 @@ End;
   A constructor for the TDNMessageTokenizer class.
 
   @precon  None.
-  @postcon Intialises the class as an empty collection and starts the parsing of the message.
+  @postcon Initialises the class as an empty collection and starts the parsing of the message.
 
   @param   strMessage as a String as a constant
   @param   strRegEx   as a String as a constant
@@ -282,7 +282,7 @@ End;
 
 (**
 
-  A destructor for the TDMMessageTokenizer class.
+  A destructor for the TDNMessageTokenizer class.
 
   @precon  None.
   @postcon Frees the memory used by the class.
@@ -414,11 +414,11 @@ End;
 
 (**
 
-  This method parse a methodname in the message by delegating the task to the sub-method for
+  This method parse a method name in the message by delegating the task to the sub-method for
   parsing identifiers.
 
   @precon  None.
-  @postcon The methodname is parsed.
+  @postcon The method name is parsed.
 
 **)
 Procedure TDNMessageTokenizer.ParseMethodName;
@@ -594,7 +594,7 @@ End;
 
 (**
 
-  This method starts the parsing of the messafe text based on the grammar.
+  This method starts the parsing of the message text based on the grammar.
 
   @see     See the grammar file "Message Parser Grammar.bnf"
 

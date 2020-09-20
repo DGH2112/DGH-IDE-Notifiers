@@ -3,8 +3,8 @@
   This module contains an IDE wizard which implements IOTAWizard and IOTAMenuWizard to create a
   RAD Studio IDE expert / plug-in to log notifications from various aspects of the IDE.
 
-  The wizard is responsible for the life time management of all other objects in this plugin (except
-  the dockable form) and installs the notifiers on creation and remoces them on destruction.
+  The wizard is responsible for the life time management of all other objects in this plug-in (except
+  the dockable form) and installs the notifiers on creation and removes them on destruction.
 
   The following notifiers are currently implemented:
    * IOTAIDENotifier                via IOTAIDEServices.AddNotifier();
@@ -42,15 +42,15 @@
    * IOTAProjectMenuItemCreatorNotifier = interface(IOTANotifier)
 
   @Author  David Hoyle
-  @Version 1.063
-  @Date    09 Feb 2020
+  @Version 1.066
+  @Date    20 Sep 2020
 
   @license
 
     DGH IDE Notifiers is a RAD Studio plug-in to logging RAD Studio IDE notifications
     and to demostrate how to use various IDE notifiers.
     
-    Copyright (C) 2019  David Hoyle (https://github.com/DGH2112/DGH-IDE-Notifiers/)
+    Copyright (C) 2020  David Hoyle (https://github.com/DGH2112/DGH-IDE-Notifiers/)
 
     This program is free software: you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
@@ -79,7 +79,7 @@ Uses
 {$R DGHIDENotITHVerInfo.RES ..\DGHIDENotITHVerInfo.RC}
 
 Type
-  (** This class implement the plugins wizard. **)
+  (** This class implement the plug-in wizard. **)
   TDGHIDENotifiersWizard = Class(TDGHNotifierObject, IOTAWizard, IOTAMenuWizard)
   Strict Private
     FIDENotifier : Integer;
@@ -130,7 +130,7 @@ Uses
 
 (**
 
-  A constructor for the TDGHIDENotifierWizard class.
+  A constructor for the TDGHIDENotifiersWizard class.
 
   @precon  None.
   @postcon Installs all the notifiers.
@@ -242,7 +242,7 @@ End;
   This is a getter method for the IDstring property.
 
   @precon  None.
-  @postcon Returns a unique string for the plugin wizard.
+  @postcon Returns a unique string for the plug-in wizard.
 
   @return  a String
 

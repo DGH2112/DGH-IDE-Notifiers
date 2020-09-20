@@ -4,15 +4,15 @@
   plug-ins build information for the splash screen and about box.
 
   @Author  David Hoyle
-  @Version 1.025
-  @Date    09 Feb 2020
+  @Version 1.028
+  @Date    20 Sep 2020
 
   @license
 
     DGH IDE Notifiers is a RAD Studio plug-in to logging RAD Studio IDE notifications
     and to demostrate how to use various IDE notifiers.
     
-    Copyright (C) 2019  David Hoyle (https://github.com/DGH2112/DGH-IDE-Notifiers/)
+    Copyright (C) 2020  David Hoyle (https://github.com/DGH2112/DGH-IDE-Notifiers/)
 
     This program is free software: you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
@@ -66,10 +66,10 @@ Uses
 
 (**
 
-  This procedure returns the build information for the OTA Plugin.
+  This procedure returns the build information for the OTA Plug-in.
 
   @precon  None.
-  @postcon the build information for the OTA plugin is returned.
+  @postcon the build information for the OTA plug-in is returned.
 
   @param   iMajor  as an Integer as a reference
   @param   iMinor  as an Integer as a reference
