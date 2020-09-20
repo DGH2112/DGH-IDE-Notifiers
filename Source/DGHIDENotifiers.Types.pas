@@ -232,12 +232,16 @@ End;
 **)
 Constructor TDGHNotifierObject.Create(Const strNotifier, strFileName : String; Const iNotification : TDGHIDENotification);
 
+ResourceString
+  strCreate = '%s.Create';
+
 Begin
   {$IFDEF CODESITE}CodeSite.TraceMethod(Self, 'Create', tmoTiming);{$ENDIF}
   Inherited Create;
   FNotifier := strNotifier;
   FFileName := strFileName;
   FNotification := iNotification;
+  DoNotification(Format(strCreate, [GetFileName]));
 End;
 
 (**
@@ -250,8 +254,12 @@ End;
 **)
 Destructor TDGHNotifierObject.Destroy;
 
+ResourceString
+  strDestroy = '%s.Destroy';
+
 Begin
   {$IFDEF CODESITE}CodeSite.TraceMethod(Self, 'Destroy', tmoTiming);{$ENDIF}
+  DoNotification(Format(strDestroy, [GetFileName]));
   Inherited Destroy;
 End;
 
