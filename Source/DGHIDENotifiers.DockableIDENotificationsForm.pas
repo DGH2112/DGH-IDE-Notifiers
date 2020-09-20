@@ -163,6 +163,9 @@ Type
     Procedure FilterMessages;
     Procedure UpdateTimer(Sender : TObject);
     Procedure RetreiveIDEEditorColours;
+    {$IFDEF DXE102}
+    Procedure ThemeVTVColours;
+    {$ENDIF DXE102}
   Public
     Constructor Create(AOwner: TComponent); Override;
     Destructor Destroy; Override;
@@ -723,6 +726,7 @@ Begin
       ITS.RegisterFormClass(TfrmDockableIDENotifications);
       ITS.ApplyTheme(Self);
       FStyleServices := ITS.StyleServices;
+      ThemeVTVColours;
     End;
   {$ENDIF DXE102}
   LoadSettings;
@@ -1375,6 +1379,26 @@ Begin
   CreateDockableBrowser;
   ShowDockableForm(FormInstance);
 End;
+
+{$IFDEF DXE102}
+(**
+
+  This method themes the focused selection colour of the VTV control as there is an issues with the
+  VTV DFM storing the actual colour and not the system colour reference.
+
+  @precon  None.
+  @postcon If theming is enabled, the highlight colour is assigned to the focused selection colour.
+
+**)
+Procedure TfrmDockableIDENotifications.ThemeVTVColours;
+
+Begin
+  If Assigned(FStyleServices) Then
+    Begin
+      LogView.Colors.FocusedSelectionColor := FStyleServices.GetSystemColor(clHighlight);
+    End;
+End;
+{$ENDIF DXE102}
 
 (**
 
