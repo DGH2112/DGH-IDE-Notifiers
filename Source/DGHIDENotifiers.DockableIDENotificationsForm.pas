@@ -4,8 +4,8 @@
   expert / plug-in which are generated RAD Studio IDE.
 
   @Author  David Hoyle
-  @Version 1.176
-  @date    20 Sep 2020
+  @Version 1.177
+  @date    27 Sep 2020
 
   @license
 
@@ -64,7 +64,7 @@ Uses
   Generics.Collections,
   ExtCtrls,
   Themes,
-  DGHIDENotifiers.Interfaces, System.Actions, System.ImageList;
+  DGHIDENotifiers.Interfaces;
 
 Type
   (** This record describes the message information to be stored. **)

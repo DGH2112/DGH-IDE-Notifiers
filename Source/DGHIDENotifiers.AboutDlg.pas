@@ -3,8 +3,8 @@
   This module contains a class which represents a form for displaying information about the application.
 
   @Author  David Hoyle
-  @Version 1.170
-  @Date    20 Sep 2020
+  @Version 1.171
+  @Date    27 Sep 2020
   
   @license
 
@@ -45,7 +45,7 @@ Uses
   Vcl.Dialogs,
   Vcl.StdCtrls,
   Vcl.Buttons,
-  Vcl.ExtCtrls, System.ImageList, Vcl.ImgList;
+  Vcl.ExtCtrls;
 
 Type
   (** A class to represent the about form. **)
