@@ -28,22 +28,23 @@
    * IOTAFormNotifier               via IOTAFormEditor.AddNotifier()
    * INTAEditViewNotifier           via IOTAEditView.AddNotifier()
 
+   * IOTAToDoServices.AddNotifier(IOTANotifier)
+   
   The following notifiers are STILL to be implemented:
+   * IOTABreakpoint40.AddNotifier(IOTABreakpointNotifier)
+   * IOTAThread50.AddNotifier(IOTAThreadNotifier, IOTAThreadNotifier160)
+   * IOTAProcess60.AddNotifier(IOTAProcessNotifier, IOTAProcessNotifier90)
+   * IOTAProcessModule80.AddNotifier(IOTAProcessModNotifier)
    * IOTAToolsFilter.AddNotifier(IOTANotifier)... IOTAToolsFilterNotifier = interface(IOTANotifier)
    * IOTAEditBlock.AddNotifier(IOTASyncEditNotifier)
    * IOTAEditLineTracker.AddNotifier(IOTAEditLineNotifier)
    * IOTAEditBlock, IOTASyncEditNotifier = interface
-   * IOTABreakpoint40.AddNotifier(IOTABreakpointNotifier)
-   * IOTAThread50.AddNotifier(IOTAThreadNotifier, IOTAThreadNotifier160)
-   * IOTAProcessModule80.AddNotifier(IOTAProcessModNotifier)
-   * IOTAProcess60.AddNotifier(IOTAProcessNotifier, IOTAProcessNotifier90)
-   * IOTAToDoServices.AddNotifier(IOTAToDoManager)
    * IOTADesignerCommandNotifier = interface(IOTANotifier)
    * IOTAProjectMenuItemCreatorNotifier = interface(IOTANotifier)
 
   @Author  David Hoyle
-  @Version 1.066
-  @Date    20 Sep 2020
+  @Version 1.214
+  @Date    27 Sep 2020
 
   @license
 
@@ -92,6 +93,7 @@ Type
     FProjectFileStorageNotifier : Integer;
     FEditorNotifier : Integer;
     FDebuggerNotifier : integer;
+    FToDoNotifier : Integer;
   Strict Protected
   Public
     Constructor Create(Const strNotifier, strFileName : String;
@@ -125,6 +127,7 @@ Uses
   DGHIDENotifiers.ProjectStorageNotifier,
   DGHIDENotifiers.EditorNotifier,
   DGHIDENotifiers.DebuggerNotifier,
+  DGHIDENotifiers.ToDoNotifier,
   DGHIDENotifiers.SplashScreen,
   DGHIDENotifiers.AboutBox;
 
@@ -152,6 +155,10 @@ Const
   strIOTAProjectFileStorageNotifier = 'IOTAProjectFileStorageNotifier';
   strINTAEditorServicesNotifier = 'INTAEditorServicesNotifier';
   strIOTADebuggerNotifier = 'IOTADebuggerNotifier';
+  strIOTAToDoNotifier = 'IOTAToDoNotifier';
+
+Var
+  TDS : IOTAToDoServices;
 
 Begin
   {$IFDEF CODESITE}CodeSite.TraceMethod(Self, 'Create', tmoTiming);{$ENDIF}
@@ -180,6 +187,11 @@ Begin
     );
   FDebuggerNotifier := (BorlandIDEServices As IOTADebuggerServices).AddNotifier(
     TDGHNotificationsDebuggerNotifier.Create(strIOTADebuggerNotifier, '', dinDebuggerNotifier));
+  //: @bug The below notifier is supposed to be implemented in Professional and above BUT the services
+  //:      interface is not available in the IDE at all - https://quality.embarcadero.com/browse/RSP-31053
+  FToDoNotifier := -1;
+  If Supports(BorlandIDEServices, IOTAToDoServices, TDS) Then
+    FToDoNotifier := TDS.AddNotifier(TDINTodoNotifier.Create(strIOTAToDoNotifier, '', dinToDoNotifier));
   TfrmDockableIDENotifications.CreateDockableBrowser;
 End;
 
@@ -192,6 +204,9 @@ End;
 
 **)
 Destructor TDGHIDENotifiersWizard.Destroy;
+
+Var
+  TDS : IOTAToDoServices;
 
 Begin
   {$IFDEF CODESITE}CodeSite.TraceMethod(Self, 'Destroy', tmoTiming);{$ENDIF}
@@ -213,6 +228,9 @@ Begin
     (BorlandIDEServices As IOTAEditorServices).RemoveNotifier(FEditorNotifier);
   If FDebuggerNotifier > -1 Then
     (BorlandIDEServices As IOTADebuggerServices).RemoveNotifier(FDebuggerNotifier);
+  If Supports(BorlandIDEServices, IOTAToDoServices, TDS) Then
+    If FToDoNotifier > -1 Then
+      TDS.RemoveNotifier(FToDoNotifier);
   RemoveAboutBoxEntry;
   TfrmDockableIDENotifications.RemoveDockableBrowser;
   Inherited Destroy;

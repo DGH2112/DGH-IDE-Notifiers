@@ -146,6 +146,7 @@
             <Form>frmDINAboutDlg</Form>
             <FormType>dfm</FormType>
         </DCCReference>
+        <DCCReference Include="Source\DGHIDENotifiers.ToDoNotifier.pas"/>
         <RcCompile Include="DGHIDENotITHVerInfo.RC">
             <Form>DGHIDENotITHVerInfo.res</Form>
         </RcCompile>

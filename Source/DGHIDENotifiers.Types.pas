@@ -4,8 +4,8 @@
   all the notifiers can log messages with the notification logging window.
 
   @Author  David Hoyle
-  @Version 1.231
-  @Date    20 Sep 2020
+  @Version 1.247
+  @Date    27 Sep 2020
 
   @license
 
@@ -54,7 +54,8 @@ Type
     dinProjectCompileNotifier,
     dinSourceEditorNotifier,
     dinFormNotifier,
-    dinEditViewNotifier
+    dinEditViewNotifier,
+    dinToDoNotifier
   );
 
   (** A set of the above notification type so that they can be filtered. **)
@@ -76,8 +77,8 @@ Type
     Procedure DoNotification(Const strMessage: String);
     Function  GetFileName : String;
   Public
-    Constructor Create(Const strNotifier, strFileName : String; Const iNotification : TDGHIDENotification);
-      Virtual;
+    Constructor Create(Const strNotifier, strFileName : String;
+      Const iNotification : TDGHIDENotification); Virtual;
     Destructor Destroy; Override;
     // TInterfaceObject
     Procedure AfterConstruction; Override;
@@ -112,7 +113,8 @@ Const
       clSilver,                                            // dinProjectCompileNotifier
       $FFFF80,                                             // dinSourceEditorNotifier
       $FF80FF,                                             // dinFormNotifier
-      $80FFFF                                              // dinEditViewNotifier
+      $80FFFF,                                             // dinEditViewNotifier
+      $FF8080                                              // dinToDoNotifier
   );
 
   (** A constant array of boolean to provide a string representation of a boolean value. **)
@@ -136,7 +138,8 @@ Const
     'Project Compile Notifications',
     'Source Editor Notifications',
     'Form Notifications',
-    'Edit View Notifier'
+    'Edit View Notifier',
+    'To Do Notifier'
   );
 
 Implementation
@@ -230,7 +233,8 @@ End;
   @param   iNotification as a TDGHIDENotification as a constant
 
 **)
-Constructor TDGHNotifierObject.Create(Const strNotifier, strFileName : String; Const iNotification : TDGHIDENotification);
+Constructor TDGHNotifierObject.Create(Const strNotifier, strFileName : String;
+  Const iNotification : TDGHIDENotification);
 
 ResourceString
   strCreate = '%s.Create';

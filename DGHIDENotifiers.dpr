@@ -74,7 +74,8 @@ uses
   DGHIDENotifiers.ProjectCompileNotifier in 'Source\DGHIDENotifiers.ProjectCompileNotifier.pas',
   DGHIDENotifiers.SourceEditorNotifier in 'Source\DGHIDENotifiers.SourceEditorNotifier.pas',
   DGHIDENotifiers.EditViewNotifier in 'Source\DGHIDENotifiers.EditViewNotifier.pas',
-  DGHIDENotifiers.AboutDlg in 'Source\DGHIDENotifiers.AboutDlg.pas' {frmDINAboutDlg};
+  DGHIDENotifiers.AboutDlg in 'Source\DGHIDENotifiers.AboutDlg.pas' {frmDINAboutDlg},
+  DGHIDENotifiers.ToDoNotifier in 'Source\DGHIDENotifiers.ToDoNotifier.pas';
 
 {$R *.res}
 
