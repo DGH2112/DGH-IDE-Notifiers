@@ -4,15 +4,15 @@
   expert / plug-in which are generated RAD Studio IDE.
 
   @Author  David Hoyle
-  @Version 1.073
-  @date    22 Feb 2020
+  @Version 1.177
+  @date    27 Sep 2020
 
   @license
 
     DGH IDE Notifiers is a RAD Studio plug-in to logging RAD Studio IDE notifications
     and to demostrate how to use various IDE notifiers.
     
-    Copyright (C) 2019  David Hoyle (https://github.com/DGH2112/DGH-IDE-Notifiers/)
+    Copyright (C) 2020  David Hoyle (https://github.com/DGH2112/DGH-IDE-Notifiers/)
 
     This program is free software: you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
@@ -163,6 +163,9 @@ Type
     Procedure FilterMessages;
     Procedure UpdateTimer(Sender : TObject);
     Procedure RetreiveIDEEditorColours;
+    {$IFDEF DXE102}
+    Procedure ThemeVTVColours;
+    {$ENDIF DXE102}
   Public
     Constructor Create(AOwner: TComponent); Override;
     Destructor Destroy; Override;
@@ -272,7 +275,7 @@ End;
   after the starting point.
 
   @precon  None.
-  @postcon Returns the position of the firrst delimiter after the starting point.
+  @postcon Returns the position of the first delimiter after the starting point.
 
   @note    Used to workaround backward compatability issues with String.Split and StringSplit.
 
@@ -303,7 +306,7 @@ End;
   This function splits a string into an array of strings based on the given delimiter character.
 
   @precon  None.
-  @postcon Splits the given string by the delimmiters and returns an array of strings.
+  @postcon Splits the given string by the delimiters and returns an array of strings.
 
   @note    Used to workaround backward compatability issues with String.Split and StringSplit.
 
@@ -340,7 +343,7 @@ End;
 
 (**
 
-  This method unregisters the dockable form from the IDE and frees its instance.
+  This method un-registers the dockable form from the IDE and frees its instance.
 
   @precon  FormVar must be a valid reference.
   @postcon The form is unregistered from the IDE and freed.
@@ -411,7 +414,7 @@ End;
 
 (**
 
-  This method unregisters the dockable for from the IDE.
+  This method un-registers the dockable for from the IDE.
 
   @precon  FormVar must be a valid reference.
   @postcon The dockable form is unregistered from the IDE.
@@ -570,10 +573,10 @@ End;
 
 (**
 
-  This method adds a notification to the forms listbox and underlying stored mechanism.
+  This method adds a notification to the forms list box and underlying stored mechanism.
 
   @precon  None.
-  @postcon A notification message is aded to the list if included in the filter else just stored
+  @postcon A notification message is added to the list if included in the filter else just stored
            internally.
 
   @param   iNotification as a TDGHIDENotification as a constant
@@ -617,7 +620,7 @@ End;
 
 (**
 
-  This method adds an item to the listbox.
+  This method adds an item to the list box.
 
   @precon  None.
   @postcon An item is added to the end of the list box.
@@ -642,7 +645,7 @@ End;
 (**
 
   This method returns the file name for the log file based on the location of the user profile and
-  where Microsft state you should store your information.
+  where Microsoft state you should store your information.
 
   @precon  None.
   @postcon The filename for the log file is returned.
@@ -723,6 +726,7 @@ Begin
       ITS.RegisterFormClass(TfrmDockableIDENotifications);
       ITS.ApplyTheme(Self);
       FStyleServices := ITS.StyleServices;
+      ThemeVTVColours;
     End;
   {$ENDIF DXE102}
   LoadSettings;
@@ -779,7 +783,7 @@ End;
   buttons.
 
   @precon  None.
-  @postcon Toolbar buttons are created for each notifications type so that the notification can
+  @postcon Tool bar buttons are created for each notifications type so that the notification can
            be switched on or off in the view.
 
 **)
@@ -809,7 +813,7 @@ Begin
         BM.Canvas.Pen.Color := clBlack;
         BM.Canvas.Brush.Color := iMaskColour;
         BM.Canvas.FillRect(Rect(0, 0, iBMSize, iBMSize));
-        BM.Canvas.Brush.Color := iNotificationColours[iFilter];
+        BM.Canvas.Brush.Color := aiNotificationColours[iFilter];
         BM.Canvas.Ellipse(Rect(0 + iPadding, 0 + iPadding, iBMSize - iPadding, iBMSize - iPadding));
         iIndex := ilButtons.AddMasked(BM, iMaskColour);
       Finally
@@ -858,7 +862,7 @@ End;
   This method filters the list of messages based on matches to the regular expression.
 
   @precon  None.
-  @postcon The mesage list is filtered for matches to the filter regular expression.
+  @postcon The message list is filtered for matches to the filter regular expression.
 
 **)
 Procedure TfrmDockableIDENotifications.FilterMessages;
@@ -917,7 +921,7 @@ End;
 
 (**
 
-  This method loads an existing log file information into the listview.
+  This method loads an existing log file information into the list view.
 
   @precon  None.
   @postcon Any existing log file information is loaded.
@@ -993,7 +997,7 @@ End;
 
 (**
 
-  This method loads the forms / applcations settings from the registry.
+  This method loads the forms / applications settings from the registry.
 
   @precon  None.
   @postcon The forms / applications settings are loaded from the registry.
@@ -1085,10 +1089,10 @@ Procedure TfrmDockableIDENotifications.LogViewAfterCellPaint(Sender: TBaseVirtua
 
   (**
 
-    This procedure sets the backgroup colour of the text to be rendered.
+    This procedure sets the background colour of the text to be rendered.
 
     @precon  T must be a valid instance.
-    @postcon The backgroudn colour is set.
+    @postcon The background colour is set.
 
     @param   T            as a TDNToken as a constant
     @param   IBrushColour as a TColor as a constant
@@ -1148,7 +1152,9 @@ Begin
       TargetCanvas.FillRect(R);
       Tokenizer := TDNMessageTokenizer.Create(
         FMessageList[NodeData.FNotificationIndex].Message,
-        FRegExFilter);
+        FRegExFilter
+      );
+      Canvas.Font.Assign(Sender.Font);
       Try
         For iToken := 0 To Tokenizer.Count - 1 Do
           Begin
@@ -1184,7 +1190,7 @@ Procedure TfrmDockableIDENotifications.LogViewGetImageIndex(Sender: TBaseVirtual
   Var ImageIndex: TImageIndex);
 
 Const
-  iPadding = 2;
+  iPadding = 3; // Number of existing images
 
 Var
   NodeData : PTreeNodeData;
@@ -1233,7 +1239,7 @@ End;
 
 (**
 
-  This is an on KeyPress event handler for the virtual string tree log.
+  This is an on Key Press event handler for the virtual string tree log.
 
   @precon  None.
   @postcon Captures filter text and stores it internally and triggers a filtering of the message
@@ -1334,7 +1340,7 @@ End;
   This method saves the forms / applications settings to the registry.
 
   @precon  None.
-  @postcon The forms / applications settings are saved to the regsitry.
+  @postcon The forms / applications settings are saved to the registry.
 
 **)
 Procedure TfrmDockableIDENotifications.SaveSettings;
@@ -1373,6 +1379,26 @@ Begin
   CreateDockableBrowser;
   ShowDockableForm(FormInstance);
 End;
+
+{$IFDEF DXE102}
+(**
+
+  This method themes the focused selection colour of the VTV control as there is an issues with the
+  VTV DFM storing the actual colour and not the system colour reference.
+
+  @precon  None.
+  @postcon If theming is enabled, the highlight colour is assigned to the focused selection colour.
+
+**)
+Procedure TfrmDockableIDENotifications.ThemeVTVColours;
+
+Begin
+  If Assigned(FStyleServices) Then
+    Begin
+      LogView.Colors.FocusedSelectionColor := FStyleServices.GetSystemColor(clHighlight);
+    End;
+End;
+{$ENDIF DXE102}
 
 (**
 

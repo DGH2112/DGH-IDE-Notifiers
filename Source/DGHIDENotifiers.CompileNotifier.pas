@@ -1,19 +1,19 @@
 (**
 
-  This module contains a class which implements the IOTACompilerNotifier for the RAD Studio IDE
-  in order to recieve notifications when compilers are and stop for each project and project group
+  This module contains a class which implements the Compiler Notifier for the RAD Studio IDE
+  in order to receive notifications when compilers are and stop for each project and project group
   in the RAD Studio IDE.
 
   @Author  David Hoyle
-  @Version 1.0
-  @Date    05 Jan 2020
+  @Version 1.002
+  @Date    20 Sep 2020
 
   @license
 
     DGH IDE Notifiers is a RAD Studio plug-in to logging RAD Studio IDE notifications
     and to demostrate how to use various IDE notifiers.
     
-    Copyright (C) 2019  David Hoyle (https://github.com/DGH2112/DGH-IDE-Notifiers/)
+    Copyright (C) 2020  David Hoyle (https://github.com/DGH2112/DGH-IDE-Notifiers/)
 
     This program is free software: you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
@@ -64,12 +64,12 @@ Uses
 
 {$IFDEF D2010}
 Const
-  (** A constant aray of strings to provide a string representation of the TOTACompileResult
-      enumerate. **)
+  (** A constant array of strings to provide a string representation of the Compile Result
+      enumerates. **)
   strCompileResult : Array[Low(TOTACompileResult)..High(TOTACompileResult)] Of String = (
     'crOTAFailed', 'crOTASucceeded', 'crOTABackground');
-  (** A constant aray of strings to provide a string representation of the TOTACompileMode
-      enumerate. **)
+  (** A constant array of strings to provide a string representation of the Compile Mode
+      enumerates. **)
   strCompileMode : Array[Low(TOTACompileMode)..High(TOTACompileMode)] Of String = (
     'cmOTAMake', 'cmOTABuild', 'cmOTACheck', 'cmOTAMakeUnit');
 
@@ -80,7 +80,7 @@ Const
   This method is called when an individual project has finished compiling.
 
   @precon  None.
-  @postcon Outputs the projecy file name and whether the project compiled successfully.
+  @postcon Outputs the project file name and whether the project compiled successfully.
 
   @nocheck MissingCONSTInParam
   

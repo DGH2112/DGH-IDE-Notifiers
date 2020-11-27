@@ -3,8 +3,8 @@
   This module contains an IDE wizard which implements IOTAWizard and IOTAMenuWizard to create a
   RAD Studio IDE expert / plug-in to log notifications from various aspects of the IDE.
 
-  The wizard is responsible for the life time management of all other objects in this plugin (except
-  the dockable form) and installs the notifiers on creation and remoces them on destruction.
+  The wizard is responsible for the life time management of all other objects in this plug-in (except
+  the dockable form) and installs the notifiers on creation and removes them on destruction.
 
   The following notifiers are currently implemented:
    * IOTAIDENotifier                via IOTAIDEServices.AddNotifier();
@@ -28,29 +28,30 @@
    * IOTAFormNotifier               via IOTAFormEditor.AddNotifier()
    * INTAEditViewNotifier           via IOTAEditView.AddNotifier()
 
+   * IOTAToDoServices.AddNotifier(IOTANotifier)
+   
   The following notifiers are STILL to be implemented:
+   * IOTABreakpoint40.AddNotifier(IOTABreakpointNotifier)
+   * IOTAThread50.AddNotifier(IOTAThreadNotifier, IOTAThreadNotifier160)
+   * IOTAProcess60.AddNotifier(IOTAProcessNotifier, IOTAProcessNotifier90)
+   * IOTAProcessModule80.AddNotifier(IOTAProcessModNotifier)
    * IOTAToolsFilter.AddNotifier(IOTANotifier)... IOTAToolsFilterNotifier = interface(IOTANotifier)
    * IOTAEditBlock.AddNotifier(IOTASyncEditNotifier)
    * IOTAEditLineTracker.AddNotifier(IOTAEditLineNotifier)
    * IOTAEditBlock, IOTASyncEditNotifier = interface
-   * IOTABreakpoint40.AddNotifier(IOTABreakpointNotifier)
-   * IOTAThread50.AddNotifier(IOTAThreadNotifier, IOTAThreadNotifier160)
-   * IOTAProcessModule80.AddNotifier(IOTAProcessModNotifier)
-   * IOTAProcess60.AddNotifier(IOTAProcessNotifier, IOTAProcessNotifier90)
-   * IOTAToDoServices.AddNotifier(IOTAToDoManager)
    * IOTADesignerCommandNotifier = interface(IOTANotifier)
    * IOTAProjectMenuItemCreatorNotifier = interface(IOTANotifier)
 
   @Author  David Hoyle
-  @Version 1.063
-  @Date    09 Feb 2020
+  @Version 1.214
+  @Date    27 Sep 2020
 
   @license
 
     DGH IDE Notifiers is a RAD Studio plug-in to logging RAD Studio IDE notifications
     and to demostrate how to use various IDE notifiers.
     
-    Copyright (C) 2019  David Hoyle (https://github.com/DGH2112/DGH-IDE-Notifiers/)
+    Copyright (C) 2020  David Hoyle (https://github.com/DGH2112/DGH-IDE-Notifiers/)
 
     This program is free software: you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
@@ -79,7 +80,7 @@ Uses
 {$R DGHIDENotITHVerInfo.RES ..\DGHIDENotITHVerInfo.RC}
 
 Type
-  (** This class implement the plugins wizard. **)
+  (** This class implement the plug-in wizard. **)
   TDGHIDENotifiersWizard = Class(TDGHNotifierObject, IOTAWizard, IOTAMenuWizard)
   Strict Private
     FIDENotifier : Integer;
@@ -92,6 +93,7 @@ Type
     FProjectFileStorageNotifier : Integer;
     FEditorNotifier : Integer;
     FDebuggerNotifier : integer;
+    FToDoNotifier : Integer;
   Strict Protected
   Public
     Constructor Create(Const strNotifier, strFileName : String;
@@ -125,12 +127,13 @@ Uses
   DGHIDENotifiers.ProjectStorageNotifier,
   DGHIDENotifiers.EditorNotifier,
   DGHIDENotifiers.DebuggerNotifier,
+  DGHIDENotifiers.ToDoNotifier,
   DGHIDENotifiers.SplashScreen,
   DGHIDENotifiers.AboutBox;
 
 (**
 
-  A constructor for the TDGHIDENotifierWizard class.
+  A constructor for the TDGHIDENotifiersWizard class.
 
   @precon  None.
   @postcon Installs all the notifiers.
@@ -152,6 +155,10 @@ Const
   strIOTAProjectFileStorageNotifier = 'IOTAProjectFileStorageNotifier';
   strINTAEditorServicesNotifier = 'INTAEditorServicesNotifier';
   strIOTADebuggerNotifier = 'IOTADebuggerNotifier';
+  strIOTAToDoNotifier = 'IOTAToDoNotifier';
+
+Var
+  TDS : IOTAToDoServices;
 
 Begin
   {$IFDEF CODESITE}CodeSite.TraceMethod(Self, 'Create', tmoTiming);{$ENDIF}
@@ -180,6 +187,11 @@ Begin
     );
   FDebuggerNotifier := (BorlandIDEServices As IOTADebuggerServices).AddNotifier(
     TDGHNotificationsDebuggerNotifier.Create(strIOTADebuggerNotifier, '', dinDebuggerNotifier));
+  //: @bug The below notifier is supposed to be implemented in Professional and above BUT the services
+  //:      interface is not available in the IDE at all - https://quality.embarcadero.com/browse/RSP-31053
+  FToDoNotifier := -1;
+  If Supports(BorlandIDEServices, IOTAToDoServices, TDS) Then
+    FToDoNotifier := TDS.AddNotifier(TDINTodoNotifier.Create(strIOTAToDoNotifier, '', dinToDoNotifier));
   TfrmDockableIDENotifications.CreateDockableBrowser;
 End;
 
@@ -192,6 +204,9 @@ End;
 
 **)
 Destructor TDGHIDENotifiersWizard.Destroy;
+
+Var
+  TDS : IOTAToDoServices;
 
 Begin
   {$IFDEF CODESITE}CodeSite.TraceMethod(Self, 'Destroy', tmoTiming);{$ENDIF}
@@ -213,6 +228,9 @@ Begin
     (BorlandIDEServices As IOTAEditorServices).RemoveNotifier(FEditorNotifier);
   If FDebuggerNotifier > -1 Then
     (BorlandIDEServices As IOTADebuggerServices).RemoveNotifier(FDebuggerNotifier);
+  If Supports(BorlandIDEServices, IOTAToDoServices, TDS) Then
+    If FToDoNotifier > -1 Then
+      TDS.RemoveNotifier(FToDoNotifier);
   RemoveAboutBoxEntry;
   TfrmDockableIDENotifications.RemoveDockableBrowser;
   Inherited Destroy;
@@ -242,7 +260,7 @@ End;
   This is a getter method for the IDstring property.
 
   @precon  None.
-  @postcon Returns a unique string for the plugin wizard.
+  @postcon Returns a unique string for the plug-in wizard.
 
   @return  a String
 

@@ -4,15 +4,15 @@
   all the notifiers can log messages with the notification logging window.
 
   @Author  David Hoyle
-  @Version 1.049
-  @Date    09 Feb 2020
+  @Version 1.247
+  @Date    27 Sep 2020
 
   @license
 
     DGH IDE Notifiers is a RAD Studio plug-in to logging RAD Studio IDE notifications
     and to demostrate how to use various IDE notifiers.
     
-    Copyright (C) 2019  David Hoyle (https://github.com/DGH2112/DGH-IDE-Notifiers/)
+    Copyright (C) 2020  David Hoyle (https://github.com/DGH2112/DGH-IDE-Notifiers/)
 
     This program is free software: you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
@@ -54,7 +54,8 @@ Type
     dinProjectCompileNotifier,
     dinSourceEditorNotifier,
     dinFormNotifier,
-    dinEditViewNotifier
+    dinEditViewNotifier,
+    dinToDoNotifier
   );
 
   (** A set of the above notification type so that they can be filtered. **)
@@ -76,8 +77,8 @@ Type
     Procedure DoNotification(Const strMessage: String);
     Function  GetFileName : String;
   Public
-    Constructor Create(Const strNotifier, strFileName : String; Const iNotification : TDGHIDENotification);
-      Virtual;
+    Constructor Create(Const strNotifier, strFileName : String;
+      Const iNotification : TDGHIDENotification); Virtual;
     Destructor Destroy; Override;
     // TInterfaceObject
     Procedure AfterConstruction; Override;
@@ -94,25 +95,26 @@ Type
 
 Const
   (** A constant array of colours to provide a different colour for each notification. **)
-  iNotificationColours: Array [Low(TDGHIDENotification) .. High(TDGHIDENotification)] Of
+  aiNotificationColours: Array [TDGHIDENotification] Of
     TColor = (
-    clTeal,
-    clAqua,
-    clMaroon,
-    clRed,
-    clNavy,
-    clBlue,
-    clOlive,
-    clYellow,
-    clGreen,
-    //clLime // not used as its the BitMap mask colour
-    clPurple,
-    clFuchsia,
-    clDkGray,
-    clSilver,
-    $FFFF80,
-    $FF80FF,
-    $80FFFF
+      clTeal,                                              // dinWizard
+      clAqua,                                              // dinMenuWizard
+      clMaroon,                                            // dinIDENotification
+      clRed,                                               // dinVersionControlNotifier
+      clNavy,                                              // dinCompileNotifier
+      clBlue,                                              // dinMessageNotifier
+      clOlive,                                             // dinIDEInsightNotifier
+      clYellow,                                            // dinProjectFileStorageNotifier
+      clGreen,                                             // dinEditorNotifier
+      //clLime // not used as its the BitMap mask colour   
+      clPurple,                                            // dinDebuggerNotifier
+      clFuchsia,                                           // dinModuleNotifier
+      clDkGray,                                            // dinProjectNotifier
+      clSilver,                                            // dinProjectCompileNotifier
+      $FFFF80,                                             // dinSourceEditorNotifier
+      $FF80FF,                                             // dinFormNotifier
+      $80FFFF,                                             // dinEditViewNotifier
+      $FF8080                                              // dinToDoNotifier
   );
 
   (** A constant array of boolean to provide a string representation of a boolean value. **)
@@ -136,7 +138,8 @@ Const
     'Project Compile Notifications',
     'Source Editor Notifications',
     'Form Notifications',
-    'Edit View Notifier'
+    'Edit View Notifier',
+    'To Do Notifier'
   );
 
 Implementation
@@ -230,7 +233,11 @@ End;
   @param   iNotification as a TDGHIDENotification as a constant
 
 **)
-Constructor TDGHNotifierObject.Create(Const strNotifier, strFileName : String; Const iNotification : TDGHIDENotification);
+Constructor TDGHNotifierObject.Create(Const strNotifier, strFileName : String;
+  Const iNotification : TDGHIDENotification);
+
+ResourceString
+  strCreate = '%s.Create';
 
 Begin
   {$IFDEF CODESITE}CodeSite.TraceMethod(Self, 'Create', tmoTiming);{$ENDIF}
@@ -238,6 +245,7 @@ Begin
   FNotifier := strNotifier;
   FFileName := strFileName;
   FNotification := iNotification;
+  DoNotification(Format(strCreate, [GetFileName]));
 End;
 
 (**
@@ -250,8 +258,12 @@ End;
 **)
 Destructor TDGHNotifierObject.Destroy;
 
+ResourceString
+  strDestroy = '%s.Destroy';
+
 Begin
   {$IFDEF CODESITE}CodeSite.TraceMethod(Self, 'Destroy', tmoTiming);{$ENDIF}
+  DoNotification(Format(strDestroy, [GetFileName]));
   Inherited Destroy;
 End;
 
@@ -260,7 +272,7 @@ End;
   This method is called when the notifier is destroyed.
 
   @precon  None.
-  @postcon Outputs a notificiation.
+  @postcon Outputs a notification.
 
 **)
 Procedure TDGHNotifierObject.Destroyed;
@@ -277,7 +289,7 @@ End;
   This method adds a notification to the dockable notifier form.
 
   @precon  None.
-  @postcon A notification is aded to the dockable form.
+  @postcon A notification is added to the dockable form.
 
   @param   strMessage as a String as a constant
 

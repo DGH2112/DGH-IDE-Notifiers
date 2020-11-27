@@ -1,18 +1,18 @@
 (**
   
-  This module contains a class which implements the IBADIIDEEditorColours interface to extract
+  This module contains a class which implements the IDE Editor Colours interface to extract
   the token colours from the IDE.
 
   @Author  David Hoyle
-  @Version 1.0
-  @Date    05 Jan 2020
+  @Version 1.001
+  @Date    20 Sep 2020
 
   @license
 
     DGH IDE Notifiers is a RAD Studio plug-in to logging RAD Studio IDE notifications
     and to demostrate how to use various IDE notifiers.
     
-    Copyright (C) 2019  David Hoyle (https://github.com/DGH2112/DGH-IDE-Notifiers/)
+    Copyright (C) 2020  David Hoyle (https://github.com/DGH2112/DGH-IDE-Notifiers/)
 
     This program is free software: you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
@@ -38,7 +38,7 @@ Uses
   DGHIDENotifiers.Interfaces;
 
 Type
-  (** A class which implements the IBADIIDEEditorColours interface for getting the current IDEs
+  (** A class which implements the IDE Editor Colours interface for getting the current IDEs
       editor colours. **)
   TITHIDEEditorColours = Class(TInterfacedObject, IDNIDEEditorColours)
   Strict Private
@@ -137,7 +137,7 @@ End;
   and returns that alternate point instead of the standard BDS if found.
 
   @precon  None.
-  @postcon Returns the activty IDEs registration point.
+  @postcon Returns the activity IDEs registration point.
 
   @return  a String
 
@@ -181,7 +181,7 @@ End;
 
 (**
 
-  This method reads an IDE Editor Token inforamtion from the given registry.
+  This method reads an IDE Editor Token information from the given registry.
 
   @precon  Reg must be a valid instance.
   @postcon The token is read from the registry.

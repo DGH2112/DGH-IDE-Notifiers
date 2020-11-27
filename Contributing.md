@@ -2,9 +2,9 @@
 
 Author:   David Hoyle (davidghoyle@gmail.com / [DGH2112](https://github.com/DGH2112))
 
-Version:  1.1g
+Version:  1.1h
 
-Date:     22 Feb 2020
+Date:     27 Nov 2020
 
 Web Page: [DGH IDE Notifiers](http://www.davidghoyle.co.uk/WordPress/?page_id=1449)
 
@@ -61,4 +61,4 @@ The plug-in in itself does not do anything except hooks all the IDEs notifiers t
 
 regards
 
-David Hoyle Feb 2020
+David Hoyle Nov 2020

@@ -1,19 +1,19 @@
 (**
 
   This module contains a class which implements the IOTADebuggerNotifier, IOTADebuggerNotifier90,
-  IOTADebuggerNotifier100 and IOTADebuggerNotifier110 interfaces to demonstarte how to get debugging
+  IOTADebuggerNotifier100 and IOTADebuggerNotifier110 interfaces to demonstrate how to get debugging
   and breakpoint notifications from the RAD Studio IDE.
 
   @Author  David Hoyle
-  @Version 1.0
-  @Date    05 Jan 2020
+  @Version 1.001
+  @Date    20 Sep 2020
 
   @license
 
     DGH IDE Notifiers is a RAD Studio plug-in to logging RAD Studio IDE notifications
     and to demostrate how to use various IDE notifiers.
     
-    Copyright (C) 2019  David Hoyle (https://github.com/DGH2112/DGH-IDE-Notifiers/)
+    Copyright (C) 2020  David Hoyle (https://github.com/DGH2112/DGH-IDE-Notifiers/)
 
     This program is free software: you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
@@ -295,7 +295,7 @@ End;
 
 (**
 
-  This method is called after the debugger / IDE process that is being debuggeed ha terminated.
+  This method is called after the debugger / IDE process that is being debugged has terminated.
 
   @precon  None.
   @postcon Provides access to the Process (not sure how valid this is).

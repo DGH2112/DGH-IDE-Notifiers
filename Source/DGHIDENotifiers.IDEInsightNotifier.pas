@@ -5,15 +5,15 @@
   so that the developer can modify the contents of the IDE Insight results.
 
   @Author  David Hoyle
-  @Version 1.0
-  @Date    05 Jan 2020
+  @Version 1.001
+  @Date    20 Sep 2020
 
   @license
 
     DGH IDE Notifiers is a RAD Studio plug-in to logging RAD Studio IDE notifications
     and to demostrate how to use various IDE notifiers.
     
-    Copyright (C) 2019  David Hoyle (https://github.com/DGH2112/DGH-IDE-Notifiers/)
+    Copyright (C) 2020  David Hoyle (https://github.com/DGH2112/DGH-IDE-Notifiers/)
 
     This program is free software: you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
@@ -94,7 +94,7 @@ End;
   This method is called when the IDE Insight dialogue is being invoked and requesting items.
 
   @precon  None.
-  @postcon Povides access to the IDE Inight services and an reserved context value.
+  @postcon Provides access to the IDE Insight services and an reserved context value.
 
   @nocheck MissingCONSTInParam
   

@@ -4,15 +4,15 @@
   interfaces for capturing editor events in the RAD Studio IDE.
 
   @Author  David Hoyle
-  @Version 1.0
-  @Date    05 Jan 2020
+  @Version 1.001
+  @Date    20 Sep 2020
 
   @license
 
     DGH IDE Notifiers is a RAD Studio plug-in to logging RAD Studio IDE notifications
     and to demostrate how to use various IDE notifiers.
     
-    Copyright (C) 2019  David Hoyle (https://github.com/DGH2112/DGH-IDE-Notifiers/)
+    Copyright (C) 2020  David Hoyle (https://github.com/DGH2112/DGH-IDE-Notifiers/)
 
     This program is free software: you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
@@ -106,10 +106,10 @@ End;
 
 (**
 
-  This function returns the DockForm ClassName.
+  This function returns the DockForm Class Name.
 
   @precon  None.
-  @postcon The DockForm ClassName is returned.
+  @postcon The DockForm Class Name is returned.
 
   @nocheck MissingCONSTInParam
   
@@ -151,7 +151,7 @@ End;
   This function returns the Form Caption of the Editor window.
 
   @precon  None.
-  @postcon The Form Caption of thr editor form is returned.
+  @postcon The Form Caption of the editor form is returned.
 
   @nocheck MissingCONSTInParam
   
@@ -173,10 +173,10 @@ End;
 
 (**
 
-  This function returns the Form ClassName of the Editor window.
+  This function returns the Form Class Name of the Editor window.
 
   @precon  None.
-  @postcon The Form ClassName of thr editor form is returned.
+  @postcon The Form Class Name of the editor form is returned.
 
   @nocheck MissingCONSTInParam
   
@@ -260,10 +260,10 @@ End;
 
 (**
 
-  This method is called whn dockable forms are loaded by the desktop.
+  This method is called when dockable forms are loaded by the desktop.
 
   @precon  None.
-  @postcon Provides access to the edit window and dickable form.
+  @postcon Provides access to the edit window and dockable form.
 
   @nocheck MissingCONSTInParam
   
@@ -356,7 +356,7 @@ End;
 Procedure TDGHNotificationsEditorNotifier.ViewActivated(Const View: IOTAEditView);
 
 ResourceString
-  strViewActiviated = '.ViewActiviated = View.TopRow: %d';
+  strViewActiviated = '.ViewActivated = View.TopRow: %d';
 
 Begin
   DoNotification(
@@ -406,7 +406,7 @@ Procedure TDGHNotificationsEditorNotifier.WindowActivated(Const EditWindow
   : INTAEditWindow);
 
 ResourceString
-  strWindowActiviated = '.WindowActiviated = EditWindow: %s.%s';
+  strWindowActiviated = '.WindowActivated = EditWindow: %s.%s';
 
 Begin
   DoNotification(
