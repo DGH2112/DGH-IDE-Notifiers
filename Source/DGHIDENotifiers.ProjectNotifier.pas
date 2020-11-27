@@ -4,8 +4,8 @@
   TDNModuleNotifier class as a based class.
 
   @Author  David Hoyle
-  @Version 1.001
-  @Date    20 Sep 2020
+  @Version 1.011
+  @Date    27 Nov 2020
 
   @license
 
@@ -40,7 +40,8 @@ Uses
 
 Type
   (** A class to implement the IOTAProjectNotifier interface. **)
-  TDNProjectNotifier = Class(TDNModuleNotifier, IOTAProjectNotifier)
+  TDNProjectNotifier = Class(TDNModuleNotifier, IUnknown, IOTANotifier, IOTAModuleNotifier,
+    IOTAModuleNotifier80, IOTAModuleNotifier90, IOTAProjectNotifier)
   Strict Private
   {$IFDEF D2010} Strict {$ENDIF} Protected
     // IOTAProjectModule

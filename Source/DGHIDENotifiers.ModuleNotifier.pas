@@ -4,8 +4,8 @@
   changes to modules in the IDE.
 
   @Author  David Hoyle
-  @Version 1.008
-  @Date    20 Sep 2020
+  @Version 1.010
+  @Date    27 Nov 2020
 
   @license
 
@@ -41,8 +41,8 @@ Uses
 
 Type
   (** A class to implements the Module Notifier interfaces. **)
-  TDNModuleNotifier = Class(TDGHNotifierObject, IOTAModuleNotifier, IOTAModuleNotifier80,
-    IOTAModuleNotifier90)
+  TDNModuleNotifier = Class(TDGHNotifierObject, IUnknown, IOTANotifier, IOTAModuleNotifier,
+    IOTAModuleNotifier80, IOTAModuleNotifier90)
   Strict Private
     FModuleRenameEvent: TDNModuleRenameEvent;
   {$IFDEF D2010} Strict {$ENDIF} Protected
