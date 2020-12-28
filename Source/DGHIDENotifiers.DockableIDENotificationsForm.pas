@@ -4,8 +4,8 @@
   expert / plug-in which are generated RAD Studio IDE.
 
   @Author  David Hoyle
-  @Version 1.177
-  @date    27 Sep 2020
+  @Version 1.179
+  @date    28 Dec 2020
 
   @license
 
@@ -64,7 +64,7 @@ Uses
   Generics.Collections,
   ExtCtrls,
   Themes,
-  DGHIDENotifiers.Interfaces;
+  DGHIDENotifiers.Interfaces, System.Actions, System.ImageList;
 
 Type
   (** This record describes the message information to be stored. **)
@@ -686,13 +686,13 @@ End;
   @postcon Initialises the form and loads the settings.
 
   @nocheck MissingCONSTInParam
-  
+
   @param   AOwner as a TComponent
 
 **)
 Constructor TfrmDockableIDENotifications.Create(AOwner: TComponent);
 
-Const 
+Const
   iPadding = 2;
   strTextHeightTest = 'Wg';
 
@@ -700,7 +700,7 @@ Const
 Var
   ITS : IOTAIDEThemingServices250;
 {$ENDIF DXE102}
-  
+
 Begin
   {$IFDEF CODESITE}CodeSite.TraceMethod('TfrmDockableIDENotifications.Create', tmoTiming);{$ENDIF}
   Inherited Create(AOwner);
@@ -1425,12 +1425,12 @@ Begin
       Node := LogView.GetLastChild(LogView.RootNode);
       LogView.Selected[Node] := True;
       LogView.FocusedNode := Node;
-      stbStatusBar.Panels[0].Text := Format(strShowingMessages, [
-        Int(LogView.RootNodeCount),
-        Int(FMessageList.Count)
-      ]);
       FLastUpdate := 0;
     End;
+  stbStatusBar.Panels[0].Text := Format(strShowingMessages, [
+    Int(LogView.RootNodeCount),
+    Int(FMessageList.Count)
+  ]);
 End;
 
 End.

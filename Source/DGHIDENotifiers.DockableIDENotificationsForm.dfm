@@ -138,6 +138,7 @@ object frmDockableIDENotifications: TfrmDockableIDENotifications
     Colors.TreeLineColor = 9471874
     Colors.UnfocusedColor = 15987699
     Header.AutoSizeIndex = 0
+    Header.Height = 23
     Header.Options = [hoColumnResize, hoDblClickResize, hoDrag, hoRestrictDrag, hoShowSortGlyphs, hoVisible]
     Header.Style = hsFlatButtons
     Images = ilButtons
@@ -158,16 +159,16 @@ object frmDockableIDENotifications: TfrmDockableIDENotifications
         Options = [coAllowClick, coDraggable, coEnabled, coParentBidiMode, coParentColor, coResizable, coShowDropMark, coVisible, coFixed, coAllowFocus, coStyleColor]
         Position = 0
         Spacing = 5
+        Text = 'Date & Time'
         Width = 185
-        WideText = 'Date & Time'
       end
       item
         Margin = 5
         Options = [coAllowClick, coDraggable, coEnabled, coParentBidiMode, coParentColor, coResizable, coShowDropMark, coVisible, coAllowFocus, coStyleColor]
         Position = 1
         Spacing = 5
+        Text = 'Message'
         Width = 640
-        WideText = 'Message'
       end>
   end
   object ilButtons: TImageList
