@@ -66,7 +66,7 @@
         <DCC_S>false</DCC_S>
         <DCC_F>false</DCC_F>
         <DCC_K>false</DCC_K>
-        <DCC_UnitSearchPath>$(BDSPROJECTSDIR)\Virtual-Treeview-6.5.0-IDE\Source;$(DCC_UnitSearchPath)</DCC_UnitSearchPath>
+        <DCC_UnitSearchPath>$(BDSPROJECTSDIR)\Virtual-Treeview-6.5.0-IDE\Source;Virtual-Treeview-6.5.0-IDE\Source;$(DCC_UnitSearchPath)</DCC_UnitSearchPath>
         <UsePackages>true</UsePackages>
         <DCC_UsePackage>DesignIDE;VCL;RTL;$(DCC_UsePackage)</DCC_UsePackage>
     </PropertyGroup>
