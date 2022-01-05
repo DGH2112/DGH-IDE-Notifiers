@@ -4,8 +4,8 @@
   IDE.
 
   @Author  David Hoyle
-  @Version 1.001
-  @Date    20 Sep 2020
+  @Version 1.084
+  @Date    05 Jan 2022
 
   @license
 
@@ -45,7 +45,11 @@ Uses
   {$ENDIF}
   ToolsAPI,
   SysUtils,
+  {$IFDEF RS110}
+  Graphics,
+  {$ELSE}
   Windows,
+  {$ENDIF}
   DGHIDENotifiers.Common,
   Forms;
 
@@ -54,7 +58,7 @@ Var
   (** This is an internal reference for the about box entry`s plug-in index - required for
       removal. **)
   iAboutPlugin : Integer;
-{$ENDIF}
+{$ENDIF D2005}
 
 (**
 
@@ -78,12 +82,33 @@ Var
   iMinor : Integer;
   iBugFix : Integer;
   iBuild : Integer;
+  {$IFDEF RS110}
+  AboutBoxBitMap : TBitMap;
+  {$ELSE}
   bmSplashScreen : HBITMAP;
+  {$ENDIF RS110}
 
 Begin
   {$IFDEF CODESITE}CodeSite.TraceMethod('AddAboutBoxEntry', tmoTiming);{$ENDIF}
   {$IFDEF D2005}
   BuildNumber(iMajor, iMinor, iBugFix, iBuild);
+  {$IFDEF RS110}
+  AboutBoxBitMap := TBitMap.Create;
+  Try
+    AboutBoxBitMap.LoadFromResourceName(hInstance, strSplashScreenResName);
+    iAboutPlugin := (BorlandIDEServices As IOTAAboutBoxServices).AddPluginInfo(
+      Format(strSplashScreenName, [iMajor, iMinor, Copy(strRevision, iBugFix + 1, 1),
+        Application.Title]),
+      strIDEExpertToLogIDENotifications,
+      [AboutBoxBitMap],
+      {$IFDEF DEBUG} True {$ELSE} False {$ENDIF},
+      Format(strSplashScreenBuild, [iMajor, iMinor, iBugfix, iBuild]),
+      Format(strSKUBuild, [iMajor, iMinor, iBugfix, iBuild])
+    );
+  Finally
+    AboutBoxBitMap.Free;
+  End;
+  {$ELSE}
   bmSplashScreen := LoadBitmap(hInstance, strSplashScreenResName);
   iAboutPlugin := (BorlandIDEServices As IOTAAboutBoxServices).AddPluginInfo(
     Format(strSplashScreenName, [iMajor, iMinor, Copy(strRevision, iBugFix + 1, 1),
@@ -92,8 +117,10 @@ Begin
     bmSplashScreen,
     {$IFDEF DEBUG} True {$ELSE} False {$ENDIF},
     Format(strSplashScreenBuild, [iMajor, iMinor, iBugfix, iBuild]),
-    Format(strSKUBuild, [iMajor, iMinor, iBugfix, iBuild]));
-  {$ENDIF}
+    Format(strSKUBuild, [iMajor, iMinor, iBugfix, iBuild])
+  );
+  {$ENDIF RS110}
+  {$ENDIF D2005}
 End;
 
 (**
