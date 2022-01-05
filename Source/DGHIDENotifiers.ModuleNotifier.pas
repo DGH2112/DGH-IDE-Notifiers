@@ -4,8 +4,8 @@
   changes to modules in the IDE.
 
   @Author  David Hoyle
-  @Version 1.010
-  @Date    27 Nov 2020
+  @Version 1.011
+  @Date    05 Jan 2022
 
   @license
 
@@ -62,7 +62,7 @@ Type
       A property the exposes to this class and descendants an interface for notifying the module notifier
       collections of a change of module name.
       @precon  None.
-      @postcon Returns the TDNModuleRenameEvent reference.
+      @postcon Returns a TDNModuleRenameEvent reference.
       @return  a TDNModuleRenameEvent
     **)
     Property ModuleRenameEvent : TDNModuleRenameEvent Read FModuleRenameEvent;

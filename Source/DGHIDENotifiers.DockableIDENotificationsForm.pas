@@ -4,8 +4,8 @@
   expert / plug-in which are generated RAD Studio IDE.
 
   @Author  David Hoyle
-  @Version 1.177
-  @date    27 Sep 2020
+  @Version 1.181
+  @date    05 Jan 2022
 
   @license
 
@@ -144,9 +144,9 @@ Type
     {$ENDIF}
     FLastUpdate           : UInt64;
     FUpdateTimer          : TTimer;
-    {$IFDEF DXE102}
+    {$IFDEF RS102}
     FStyleServices        : TCustomStyleServices;
-    {$ENDIF DXE102}
+    {$ENDIF RS102}
     FIDEEditorColours     : IDNIDEEditorColours;
     FIDEEditorTokenInfo   : TDNTokenFontInfoTokenSet;
     FBackgroundColour     : TColor;
@@ -163,9 +163,9 @@ Type
     Procedure FilterMessages;
     Procedure UpdateTimer(Sender : TObject);
     Procedure RetreiveIDEEditorColours;
-    {$IFDEF DXE102}
+    {$IFDEF RS102}
     Procedure ThemeVTVColours;
-    {$ENDIF DXE102}
+    {$ENDIF RS102}
   Public
     Constructor Create(AOwner: TComponent); Override;
     Destructor Destroy; Override;
@@ -686,21 +686,21 @@ End;
   @postcon Initialises the form and loads the settings.
 
   @nocheck MissingCONSTInParam
-  
+
   @param   AOwner as a TComponent
 
 **)
 Constructor TfrmDockableIDENotifications.Create(AOwner: TComponent);
 
-Const 
+Const
   iPadding = 2;
   strTextHeightTest = 'Wg';
 
-{$IFDEF DXE102}
+{$IFDEF RS102}
 Var
   ITS : IOTAIDEThemingServices250;
-{$ENDIF DXE102}
-  
+{$ENDIF RS102}
+
 Begin
   {$IFDEF CODESITE}CodeSite.TraceMethod('TfrmDockableIDENotifications.Create', tmoTiming);{$ENDIF}
   Inherited Create(AOwner);
@@ -710,9 +710,9 @@ Begin
   FIsFiltering := False;
   FCapture := True;
   FLastUpdate := 0;
-  {$IFDEF DXE102}
+  {$IFDEF RS102}
   FStyleServices := Nil;
-  {$ENDIF DXE102}
+  {$ENDIF RS102}
   LogView.NodeDataSize := SizeOf(TTreeNodeData);
   FMessageList := TList<TMsgNotification>.Create;
   FMessageFilter := [Low(TDGHIDENotification) .. High(TDGHIDENotification)];
@@ -720,7 +720,7 @@ Begin
   FIDEEditorColours := TITHIDEEditorColours.Create;
   RetreiveIDEEditorColours;
   LogView.DefaultNodeHeight := iPadding + LogView.Canvas.TextHeight(strTextHeightTest) + iPadding;
-  {$IFDEF DXE102}
+  {$IFDEF RS102}
   If Supports(BorlandIDEServices, IOTAIDEThemingServices250, ITS) Then
     Begin
       ITS.RegisterFormClass(TfrmDockableIDENotifications);
@@ -728,7 +728,7 @@ Begin
       FStyleServices := ITS.StyleServices;
       ThemeVTVColours;
     End;
-  {$ENDIF DXE102}
+  {$ENDIF RS102}
   LoadSettings;
   {$IFDEF CODESITE}CodeSite.Enabled := False;{$ENDIF}
   LoadLogFile;
@@ -1065,10 +1065,10 @@ Procedure TfrmDockableIDENotifications.LogViewAfterCellPaint(Sender: TBaseVirtua
 
   Begin
     TargetCanvas.Font.Color := FIDEEditorTokenInfo[T.TokenType].FForeColour;
-    {$IFDEF DXE102}
+    {$IFDEF RS102}
     If Assigned(FStyleServices) Then
       TargetCanvas.Font.Color := FStyleServices.GetSystemColor(TargetCanvas.Font.Color);
-    {$ENDIF DXE102}
+    {$ENDIF RS102}
   End;
 
   (**
@@ -1105,10 +1105,10 @@ Procedure TfrmDockableIDENotifications.LogViewAfterCellPaint(Sender: TBaseVirtua
       TargetCanvas.Brush.Color := FIDEEditorTokenInfo[ttSelection].FBackColour
     Else
       TargetCanvas.Brush.Color := iBrushColour;
-    {$IFDEF DXE102}
+    {$IFDEF RS102}
     If Assigned(FStyleServices) Then
       TargetCanvas.Brush.Color := FStyleServices.GetSystemColor(TargetCanvas.Brush.Color);
-    {$ENDIF DXE102}
+    {$ENDIF RS102}
   End;
 
   (**
@@ -1380,7 +1380,7 @@ Begin
   ShowDockableForm(FormInstance);
 End;
 
-{$IFDEF DXE102}
+{$IFDEF RS102}
 (**
 
   This method themes the focused selection colour of the VTV control as there is an issues with the
@@ -1398,7 +1398,7 @@ Begin
       LogView.Colors.FocusedSelectionColor := FStyleServices.GetSystemColor(clHighlight);
     End;
 End;
-{$ENDIF DXE102}
+{$ENDIF RS102}
 
 (**
 
@@ -1425,12 +1425,12 @@ Begin
       Node := LogView.GetLastChild(LogView.RootNode);
       LogView.Selected[Node] := True;
       LogView.FocusedNode := Node;
-      stbStatusBar.Panels[0].Text := Format(strShowingMessages, [
-        Int(LogView.RootNodeCount),
-        Int(FMessageList.Count)
-      ]);
       FLastUpdate := 0;
     End;
+  stbStatusBar.Panels[0].Text := Format(strShowingMessages, [
+    Int(LogView.RootNodeCount),
+    Int(FMessageList.Count)
+  ]);
 End;
 
 End.

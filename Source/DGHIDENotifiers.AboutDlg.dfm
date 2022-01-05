@@ -10,7 +10,6 @@ object frmDINAboutDlg: TfrmDINAboutDlg
   Font.Height = -13
   Font.Name = 'Tahoma'
   Font.Style = []
-  OldCreateOrder = False
   Position = poMainFormCenter
   OnCreate = FormCreate
   PixelsPerInch = 96
@@ -32,14 +31,14 @@ object frmDINAboutDlg: TfrmDINAboutDlg
     Width = 499
     Height = 16
     Align = alTop
-    Caption = 'Author: David Hoyle (c) 2020 GNU GPL 3'
+    Caption = 'lblAuthor'
     Font.Charset = DEFAULT_CHARSET
     Font.Color = clWindowText
     Font.Height = -13
     Font.Name = 'Tahoma'
     Font.Style = []
     ParentFont = False
-    ExplicitWidth = 229
+    ExplicitWidth = 51
   end
   object lblBuild: TLabel
     AlignWithMargins = True
@@ -107,38 +106,6 @@ object frmDINAboutDlg: TfrmDINAboutDlg
     Width = 499
     Height = 306
     Align = alClient
-    Lines.Strings = (
-      'DGH IDE Notifiers'
-      ''
-      
-        'Copyright (C) 2020  David Hoyle (https://github.com/DGH2112/DGH-' +
-        'IDE-Notifiers/)'
-      ''
-      
-        'This program is free software: you can redistribute it and/or mo' +
-        'dify it under the '
-      
-        'terms of the GNU General Public License as published by the Free' +
-        ' Software '
-      
-        'Foundation, either version 3 of the License, or (at your option)' +
-        ' any later version.'
-      ''
-      
-        'This program is distributed in the hope that it will be useful, ' +
-        'but WITHOUT ANY '
-      
-        'WARRANTY; without even the implied warranty of MERCHANTABILITY o' +
-        'r FITNESS '
-      
-        'FOR A PARTICULAR PURPOSE.  See the GNU General Public License fo' +
-        'r more '
-      'details.'
-      ''
-      
-        'You should have received a copy of the GNU General Public Licens' +
-        'e along with this '
-      'program. If not, see <https://www.gnu.org/licenses/>.')
     ParentColor = True
     ReadOnly = True
     ScrollBars = ssVertical

@@ -4,8 +4,8 @@
   changes in the source editor.
 
   @Author  David Hoyle
-  @Version 1.711
-  @Date    20 Sep 2020
+  @Version 1.712
+  @Date    05 Jan 2022
   
   @license
 
@@ -43,10 +43,10 @@ Type
   (** A class which implements the Editor Notifier. **)
   TDINSourceEditorNotifier = Class(TDGHNotifierObject, IInterface, IOTANotifier, IOTAEditorNotifier)
   Strict Private
-    {$IFDEF DXE100}
+    {$IFDEF RS100}
     FEditViewNotifierIndex: Integer;
     FView: IOTAEditView;
-    {$ENDIF DXE100}
+    {$ENDIF RS100}
   Strict Protected
     Procedure ViewActivated(Const View: IOTAEditView);
     Procedure ViewNotification(Const View: IOTAEditView; Operation: TOperation);
@@ -87,13 +87,13 @@ Constructor TDINSourceEditorNotifier.Create(Const strNotifier, strFileName: Stri
 
 Begin
   Inherited Create(strNotifier, strFileName, iNotification);
-  {$IFDEF DXE100}
+  {$IFDEF RS100}
   FEditViewNotifierIndex := -1;
   FView := Nil;
   // Workaround for new modules create after the IDE has started
   If SourceEditor.EditViewCount > 0 Then
     ViewNotification(SourceEditor.EditViews[0], opInsert);
-  {$ENDIF DXE100}
+  {$ENDIF RS100}
 End;
 
 (**
@@ -107,9 +107,9 @@ End;
 Destructor TDINSourceEditorNotifier.Destroy;
 
 Begin
-  {$IFDEF DXE100}
+  {$IFDEF RS100}
   ViewNotification(FView, opRemove);
-  {$ENDIF DXE100}
+  {$ENDIF RS100}
   Inherited Destroy;
 End;
 
@@ -171,7 +171,7 @@ Begin
       ]
     )
   );
-  {$IFDEF DXE100}
+  {$IFDEF RS100}
   If Assigned(View) Then
     Case Operation Of
       // Only create a notifier if one has not already been created!
@@ -191,7 +191,7 @@ Begin
             FEditViewNotifierIndex := -1;
           End;
     End;
-  {$ENDIF DXE100}
+  {$ENDIF RS100}
 End;
 
 End.

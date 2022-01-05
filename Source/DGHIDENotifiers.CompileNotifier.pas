@@ -5,8 +5,8 @@
   in the RAD Studio IDE.
 
   @Author  David Hoyle
-  @Version 1.002
-  @Date    20 Sep 2020
+  @Version 1.010
+  @Date    05 Jan 2022
 
   @license
 
@@ -71,7 +71,8 @@ Const
   (** A constant array of strings to provide a string representation of the Compile Mode
       enumerates. **)
   strCompileMode : Array[Low(TOTACompileMode)..High(TOTACompileMode)] Of String = (
-    'cmOTAMake', 'cmOTABuild', 'cmOTACheck', 'cmOTAMakeUnit');
+    'cmOTAMake', 'cmOTABuild', 'cmOTACheck', 'cmOTAMakeUnit' {$IFDEF RS110}, 'cmOTACLean',
+    'cmOTALink' {$ENDIF RS110});
 
 { TDGHIDENotificationsCompileNotifier }
 

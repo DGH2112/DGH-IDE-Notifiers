@@ -5,8 +5,8 @@
   RAD Studio IDE.
 
   @Author  David Hoyle
-  @Version 1.315
-  @Date    20 Sep 2020
+  @Version 1.316
+  @Date    05 Jan 2022
 
   @license
 
@@ -319,11 +319,11 @@ Const
     'ofnPackageInstalled',
     'ofnPackageUninstalled',
     'ofnActiveProjectChanged' {$IFDEF DXE80},
-    'ofnProjectOpenedFromTemplate' {$ENDIF} {$IFDEF DXE104},
+    'ofnProjectOpenedFromTemplate' {$ENDIF} {$IFDEF RS104},
     'ofnBeginProjectGroupOpen',
     'ofnEndProjectGroupOpen',
     'ofnBeginProjectGroupClose',
-    'ofnEndProjectGroupClose' {$ENDIF}
+    'ofnEndProjectGroupClose' {$ENDIF RS110}
   );
 
 ResourceString
