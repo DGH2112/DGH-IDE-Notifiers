@@ -64,7 +64,7 @@ Uses
   Generics.Collections,
   ExtCtrls,
   Themes,
-  DGHIDENotifiers.Interfaces, System.Actions, System.ImageList;
+  DGHIDENotifiers.Interfaces;
 
 Type
   (** This record describes the message information to be stored. **)
