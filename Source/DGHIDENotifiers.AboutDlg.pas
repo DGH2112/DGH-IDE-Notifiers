@@ -3,8 +3,8 @@
   This module contains a class which represents a form for displaying information about the application.
 
   @Author  David Hoyle
-  @Version 1.171
-  @Date    27 Sep 2020
+  @Version 1.324
+  @Date    05 Jan 2022
   
   @license
 
@@ -119,33 +119,48 @@ ResourceString
   {$ELSE}
   strDINCaption = 'DGH IDE Notifiers %d.%d%s (Build %d.%d.%d.%d)';
   {$ENDIF}
+  strGPL3Notice = 
+    'DGH IDE Notifiers'#13#10 +
+    ''#13#10 +
+    'Copyright (C) 2020  David Hoyle (https://github.com/DGH2112/DGH-IDE-Notifiers/)'#13#10 +
+    ''#13#10 +
+    'This program is free software: you can redistribute it and/or modify it under the ' +
+    'terms of the GNU General Public License as published by the Free Software ' +
+    'Foundation, either version 3 of the License, or (at your option) any later version.'#13#10 +
+    ''#13#10 +
+    'This program is distributed in the hope that it will be useful, but WITHOUT ANY ' +
+    'WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS ' +
+    'FOR A PARTICULAR PURPOSE.  See the GNU General Public License for more ' +
+    'details.'#13#10 +
+    ''#13#10 +
+    'You should have received a copy of the GNU General Public License along with this ' +
+    'program. If not, see <https://www.gnu.org/licenses/>.';
+  strAuthor = 'Author: David Hoyle (c) %s GNU GPL 3';
 
 Const
   strDateFmt = 'ddd dd mmm yyyy @ hh:nn';
+  strYearFmt = 'yyyy';
 
 Var
   dtDateTime : TDateTime;
   recVerInfo: TDINVerInfo;
-  {$IFDEF DXE102}
+  {$IFDEF RS102}
   ITS : IOTAIDEThemingServices250;
-  {$ENDIF DXE102}
+  {$ENDIF RS102}
   
 Begin
-  {$IFDEF DXE102}
+  {$IFDEF RS102}
   If Supports(BorlandIDEServices, IOTAIDEThemingServices250, ITS) Then
     Begin
       ITS.RegisterFormClass(TfrmDINAboutDlg);
       If ITS.IDEThemingEnabled Then
         ITS.ApplyTheme(Self);
     End;
-  {$ENDIF DXE102}
-  FileAge(ParamStr(0), dtDateTime);
-  lblBuildDate.Caption := Format(
-    strBuildDate, [
-      FormatDateTime(strDateFmt, dtDateTime)
-    ]
-  );
+  {$ENDIF RS102}
+  FileAge(GetModuleName(hInstance), dtDateTime);
+  lblBuildDate.Caption := Format(strBuildDate, [FormatDateTime(strDateFmt, dtDateTime)]);
   BuildNumber(recVerInfo.FMajor, recVerInfo.FMinor, recVerInfo.FBugFix, recVerInfo.FBuild);
+  lblAuthor.Caption := Format(strAuthor, [FormatDateTime(strYearFmt, dtDateTime)]);
   lblBuild.Caption := Format(strDINCaption,
     [
       recVerInfo.FMajor,
@@ -157,6 +172,7 @@ Begin
       recVerInfo.FBuild
     ]
   );
+  lblInformation.Lines.Text := strGPL3Notice;
 End;
 
 End.
