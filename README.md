@@ -2,11 +2,9 @@
 
 Author:   David Hoyle
 
-Version:  1.1h
+Version:  1.2
 
-Date:     27 Nov 2020
-
-Web Page: [DGH IDE Notifiers](http://www.davidghoyle.co.uk/WordPress/?page_id=1449)
+Date:     05 Jan 2022
 
 ## Overview
 
