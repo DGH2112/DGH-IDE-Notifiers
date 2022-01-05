@@ -4,8 +4,8 @@
   compile information on each compile operation.
 
   @Author  David Hoyle
-  @Version 1.003
-  @Date    20 Sep 2020
+  @Version 1.016
+  @Date    05 Jan 2022
   
   @license
 
@@ -36,6 +36,8 @@ Uses
   ToolsAPI,
   DGHIDENotifiers.Types,
   DGHIDENotifiers.Interfaces;
+
+{$INCLUDE CompilerDefinitions.inc}
 
 Type
   (** A class to implement the IOTAProjectCompileNotifier interface. **)
@@ -69,7 +71,10 @@ Const
     'cmOTAMake',
     'cmOTABuild',
     'cmOTACheck',
-    'cmOTAMakeUnit'
+    'cmOTAMakeUnit' {$IFDEF RS110},
+    'cmOTAClean',
+    'cmOTALink'
+    {$ENDIF RS110}
   );
   (** An array constant of strings for false and true. **)
   astrBoolean : Array[False..True] Of String = ('False', 'True');

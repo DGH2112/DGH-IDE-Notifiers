@@ -10,7 +10,6 @@ object frmDockableIDENotifications: TfrmDockableIDENotifications
   Font.Height = -13
   Font.Name = 'Tahoma'
   Font.Style = []
-  OldCreateOrder = False
   Position = poDesigned
   PixelsPerInch = 96
   TextHeight = 16
@@ -153,6 +152,8 @@ object frmDockableIDENotifications: TfrmDockableIDENotifications
     OnGetText = LogViewGetText
     OnGetImageIndex = LogViewGetImageIndex
     OnKeyPress = LogViewKeyPress
+    Touch.InteractiveGestures = [igPan, igPressAndTap]
+    Touch.InteractiveGestureOptions = [igoPanSingleFingerHorizontal, igoPanSingleFingerVertical, igoPanInertia, igoPanGutter, igoParentPassthrough]
     Columns = <
       item
         Margin = 5

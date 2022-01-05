@@ -4,8 +4,8 @@
   start up.
 
   @Author  David Hoyle
-  @Version 1.001
-  @Date    20 Sep 2020
+  @Version 1.079
+  @Date    05 Jan 2022
 
   @license
 
@@ -44,7 +44,11 @@ Uses
   {$ENDIF}
   ToolsAPI,
   SysUtils,
+  {$IFDEF RS110}
+  Graphics,
+  {$ELSE}
   Windows,
+  {$ENDIF}
   Forms,
   DGHIDENotifiers.Common;
 
@@ -70,21 +74,39 @@ Var
   iMinor : Integer;
   iBugFix : Integer;
   iBuild : Integer;
+  {$IFDEF RS110}
+  SplashScreenBitMap : TBitMap;
+  {$ELSE}
   bmSplashScreen : HBITMAP;
+  {$ENDIF RS110}
 
 Begin
   {$IFDEF CODESITE}CodeSite.TraceMethod('AddSplashScreen', tmoTiming);{$ENDIF}
   {$IFDEF D2005}
   BuildNumber(iMajor, iMinor, iBugFix, iBuild);
+  {$IFDEF RS110}
+  SplashScreenBitMap := TBitMap.Create;
+  Try
+    SplashScreenBitMap.LoadFromResourceName(hINstance, strDGHIDENotificationsSplashScreenBitMap);
+    (SplashScreenServices As IOTASplashScreenServices).AddPluginBitmap(
+      Format(strSplashScreenName, [iMajor, iMinor, Copy(strRevision, iBugFix + 1, 1), Application.Title]),
+      [SplashScreenBitMap],
+      {$IFDEF DEBUG} True {$ELSE} False {$ENDIF},
+      Format(strSplashScreenBuild, [iMajor, iMinor, iBugfix, iBuild]), ''
+    );
+  Finally
+    SplashScreenBitMap.Free;
+  End;
+  {$ELSE}
   bmSplashScreen := LoadBitmap(hInstance, strDGHIDENotificationsSplashScreenBitMap);
   (SplashScreenServices As IOTASplashScreenServices).AddPluginBitmap(
-    Format(strSplashScreenName, [iMajor, iMinor, Copy(strRevision, iBugFix + 1, 1),
-      Application.Title]),
+    Format(strSplashScreenName, [iMajor, iMinor, Copy(strRevision, iBugFix + 1, 1), Application.Title]),
     bmSplashScreen,
     {$IFDEF DEBUG} True {$ELSE} False {$ENDIF},
     Format(strSplashScreenBuild, [iMajor, iMinor, iBugfix, iBuild]), ''
-    );
-  {$ENDIF}
+  );
+  {$ENDIF RS110}
+  {$ENDIF D2005}
 End;
 
 End.
