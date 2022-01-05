@@ -3,8 +3,8 @@
   This module contains a class which implements the Edit View Notifier for drawing on the code editor.
 
   @Author  David Hoyle
-  @Version 1.688
-  @Date    20 Sep 2020
+  @Version 1.689
+  @Date    05 Jan 2022
   
   @license
 
@@ -33,7 +33,7 @@ Interface
 
 {$INCLUDE CompilerDefinitions.inc}
 
-{$IFDEF DXE100}
+{$IFDEF RS100}
 Uses
   ToolsAPI,
   Classes,
@@ -54,7 +54,7 @@ Type
       Const TextRect: TRect; Const LineRect: TRect; Const CellSize: TSize);
   Public
   End;
-{$ENDIF DXE100}
+{$ENDIF RS100}
 
 Implementation
 
@@ -64,7 +64,7 @@ Uses
   {$ENDIF}
   SysUtils;
 
-{$IFDEF DXE100}
+{$IFDEF RS100}
 (**
 
   This method is called before the code editor is repainted. By default Fullrepaint is false however
@@ -192,7 +192,7 @@ Begin
     )
   );
 End;
-{$ENDIF DXE100}
+{$ENDIF RS100}
 
 End.
 
