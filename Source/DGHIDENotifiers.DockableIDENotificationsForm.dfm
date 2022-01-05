@@ -320,7 +320,7 @@ object frmDockableIDENotifications: TfrmDockableIDENotifications
     Left = 32
     Top = 128
     object actCapture: TAction
-      Caption = 'Catpure Notifications'
+      Caption = 'Capture Notifications'
       Hint = 'Capture Notifications'
       ImageIndex = 0
       OnExecute = actCaptureExecute

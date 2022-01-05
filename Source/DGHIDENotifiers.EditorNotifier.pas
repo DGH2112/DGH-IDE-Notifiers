@@ -4,8 +4,8 @@
   interfaces for capturing editor events in the RAD Studio IDE.
 
   @Author  David Hoyle
-  @Version 1.001
-  @Date    20 Sep 2020
+  @Version 1.002
+  @Date    05 Jan 2022
 
   @license
 
@@ -394,7 +394,7 @@ End;
 
 (**
 
-  This method doesn`t seem to be called.
+  This method does not seem to be called.
 
   @precon  None.
   @postcon Provides access to the edit window.
